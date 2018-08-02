@@ -10,11 +10,14 @@ class Branch(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        verbose_name_plural = 'Branches'
+
 
 class Unit(models.Model):
     block = models.CharField(max_length=32, blank=False, null=False)
     lot = models.CharField(max_length=32, blank=False, null=False)
-    price = models.DecimalField(max_digits=15, decimal_places=2, null=True, default=0.01)
+    price = models.DecimalField(max_digits=15, decimal_places=2, null=True, default=0.00)
     branch = models.ForeignKey(Branch, null=True, blank=True, related_name='units', on_delete=models.SET_NULL)
 
     def __str__(self):
@@ -41,7 +44,7 @@ class Client(models.Model):
 
     # Address
     house_number = models.CharField(max_length=8, blank=True, null=True)
-    street_name = models.CharField(max_length=128, blank=True, null=True)
+    street = models.CharField(max_length=128, blank=True, null=True)
     barangay = models.CharField(max_length=128, blank=False, null=False)
     town = models.CharField(max_length=128, blank=False, null=False)
     province = models.CharField(max_length=128, blank=False, null=False)
@@ -58,6 +61,18 @@ class Client(models.Model):
         if self.middle_name:
             fullname = '{0} {1} {2}'.format(self.last_name, self.first_name, self.middle_name)
         return fullname
+
+    def main_address(self):
+        addr = '{barangay}, {town}, {province}'.format(barangay=self.barangay, town=self.town, province=self.province)
+        if self.street:
+            addr = '{street}, {address}'.format(street=self.street, address=addr)
+        if self.house_number:
+            addr = '{house_number}, {address}'.format(house_number=self.house_number, address=addr)
+
+        return addr
+
+    def contact_number(self):
+        return self.mobile or self.phone
 
     def clean(self):
         if not self.mobile and not self.phone:
@@ -94,6 +109,18 @@ class Agent(models.Model):
         if self.middle_name:
             fullname = '{0} {1} {2}'.format(self.last_name, self.first_name, self.middle_name)
         return fullname
+
+    def main_address(self):
+        addr = '{barangay}, {town}, {province}'.format(barangay=self.barangay, town=self.town, province=self.province)
+        if self.street:
+            addr = '{street}, {address}'.format(street=self.street, address=addr)
+        if self.house_number:
+            addr = '{house_number}, {address}'.format(house_number=self.house_number, address=addr)
+
+        return addr
+
+    def contact_number(self):
+        return self.mobile or self.phone
 
     def clean(self):
         if not self.mobile and not self.phone:
