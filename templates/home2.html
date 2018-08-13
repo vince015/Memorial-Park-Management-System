@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+{% block pagetitle %}Home{% endblock %}
+
+{% block pagestylesheets %}
+{% endblock %}
+
+{% block breadcrumb %}
+<div class="input-group input-group-sm col-md-6">
+    <input type="text" id="search-input" class="form-control" placeholder="Search...">
+    <span class="input-group-btn">
+        <button type="button" class="btn btn-primary">
+            <i class="fa fa-search"></i>
+        </button>
+    </span>
+</div>
+
+<ol class="breadcrumb">
+    <li class="active">
+        <i class="fa fa-home"></i> Home
+    </li>
+</ol>
+{% endblock %}
+
+{% block main %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="box box-primary" id="search-results">
+            <div class="box-body">
+                <h3>&nbsp;</h3>
+            </div>
+            <div class="overlay">
+                <i class="fa fa-refresh fa-spin"></i>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block pagescripts %}
+<script src="{% static "bower_components/datatables.net/js/jquery.dataTables.min.js" %}"></script>
+<script src="{% static "bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js" %}"></script>
+<script>
+    $(document).ready(function() {
+        getData("", 1);
+    });
+
+    function getData(query, page) {
+        $(".overlay").show();
+        $.ajax({
+            type: "GET",
+            url: "{% url 'contract_list' %}",
+            data: {
+                "query": query,
+                "page": page
+            },
+            success: getDataOK,
+            dataType: "html"
+        })
+    }
+    function getDataOK(data, textStatus, jqXHR) {
+        $("#search-results").html(data);
+        $(".overlay").hide();
+    }
+
+    function pageChange(page) {
+        console.log(page);
+        var query = $("#search-input").val();
+        getData(query, page);
+    }
+
+    // action listeners
+    $("#search-input").keyup(function() {
+        getData($(this).val(), 1);
+    });
+</script>
+{% endblock %}

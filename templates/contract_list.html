@@ -1,0 +1,76 @@
+<div class="box-header">
+  <i class="ion ion-ios-people"></i>
+  <h3 class="box-title">Clients</h3>
+</div>
+
+<div class="box-body">
+    {% if contracts %}
+    <ul class="todo-list">
+        {% for contract in contracts %}
+        <li>
+            <span class="text">
+                <a href="{% url 'contract_read' contract_id=contract.id %}">
+                    {{ contract.client.last_name | upper }}, {{ contract.client.first_name }}
+                </a>
+            </span>
+             <!-- Emphasis label -->
+            <p class="text-red inline">
+                {{ contract.lot }}
+            </p>
+            <!-- General tools such as edit or delete-->
+            <div class="tools">
+                <a href="{% url 'contract_read' contract_id=contract.id %}">
+                    <i class="fa fa-eye"></i>
+                </a>
+                <i class="fa fa-edit"></i>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <h3 class="text-muted text-center">
+        <i class="ion ion-android-sad"></i> No results found
+    </h3>
+    {% endif %}
+</div>
+
+<div class="box-footer clearfix no-border">
+    {% if contracts %}
+    <div class="box-tools pull-right">
+        <ul class="pagination pagination-sm inline">
+            {% if contracts.has_previous %}
+            <li>
+                <a href="javascript:void(0)" onclick="pageChange(1)">
+                    &laquo;
+                </a>
+            </li>
+            <li>
+                <a href="javascript:void(0)" onclick="pageChange({{ contracts.previous_page_number }})">
+                    {{ contracts.previous_page_number }}
+                </a>
+            </li>
+            {% endif %}
+
+            <li class="current">
+                <a href="javascript:void(0)" onclick="pageChange({{ contracts.number }})">
+                    {{ contracts.number }}
+                </a>
+            </li>
+
+            {% if contracts.has_next %}
+            <li>
+                <a href="javascript:void(0)" onclick="pageChange({{ contracts.next_page_number }})">
+                    {{ contracts.next_page_number }}
+                </a>
+            </li>
+            <li>
+                <a href="javascript:void(0)" onclick="pageChange({{ contracts.paginator.num_pages }})">
+                    &raquo;
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </div>
+    {% endif %}
+</div>
+

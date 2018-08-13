@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+
+{% load staticfiles %}
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+        <title>Memorial Park Management System | {% block pagetitle %}{% endblock %} </title>
+        <!-- <link rel="icon" type="image/png" href="{% static 'images/logo_mini.png' %}"> -->
+
+        <!-- Tell the browser to be responsive to screen width -->
+        <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+
+        {% block stylesheets %}
+        <!-- Bootstrap 3.3.7 -->
+        <link rel="stylesheet" href="{% static 'bower_components/bootstrap/dist/css/bootstrap.min.css' %}">
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="{% static 'bower_components/font-awesome/css/font-awesome.min.css' %}">
+        <!-- Ionicons -->
+        <link rel="stylesheet" href="{% static 'bower_components/Ionicons/css/ionicons.min.css' %}">
+        <!-- Theme style -->
+        <link rel="stylesheet" href="{% static 'dist/css/AdminLTE.css' %}">
+        {% endblock %}
+
+        {% block pagestylesheets %}{% endblock %}
+
+        {% block uielements %}
+        <!-- AdminLTE Skins. Choose a skin from the css/skins
+           folder instead of downloading all of them to reduce the load. -->
+        <link rel="stylesheet" href="{% static 'dist/css/skins/_all-skins.min.css' %}">
+        <!-- Date Picker -->
+        <link rel="stylesheet" href="{% static 'bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css' %}">
+        <link rel="stylesheet" href="{% static 'bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css' %}">
+        {% endblock %}
+
+    </head>
+    <body class="hold-transition skin-blue layout-top-nav">
+        <div class="wrapper">
+            <header class="main-header">
+                <nav class="navbar navbar-static-top">
+                    <div class="container">
+                        <!-- Brand Logo -->
+                        <div class="navbar-header">
+                            <a href="{% url 'home' %}" class="navbar-brand">
+                                <b>MP</b>MS
+                            </a>
+                            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse">
+                                <i class="fa fa-bars"></i>
+                            </button>
+                        </div>
+
+                        <!-- Navigation Links -->
+                        <div class="collapse navbar-collapse pull-left" id="navbar-collapse">
+                            <ul class="nav navbar-nav">
+                                <li><a href="#">Link</a></li>
+                            </ul>
+                        </div>
+
+                        <!-- Navbar Right Menu -->
+                        <div class="navbar-custom-menu">
+                            <ul class="nav navbar-nav">
+                                <li>
+                                    <a href="#">
+                                        Username
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#">
+                                        <i class="fa fa-sign-out"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </nav>
+            </header>
+
+            <div class="content-wrapper">
+                <section class="content-header">
+                    {% block breadcrumb %}{% endblock %}
+                </section>
+
+                <!-- error messages -->
+                <section class="content">
+                    {% if messages %}
+                    <div class="callout callout-success">
+                        <ul>
+                        {% for message in messages %}
+                            {% if message.tags %}
+                                {% if message.tags == 'success' %}
+                                    <li>{{ message }}</li>
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+
+                    {% block callouts %}{% endblock %}
+
+                    {% block main %}{% endblock %}
+                </section>
+            </div>
+
+            <footer class="main-footer">
+                <div class="pull-right hidden-xs">
+                    <b>Version</b> 2.4.0
+                </div>
+                <strong>
+                    Copyright &copy; 2014-2016 <a href="https://adminlte.io">Almsaeed Studio</a>.
+                </strong>
+                All rights reserved.
+            </footer>
+        </div>
+
+        <!-- jQuery 3 -->
+        <script src="{% static 'bower_components/jquery/dist/jquery.min.js' %}"></script>
+        <!-- jQuery UI 1.11.4 -->
+        <script src="{% static 'bower_components/jquery-ui/jquery-ui.min.js' %}"></script>
+        <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
+        <script>
+          $.widget.bridge('uibutton', $.ui.button);
+        </script>
+        <!-- Bootstrap 3.3.7 -->
+        <script src="{% static 'bower_components/bootstrap/dist/js/bootstrap.min.js' %}"></script>
+        <!-- datepicker -->
+        <script src="{% static 'bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js' %}"></script>
+        <!-- AdminLTE App -->
+        <script src="{% static 'dist/js/adminlte.min.js' %}"></script>
+        <!-- FastClick -->
+        <script src="{% static 'bower_components/fastclick/lib/fastclick.js' %}"></script>
+
+        {% block pagescripts %}{% endblock %}
+    </body>
+</html>

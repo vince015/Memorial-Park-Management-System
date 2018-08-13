@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+{% block pagetitle %}Home{% endblock %}
+
+{% block pagestylesheets %}
+{% endblock %}
+
+{% block breadcrumb %}
+<h1>
+    Home
+</h1>
+<ol class="breadcrumb">
+    <li class="active"><i class="fa fa-home"></i> Home</a></li>
+</ol>
+{% endblock %}
+
+{% block main %}
+    <div class="row">
+        <div class="box">
+            <div class="box-body">
+                <table id="client_table" class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Lot</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block pagescripts %}
+<script src="{% static "bower_components/datatables.net/js/jquery.dataTables.min.js" %}"></script>
+<script src="{% static "bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js" %}"></script>
+<script>
+    $(function () {
+        $('#client_table').DataTable({
+            "processing": true,
+            "serverSide": true,
+            "ajax": "{% url 'contract_json' %}"
+        });
+    });
+</script>
+{% endblock %}
