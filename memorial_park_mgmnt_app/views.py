@@ -38,7 +38,7 @@ class ContractListView(TemplateView):
                                                           Lower('client__middle_name'))
 
         page = request.GET.get('page', 1)
-        paginator = Paginator(data, 1)
+        paginator = Paginator(data, 25)
         try:
             data = paginator.page(page)
         except PageNotAnInteger:
@@ -57,8 +57,8 @@ class ContractReadView(TemplateView):
 
         data = {
             'contract': instance,
-            'downpayments': instance.downpayments.all(),
-            'commissions': instance.commissions.all()
+            'downpayments': instance.downpayments.all().order_by('-date'),
+            'commissions': instance.commissions.all().order_by('-date')
         }
 
         return render(request, self.template_name, data)

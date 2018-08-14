@@ -161,7 +161,12 @@ class Contract(models.Model):
 
     @property
     def installment_downpayment_balance(self):
-        return ((self.lot_price + self.care_fund) * 0.2) - self.reservation_loi
+        balance = self.downpayment_amount - self.discount_spot_dp
+        downpayments = self.downpayments.aggregate(Sum('amount')).get('amount__sum', 0.00)
+        if downpayments is not None:
+            balance = balance - downpayments
+
+        return balance
 
     @property
     def installment_balance(self):
