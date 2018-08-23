@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% include 'autocomplete_light/static.html' %}
 
 {% load staticfiles %}
 {% load humanize %}
@@ -8,7 +9,7 @@
 
 {% block breadcrumb %}
 <h1>
-    Update Contract
+    New Contract
 </h1>
 
 <ol class="breadcrumb">
@@ -17,13 +18,8 @@
             <i class="fa fa-home"></i> Home
         </a>
     </li>
-    <li>
-        <a href="{% url 'contract_read' contract_id=form.instance.id %}">
-            Contract {{ form.instance.id }}
-        </a>
-    </li>
     <li class="active">
-        Update Contract
+        New Contract
     </li>
 </ol>
 {% endblock %}
@@ -32,7 +28,7 @@
 <div class="row">
     <div class="col-md-12">
         <div class="box box-primary">
-            <form class="form-horizontal" action="{% url 'contract_update' contract_id=form.instance.id %}" method="post">
+            <form class="form-horizontal" action="{% url 'contract_create' %}" method="post">
             {% csrf_token %}
             <div class="box-body">
                 {% if form.non_field_errors %}
@@ -238,6 +234,7 @@
 {% endblock %}
 
 {% block pagescripts %}
+<script type="text/javascript" src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
 <script type="text/javascript">
     $(document).ready( function() {
         $(".datepicker").datepicker({

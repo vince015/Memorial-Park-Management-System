@@ -101,6 +101,38 @@ class ContractUpdateView(TemplateView):
             return render(request, self.template_name, context_dict)
 
 
+class ContractCreateView(TemplateView):
+    template_name = 'contract_create.html'
+
+    def get(self, request):
+        form = forms.ContractForm()
+
+        context_dict = {
+            'form': form
+        }
+
+        return render(request, self.template_name, context_dict)
+
+    def post(self, request, contract_id):
+        form = forms.contractForm(request.POST)
+
+        if form.is_valid():
+            instance = form.save(commit=False)
+            instance.save()
+
+            msg = 'Successfully created new Contract: {0}'.format(str(instance))
+            messages.success(request, msg)
+
+            return redirect(reverse('home'))
+
+        else:
+            context_dict = {
+                'form': form
+            }
+
+            return render(request, self.template_name, context_dict)
+
+
 class ContractJson(BaseDatatableView):
     model = models.Contract
     columns = ['name', 'lot']

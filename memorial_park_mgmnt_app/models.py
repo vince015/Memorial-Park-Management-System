@@ -11,6 +11,11 @@ from django.db.models import Sum
 BUYER_TYPES = (('PRE-NEED', 'Pre-Need'),
                ('IN-NEED', 'In-Need'))
 
+AGENT_TYPES = (('SALES_AGENT', 'Sales Agent'),
+               ('UNIT_MNGR', 'Unit Manager'),
+               ('SALES_LEADER', 'Sales Leader'),
+               ('REFERRAL', 'Referral'))
+
 def valid_id_directory_path(instance, filename):
     ext  = os.path.splitext(filename)[1]
     uid = uuid.uuid4().hex
@@ -142,7 +147,18 @@ class Contract(models.Model):
 
     lot = models.OneToOneField(Lot, null=False, blank=False, related_name='lot_contract', on_delete=models.CASCADE)
     client = models.ForeignKey(Client, null=False, blank=False, related_name='client_contracts', on_delete=models.CASCADE)
-    agent = models.ForeignKey(Agent, null=True, blank=True, related_name='agent_contracts', on_delete=models.CASCADE)
+
+    # Commission = 7%
+    sales_agent = models.ForeignKey(Agent, null=True, blank=True, related_name='sales_agent_contracts', on_delete=models.SET_NULL)
+    # Commission = 1%
+    unit_manager = models.ForeignKey(Agent, null=True, blank=True, related_name='unit_manager_contracts', on_delete=models.SET_NULL)
+    # Commission = 1%
+    sales_leader = models.ForeignKey(Agent, null=True, blank=True, related_name='sales_leader_contracts', on_delete=models.SET_NULL)
+    # Referral
+    referral = models.ForeignKey(Agent, null=True, blank=True, related_name='referral_contracts', on_delete=models.SET_NULL)
+
+    # Scenario helpers
+    sold_by = models.CharField(max_length=32, blank=False, null=False, choices=AGENT_TYPES, default='SALES_AGENT')
 
     def __str__(self):
         return '{0} - {1}'.format(str(self.client), str(self.lot))
@@ -213,6 +229,59 @@ class Contract(models.Model):
             total = total + downpayments
 
         return total
+
+    def get_commissions(self):
+        base = self.total_commissionable_amount
+        commissions = {
+                'sales_agent': 0,
+                'unit_manager': 0,
+                'sales_leader': 0,
+                'referral': 0
+            }
+
+        if self.sold_by == 'SALES_AGENT':
+            # Scenario 1
+            if self.unit_manager is not None:
+                commissions = {
+                    'sales_agent': base * 0.07,
+                    'unit_manager': base * 0.01,
+                    'sales_leader': base * 0.01,
+                    'referral': 0
+                }
+            # Scenario 4
+            else:
+                commissions = {
+                    'sales_agent': base * 0.07,
+                    'unit_manager': 0,
+                    'sales_leader': base * 0.01 + base * 0.01,
+                    'referral': 0
+                }
+        # Scenario 2
+        elif self.sold_by == 'UNIT_MNGR':
+            commissions = {
+                'sales_agent': 0,
+                'unit_manager': base * 0.07 + base * 0.01,
+                'sales_leader': base * 0.01,
+                'referral': 0
+            }
+        # Scenario 3
+        elif self.sold_by == 'SALES_LEADER':
+            commissions = {
+                'sales_agent': 0,
+                'unit_manager': 0,
+                'sales_leader': base * 0.07 + base * 0.01 + base * 0.01,
+                'referral': 0
+            }
+        # Scenario 5
+        elif self.sold_by == 'REFERRAL':
+            commissions = {
+                'sales_agent': base * 0.01,
+                'unit_manager': 0,
+                'sales_leader': 0,
+                'referral': base * 0.07
+            }
+
+        return commissions
 
 
 class Downpayment(models.Model):
