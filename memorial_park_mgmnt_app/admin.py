@@ -65,18 +65,12 @@ class ClientAdmin(admin.ModelAdmin):
                     'last_name',
                     'first_name',
                     'contact_number',
-                    'address')
+                    'main_address')
     list_display_links = ('id',)
     search_fields = ('id',
                      'last_name',
                      'first_name')
     list_per_page = 50
-
-    def contact_number(self, instance):
-        return instance.contact_number()
-
-    def address(self, instance):
-        return instance.main_address()
 
 admin.site.register(models.Client, ClientAdmin)
 
@@ -86,18 +80,12 @@ class AgentAdmin(admin.ModelAdmin):
                     'last_name',
                     'first_name',
                     'contact_number',
-                    'address')
+                    'main_address')
     list_display_links = ('id',)
     search_fields = ('id',
                      'last_name',
                      'first_name')
     list_per_page = 50
-
-    def contact_number(self, instance):
-        return instance.contact_number()
-
-    def address(self, instance):
-        return instance.main_address()
 
 admin.site.register(models.Agent, AgentAdmin)
 

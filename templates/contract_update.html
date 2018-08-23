@@ -1,0 +1,236 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+{% load humanize %}
+{% block pagetitle %}Clients{% endblock %}
+
+{% block pagestylesheets %}{% endblock %}
+
+{% block breadcrumb %}
+<h1>
+    Update Contract
+</h1>
+
+<ol class="breadcrumb">
+    <li>
+        <a href="{% url 'home' %}">
+            <i class="fa fa-home"></i> Home
+        </a>
+    </li>
+    <li>
+        <a href="{% url 'contract_read' contract_id=form.instance.id %}">
+            Contract {{ form.instance.id }}
+        </a>
+    </li>
+    <li class="active">
+        Update Contract
+    </li>
+</ol>
+{% endblock %}
+
+{% block main %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="box box-primary">
+            <form class="form-horizontal" action="{% url 'contract_update' contract_id=form.instance.id %}" method="post">
+            {% csrf_token %}
+            <div class="box-body">
+                {% if form.non_field_errors %}
+                <div class="form-group has-error">
+                    <ul>
+                        {% for error in form.non_field_errors %}
+                        <li class="help-block">
+                            <i class="fa fa-times-circle-o"></i>
+                            <b>Error</b>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <hr>
+                {% endif %}
+
+                <div class="form-group">
+                    <ul>
+                        <li class="help-block">
+                            <i class="fa fa-info-circle"></i>
+                            <b>Fields with * are required.</b>
+                        </li>
+                    </ul>
+                </div>
+                <hr>
+
+                <div class="form-group {% if form.date.errors %} has-error {% endif %}">
+                    <label for="{{ form.date.id_for_label }}" class="col-sm-3 control-label">
+                        Date *
+                    </label>
+                    <div class="col-sm-8">
+                        {{ form.date }}
+                        {% for error in form.date.errors %}
+                            <span class="help-block">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="form-group {% if form.buyer_type.errors %} has-error {% endif %}">
+                    <label for="{{ form.buyer_type.id_for_label }}" class="col-sm-3 control-label">
+                        Buyer Type *
+                    </label>
+                    <div class="col-sm-8">
+                        {{ form.buyer_type }}
+                        {% for error in form.buyer_type.errors %}
+                            <span class="help-block">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="form-group {% if form.lot_price.errors %} has-error {% endif %}">
+                    <label for="{{ form.lot_price.id_for_label }}" class="col-sm-3 control-label">
+                        Lot Price *
+                    </label>
+                    <div class="col-sm-8">
+                        {{ form.lot_price }}
+                        {% for error in form.lot_price.errors %}
+                            <span class="help-block">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="form-group {% if form.care_fund.errors %} has-error {% endif %}">
+                    <label for="{{ form.care_fund.id_for_label }}" class="col-sm-3 control-label">
+                        Care Fund *
+                    </label>
+                    <div class="col-sm-8">
+                        {{ form.care_fund }}
+                        {% for error in form.care_fund.errors %}
+                            <span class="help-block">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="form-group {% if form.discount_spot_cash.errors %} has-error {% endif %}">
+                    <label for="{{ form.discount_spot_cash.id_for_label }}" class="col-sm-3 control-label">
+                        Spot Cash Discount *
+                    </label>
+                    <div class="col-sm-8">
+                        {{ form.discount_spot_cash }}
+                        {% for error in form.discount_spot_cash.errors %}
+                            <span class="help-block">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="form-group {% if form.discount_spot_dp.errors %} has-error {% endif %}">
+                    <label for="{{ form.discount_spot_dp.id_for_label }}" class="col-sm-3 control-label">
+                        Spot Downpayment Discount *
+                    </label>
+                    <div class="col-sm-8">
+                        {{ form.discount_spot_dp }}
+                        {% for error in form.discount_spot_dp.errors %}
+                            <span class="help-block">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="form-group {% if form.interest_on_installment.errors %} has-error {% endif %}">
+                    <label for="{{ form.interest_on_installment.id_for_label }}" class="col-sm-3 control-label">
+                        Installment Interest *
+                    </label>
+                    <div class="col-sm-8">
+                        {{ form.interest_on_installment }}
+                        {% for error in form.interest_on_installment.errors %}
+                            <span class="help-block">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="form-group {% if form.certificate_of_ownership.errors %} has-error {% endif %}">
+                    <label for="{{ form.certificate_of_ownership.id_for_label }}" class="col-sm-3 control-label">
+                        Certificate of Ownership Fee *
+                    </label>
+                    <div class="col-sm-8">
+                        {{ form.certificate_of_ownership }}
+                        {% for error in form.certificate_of_ownership.errors %}
+                            <span class="help-block">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="form-group {% if form.change_of_title.errors %} has-error {% endif %}">
+                    <label for="{{ form.change_of_title.id_for_label }}" class="col-sm-3 control-label">
+                        Change of Title Fee *
+                    </label>
+                    <div class="col-sm-8">
+                        {{ form.change_of_title }}
+                        {% for error in form.change_of_title.errors %}
+                            <span class="help-block">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="form-group {% if form.interment.errors %} has-error {% endif %}">
+                    <label for="{{ form.interment.id_for_label }}" class="col-sm-3 control-label">
+                        Interment Fee *
+                    </label>
+                    <div class="col-sm-8">
+                        {{ form.interment }}
+                        {% for error in form.interment.errors %}
+                            <span class="help-block">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="form-group {% if form.reservation_loi.errors %} has-error {% endif %}">
+                    <label for="{{ form.reservation_loi.id_for_label }}" class="col-sm-3 control-label">
+                        Reservation LOI *
+                    </label>
+                    <div class="col-sm-8">
+                        {{ form.reservation_loi }}
+                        {% for error in form.reservation_loi.errors %}
+                            <span class="help-block">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="form-group {% if form.spot_cash_payment.errors %} has-error {% endif %}">
+                    <label for="{{ form.spot_cash_payment.id_for_label }}" class="col-sm-3 control-label">
+                        Spot Cash Payment *
+                    </label>
+                    <div class="col-sm-8">
+                        {{ form.spot_cash_payment }}
+                        {% for error in form.spot_cash_payment.errors %}
+                            <span class="help-block">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="form-group {% if form.remarks.errors %} has-error {% endif %}">
+                    <label for="{{ form.remarks.id_for_label }}" class="col-sm-3 control-label">
+                        Remarks
+                    </label>
+                    <div class="col-sm-8">
+                        {{ form.remarks }}
+                        {% for error in form.remarks.errors %}
+                            <span class="help-block">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="box-footer">
+                    <button type="submit" class="btn btn-primary pull-right">Submit</button>
+                </div>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block pagescripts %}
+<script type="text/javascript">
+    $(document).ready( function() {
+        $(".datepicker").datepicker({
+            autoclose: true
+        });
+    });
+</script>
+{% endblock %}

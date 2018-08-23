@@ -57,6 +57,10 @@
                         </a>
                     </li>
                 </ul>
+
+                <a href="{% url 'contract_update' contract_id=contract.id %}" class="btn btn-primary btn-block">
+                    Update Contract
+                </a>
             </div>
         </div>
 
@@ -64,9 +68,9 @@
             <div class="box-header with-border">
                 <h3 class="box-title">Info</h3>
 
-                <button type="button" class="btn btn-box-tool pull-right">
+                <a href="{% url 'client_update' contract_id=contract.id client_id=contract.client.id %}" class="btn btn-box-tool pull-right">
                     <i class="fa fa-pencil"></i>
-                </button>
+                </a>
             </div>
 
             <div class="box-body">
@@ -125,9 +129,9 @@
     <div class="col-md-9">
         <div class="nav-tabs-custom">
             <ul class="nav nav-tabs">
-                <li><a href="#details" data-toggle="tab">Details</a></li>
-                <li class="active"><a href="#downpayments" data-toggle="tab">Downpayments</a></li>
-                <li><a href="#commissions" data-toggle="tab">Commissions</a></li>
+                <li id="link-details"><a href="#details" data-toggle="tab">Details</a></li>
+                <li id="link-downpayments"><a href="#downpayments" data-toggle="tab">Downpayments</a></li>
+                <li id="link-commissions"><a href="#commissions" data-toggle="tab">Commissions</a></li>
             </ul>
 
             <div class="tab-content">
@@ -313,165 +317,197 @@
                     </form>
                 </div>
 
-                <div class="active tab-pane" id="downpayments">
-                    <b>Summary</b>
-                    <a href="#" class="pull-right">
-                        <i class="fa fa-plus"></i>
-                        Add Downpayment
-                    </a>
-
-                    <table class="table table-bordered">
-                        <tbody>
-                            <tr>
-                                <th class="bg-blue">
-                                    Installment<br>
-                                    Amount
-                                </th>
-                                <th class="bg-blue">
-                                    Downpayment<br>
-                                    Amount
-                                </th>
-                                <th class="bg-blue">
-                                    Installment<br>
-                                    Downpayment<br>
-                                    Balance
-                                </th>
-                                <th class="bg-blue">
-                                    Installment<br>
-                                    Balance
-                                </th>
-                                <th class="bg-blue">
-                                    Unpaid<br>
-                                    Balance
-                                </th>
-                            </tr>
-                            <tr>
-                                <td class="text-center">
-                                    Php {{ contract.installment_amount  | floatformat:2 | intcomma}}
-                                </td>
-                                <td class="text-center">
-                                    Php {{ contract.downpayment_amount  | floatformat:2 | intcomma}}
-                                </td>
-                                <td class="text-center">
-                                    Php {{ contract.installment_downpayment_balance  | floatformat:2 | intcomma}}
-                                </td>
-                                <td class="text-center">
-                                    Php {{ contract.installment_balance  | floatformat:2 | intcomma}}
-                                </td>
-                                <td class="text-center">
-                                    Php {{ contract.unpaid_balance  | floatformat:2 | intcomma}}
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-
-                    <ul class="timeline timeline-inverse">
-                        {% if downpayments %}
-                            {% for downpayment in downpayments %}
-                            <li class="time-label">
-                                <span class="bg-blue">
-                                    {{ downpayment.date }}
-                                </span>
-                            </li>
-                            <li>
-                                <i class="fa fa-money bg-primary"></i>
-                                <div class="timeline-item">
-                                    <h3 class="timeline-header no-border">
-                                        Php {{ downpayment.amount  | floatformat:2 | intcomma}}
-                                    </h3>
+                <div class="tab-pane" id="downpayments">
+                    <div class="row">
+                        <div class="col-xs-8">
+                            <ul class="timeline timeline-inverse">
+                                {% if downpayments %}
+                                    {% for downpayment in downpayments %}
+                                    <li class="time-label">
+                                        <span class="bg-blue">
+                                            {{ downpayment.date }}
+                                        </span>
+                                    </li>
+                                    <li>
+                                        <i class="fa fa-money bg-primary"></i>
+                                        <div class="timeline-item">
+                                            <h3 class="timeline-header">
+                                                <a>
+                                                    Php {{ downpayment.amount  | floatformat:2 | intcomma}}
+                                                </a>
+                                            </h3>
+                                            {% if downpayment.remarks %}
+                                            <div class="timeline-body">
+                                                {{ downpayment.remarks }}
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </li>
+                                    {% endfor %}
+                                {% else %}
+                                <li class="time-label">
+                                    <span class="bg-blue">
+                                        {% now "DATE_FORMAT" %}
+                                    </span>
+                                </li>
+                                <li>
+                                    <i class="fa fa-money bg-primary"></i>
+                                    <div class="timeline-item">
+                                        <h3 class="timeline-header no-border">
+                                            No downpayments paid yet
+                                        </h3>
+                                    </div>
+                                </li>
+                                {% endif %}
+                                <li>
+                                    <i class="fa fa-clock-o bg-gray"></i>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-xs-4" id="downpayment-summary-accordion">
+                            <div class="panel box box-primary">
+                                <div class="box-header">
+                                    <h4 class="box-title">
+                                        <a data-toggle="collapse" data-parent="#downpayment-summary-accordion" href="#downpaymentCollapse" aria-expanded="true" class="">
+                                            Summary
+                                        </a>
+                                    </h4>
                                 </div>
-                            </li>
-                            {% endfor %}
-                        {% else %}
-                        <li class="time-label">
-                            <span class="bg-blue">
-                                {% now "DATE_FORMAT" %}
-                            </span>
-                        </li>
-                        <li>
-                            <i class="fa fa-money bg-primary"></i>
-                            <div class="timeline-item">
-                                <h3 class="timeline-header no-border">
-                                    No downpayments paid yet
-                                </h3>
+                                <div id="downpaymentCollapse" class="panel-collapse collapse in" aria-expanded="true" style="">
+                                    <div class="box-body">
+                                        <ul class="list-group list-group-unbordered">
+                                            <li class="list-group-item">
+                                                <b>Installment<br>Amount</b>
+                                                <a class="pull-right">
+                                                    Php {{ contract.installment_amount  | floatformat:2 | intcomma}}
+                                                </a>
+                                            </li>
+                                            <li class="list-group-item">
+                                                <b>Downpayment<br>Amount</b>
+                                                <a class="pull-right">
+                                                    Php {{ contract.downpayment_amount  | floatformat:2 | intcomma}}
+                                                </a>
+                                            </li>
+                                            <li class="list-group-item">
+                                                <b>Installment<br>Downpayment<br>Balance</b>
+                                                <a class="pull-right">
+                                                    Php {{ contract.installment_downpayment_balance  | floatformat:2 | intcomma}}
+                                                </a>
+                                            </li>
+                                                <li class="list-group-item">
+                                                <b>Installment<br>Balance</b>
+                                                <a class="pull-right">
+                                                    Php {{ contract.installment_balance  | floatformat:2 | intcomma}}
+                                                </a>
+                                            </li>
+                                                <li class="list-group-item">
+                                                <b>Unpaid<br>Balance</b>
+                                                <a class="pull-right">
+                                                    Php {{ contract.unpaid_balance  | floatformat:2 | intcomma}}
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="box-footer">
+                                    <a href="{% url 'downpayment_create' contract_id=contract.id %}" class="btn btn-primary btn-block">
+                                        Add Downpayment
+                                    </a>
+                                </div>
                             </div>
-                        </li>
-                        {% endif %}
-                    </ul>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="tab-pane" id="commissions">
-                    <b>Summary</b>
-                    <a href="#" class="pull-right">
-                        <i class="fa fa-plus"></i>
-                        Add Commission
-                    </a>
-
-                    <table class="table table-bordered">
-                        <tbody>
-                            <tr>
-                                <th class="bg-blue">
-                                    Total<br>
-                                    Commissionable<br>
-                                    Amount
-                                </th>
-                                <th class="bg-blue">
-                                    Total<br>
-                                    Commission<br>
-                                    Paid
-                                </th>
-                                <th class="bg-blue">
-                                    Commission<br>
-                                    Balance
-                                </th>
-                            </tr>
-                            <tr>
-                                <td class="text-center">
-                                    Php {{ contract.total_commissionable_amount | floatformat:2 | intcomma}}
-                                </td>
-                                <td class="text-center">
-                                    Php {{ contract.total_commission_paid | floatformat:2 | intcomma}}
-                                </td>
-                                <td class="text-center">
-                                    Php {{ contract.commission_balance | floatformat:2 | intcomma}}
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-
-                    <ul class="timeline timeline-inverse">
-                        {% if commissions %}
-                            {% for commission in commissions %}
-                            <li class="time-label">
-                                <span class="bg-blue">
-                                    {{ commission.date }}
-                                </span>
-                            </li>
-                            <li>
-                                <i class="fa fa-money bg-primary"></i>
-                                <div class="timeline-item">
-                                    <h3 class="timeline-header no-border">
-                                        Php {{ commission.amount  | floatformat:2 | intcomma}}
-                                    </h3>
+                    <div class="row">
+                        <div class="col-xs-8">
+                            <ul class="timeline timeline-inverse">
+                                {% if commissions %}
+                                    {% for commission in commissions %}
+                                    <li class="time-label">
+                                        <span class="bg-blue">
+                                            {{ commission.date }}
+                                        </span>
+                                    </li>
+                                    <li>
+                                        <i class="fa fa-money bg-primary"></i>
+                                        <div class="timeline-item">
+                                            <h3 class="timeline-header">
+                                                <a>
+                                                    Php {{ commission.amount  | floatformat:2 | intcomma}}
+                                                </a>
+                                            </h3>
+                                            {% if commission.remarks %}
+                                            <div class="timeline-body">
+                                                {{ commission.remarks }}
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </li>
+                                    {% endfor %}
+                                {% else %}
+                                <li class="time-label">
+                                    <span class="bg-blue">
+                                        {% now "DATE_FORMAT" %}
+                                    </span>
+                                </li>
+                                <li>
+                                    <i class="fa fa-money bg-primary"></i>
+                                    <div class="timeline-item">
+                                        <h3 class="timeline-header no-border">
+                                            No commissions paid yet
+                                        </h3>
+                                    </div>
+                                </li>
+                                {% endif %}
+                                <li>
+                                    <i class="fa fa-clock-o bg-gray"></i>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-xs-4" id="commission-summary-accordion">
+                            <div class="panel box box-primary">
+                                <div class="box-header">
+                                    <h4 class="box-title">
+                                        <a data-toggle="collapse" data-parent="#commission-summary-accordion" href="#commissionCollapse" aria-expanded="true" class="">
+                                            Summary
+                                        </a>
+                                    </h4>
                                 </div>
-                            </li>
-                            {% endfor %}
-                        {% else %}
-                        <li class="time-label">
-                            <span class="bg-blue">
-                                {% now "DATE_FORMAT" %}
-                            </span>
-                        </li>
-                        <li>
-                            <i class="fa fa-money bg-primary"></i>
-                            <div class="timeline-item">
-                                <h3 class="timeline-header no-border">
-                                    No commissions paid yet
-                                </h3>
+                                <div id="commissionCollapse" class="panel-collapse collapse in" aria-expanded="true" style="">
+                                    <div class="box-body">
+                                        <ul class="list-group list-group-unbordered">
+                                            <li class="list-group-item">
+                                                <b>Total<br>Commissionable<br>Amount</b>
+                                                <a class="pull-right">
+                                                    Php {{ contract.total_commissionable_amount | floatformat:2 | intcomma}}
+                                                </a>
+                                            </li>
+                                            <li class="list-group-item">
+                                                <b>Total<br>Commission<br>Paid</b>
+                                                <a class="pull-right">
+                                                    Php {{ contract.total_commission_paid | floatformat:2 | intcomma}}
+                                                </a>
+                                            </li>
+                                            <li class="list-group-item">
+                                                <b>Commission<br>Balance</b>
+                                                <a class="pull-right">
+                                                    Php {{ contract.commission_balance | floatformat:2 | intcomma}}
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="box-footer">
+                                    <a href="{% url 'commission_create' contract_id=contract.id %}" class="btn btn-primary btn-block">
+                                        Add Commission
+                                    </a>
+                                </div>
                             </div>
-                        </li>
-                        {% endif %}
-                    </ul>
+                        </div>
+                    </div>
+                    
                 </div>
             </div>
         </div>
@@ -479,4 +515,19 @@
 </div>
 {% endblock %}
 
-{% block pagescripts %}{% endblock %}
+{% block pagescripts %}
+<script type="text/javascript">
+    $(document).ready( function() {
+        var active = getURLParameter("active");
+
+        if(active == undefined) {
+            $("#details").addClass("active");
+            $("#link-details").addClass("active");
+        }
+        else {
+            $("#" + active).addClass("active");
+            $("#link-" + active).addClass("active");
+        }
+    });
+</script>
+{% endblock %}

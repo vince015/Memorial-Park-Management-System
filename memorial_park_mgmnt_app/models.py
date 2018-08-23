@@ -11,7 +11,7 @@ from django.db.models import Sum
 BUYER_TYPES = (('PRE-NEED', 'Pre-Need'),
                ('IN-NEED', 'In-Need'))
 
-def scanned_id_directory_path(instance, filename):
+def valid_id_directory_path(instance, filename):
     ext  = os.path.splitext(filename)[1]
     uid = uuid.uuid4().hex
     return '{model}_ids/{uid}_{name}{ext}'.format(model=type(instance)._meta.verbose_name.lower(),
@@ -53,7 +53,7 @@ class Agent(models.Model):
     province = models.CharField(max_length=128, blank=False, null=False)
 
     contact_number = models.CharField(max_length=16, blank=True, null=True)
-    scanned_id = models.FileField(upload_to=scanned_id_directory_path, blank=False, null=False)
+    valid_id = models.FileField(upload_to=valid_id_directory_path, blank=False, null=False)
     birthdate = models.DateField(blank=True, null=True)
 
     other_address = models.CharField(max_length=512, blank=True, null=True)
@@ -90,7 +90,7 @@ class Client(models.Model):
     province = models.CharField(max_length=128, blank=False, null=False)
 
     contact_number = models.CharField(max_length=16, blank=True, null=True)
-    scanned_id = models.FileField(upload_to=scanned_id_directory_path, blank=False, null=False)
+    valid_id = models.FileField(upload_to=valid_id_directory_path, blank=False, null=False)
     birthdate = models.DateField(blank=True, null=True)
 
     other_address = models.CharField(max_length=512, blank=True, null=True)
@@ -216,16 +216,22 @@ class Contract(models.Model):
 
 
 class Downpayment(models.Model):
-    timestamp = models.DateTimeField(auto_now_add=True)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
     date = models.DateField(null=False, blank=False, default=timezone.now)
     amount = models.FloatField(default=0.00)
+    remarks = models.CharField(max_length=256, blank=True, null=True)
 
     contract = models.ForeignKey(Contract, null=False, blank=False, related_name='downpayments', on_delete=models.CASCADE)
 
 
 class Commission(models.Model):
-    timestamp = models.DateTimeField(auto_now_add=True)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
     date = models.DateField(null=False, blank=False, default=timezone.now)
     amount = models.FloatField(default=0.00)
+    remarks = models.CharField(max_length=256, blank=True, null=True)
 
     contract = models.ForeignKey(Contract, null=False, blank=False, related_name='commissions', on_delete=models.CASCADE)
