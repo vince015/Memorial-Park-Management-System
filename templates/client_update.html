@@ -17,13 +17,8 @@
             <i class="fa fa-home"></i> Home
         </a>
     </li>
-    <li>
-        <a href="{% url 'contract_read' contract_id=contract.id %}">
-            Contract {{ contract.id }}
-        </a>
-    </li>
     <li class="active">
-        Update Contract
+        Update Client
     </li>
 </ol>
 {% endblock %}
@@ -32,7 +27,7 @@
 <div class="row">
     <div class="col-md-12">
         <div class="box box-primary">
-            <form class="form-horizontal" action="{% url 'client_update' contract_id=contract.id client_id=form.instance.id %}" method="post">
+            <form class="form-horizontal" action="{% url 'client_update' client_id=form.instance.id %}" method="post">
             {% csrf_token %}
             <div class="box-body">
                 {% if form.non_field_errors %}
@@ -153,7 +148,7 @@
 
                 <div class="form-group {% if form.valid_id.errors %} has-error {% endif %}">
                     <label for="{{ form.valid_id.id_for_label }}" class="col-sm-2 control-label">
-                        Valid ID *
+                        Valid ID
                     </label>
                     <div class="col-sm-8">
                         {% if form.instance.valid_id %}

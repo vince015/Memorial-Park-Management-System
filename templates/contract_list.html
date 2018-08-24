@@ -1,5 +1,5 @@
 <div class="box-header">
-  <i class="ion ion-ios-people"></i>
+  <i class="fa fa-clipboard"></i>
   <h3 class="box-title">Contracts</h3>
 </div>
 
@@ -11,18 +11,17 @@
             <span class="text">
                 <a href="{% url 'contract_read' contract_id=contract.id %}">
                     {{ contract.client.last_name | upper }}, {{ contract.client.first_name }}
+                    &bull;   {{ contract.lot }}
                 </a>
             </span>
-             <!-- Emphasis label -->
-            <p class="text-red inline">
-                {{ contract.lot }}
-            </p>
             <!-- General tools such as edit or delete-->
             <div class="tools">
                 <a href="{% url 'contract_read' contract_id=contract.id %}">
                     <i class="fa fa-eye"></i>
                 </a>
-                <i class="fa fa-edit"></i>
+                <a href="{% url 'contract_update' contract_id=contract.id %}">
+                    <i class="fa fa-edit"></i>
+                </a>
             </div>
         </li>
         {% endfor %}

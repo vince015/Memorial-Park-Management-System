@@ -58,7 +58,7 @@ class Agent(models.Model):
     province = models.CharField(max_length=128, blank=False, null=False)
 
     contact_number = models.CharField(max_length=16, blank=True, null=True)
-    valid_id = models.FileField(upload_to=valid_id_directory_path, blank=False, null=False)
+    valid_id = models.FileField(upload_to=valid_id_directory_path, blank=True, null=True)
     birthdate = models.DateField(blank=True, null=True)
 
     other_address = models.CharField(max_length=512, blank=True, null=True)
@@ -72,6 +72,7 @@ class Agent(models.Model):
             fullname = '{0} {1} {2}'.format(self.last_name, self.first_name, self.middle_name)
         return fullname
 
+    @property
     def main_address(self):
         addr = '{barangay}, {town}, {province}'.format(barangay=self.barangay, town=self.town, province=self.province)
         if self.street:
@@ -95,7 +96,7 @@ class Client(models.Model):
     province = models.CharField(max_length=128, blank=False, null=False)
 
     contact_number = models.CharField(max_length=16, blank=True, null=True)
-    valid_id = models.FileField(upload_to=valid_id_directory_path, blank=False, null=False)
+    valid_id = models.FileField(upload_to=valid_id_directory_path, blank=True, null=True)
     birthdate = models.DateField(blank=True, null=True)
 
     other_address = models.CharField(max_length=512, blank=True, null=True)
@@ -301,6 +302,7 @@ class Commission(models.Model):
 
     date = models.DateField(null=False, blank=False, default=timezone.now)
     amount = models.FloatField(default=0.00)
+    recipient = models.CharField(max_length=32, blank=False, null=False, choices=AGENT_TYPES, default='SALES_AGENT')
     remarks = models.CharField(max_length=256, blank=True, null=True)
 
     contract = models.ForeignKey(Contract, null=False, blank=False, related_name='commissions', on_delete=models.CASCADE)

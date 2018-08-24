@@ -76,8 +76,22 @@
                         Lot *
                     </label>
                     <div class="col-sm-8">
+                        <input type="text" id="lot-autocomplete" class="form-control">
                         {{ form.lot }}
                         {% for error in form.lot.errors %}
+                            <span class="help-block">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="form-group {% if form.client.errors %} has-error {% endif %}">
+                    <label for="{{ form.client.id_for_label }}" class="col-sm-3 control-label">
+                        Client Name*
+                    </label>
+                    <div class="col-sm-8">
+                        <input type="text" id="client-autocomplete" class="form-control">
+                        {{ form.client }}
+                        {% for error in form.client.errors %}
                             <span class="help-block">{{ error }}</span>
                         {% endfor %}
                     </div>
@@ -94,6 +108,7 @@
                         {% endfor %}
                     </div>
                 </div>
+                <hr>
 
                 <div class="form-group {% if form.lot_price.errors %} has-error {% endif %}">
                     <label for="{{ form.lot_price.id_for_label }}" class="col-sm-3 control-label">
@@ -118,6 +133,7 @@
                         {% endfor %}
                     </div>
                 </div>
+                <hr>
 
                 <div class="form-group {% if form.discount_spot_cash.errors %} has-error {% endif %}">
                     <label for="{{ form.discount_spot_cash.id_for_label }}" class="col-sm-3 control-label">
@@ -142,6 +158,7 @@
                         {% endfor %}
                     </div>
                 </div>
+                <hr>
 
                 <div class="form-group {% if form.interest_on_installment.errors %} has-error {% endif %}">
                     <label for="{{ form.interest_on_installment.id_for_label }}" class="col-sm-3 control-label">
@@ -154,6 +171,7 @@
                         {% endfor %}
                     </div>
                 </div>
+                <hr>
 
                 <div class="form-group {% if form.certificate_of_ownership.errors %} has-error {% endif %}">
                     <label for="{{ form.certificate_of_ownership.id_for_label }}" class="col-sm-3 control-label">
@@ -190,6 +208,7 @@
                         {% endfor %}
                     </div>
                 </div>
+                <hr>
 
                 <div class="form-group {% if form.reservation_loi.errors %} has-error {% endif %}">
                     <label for="{{ form.reservation_loi.id_for_label }}" class="col-sm-3 control-label">
@@ -214,6 +233,72 @@
                         {% endfor %}
                     </div>
                 </div>
+                <hr>
+
+                <div class="form-group {% if form.sales_agent.errors %} has-error {% endif %}">
+                    <label for="{{ form.sales_agent.id_for_label }}" class="col-sm-3 control-label">
+                        Name of Sales Agent
+                    </label>
+                    <div class="col-sm-8">
+                        <input type="text" id="sales_agent-autocomplete" class="form-control">
+                        {{ form.sales_agent }}
+                        {% for error in form.sales_agent.errors %}
+                            <span class="help-block">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="form-group {% if form.unit_manager.errors %} has-error {% endif %}">
+                    <label for="{{ form.unit_manager.id_for_label }}" class="col-sm-3 control-label">
+                        Name of Unit Manager
+                    </label>
+                    <div class="col-sm-8">
+                        <input type="text" id="unit_manager-autocomplete" class="form-control">
+                        {{ form.unit_manager }}
+                        {% for error in form.unit_manager.errors %}
+                            <span class="help-block">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="form-group {% if form.sales_leader.errors %} has-error {% endif %}">
+                    <label for="{{ form.sales_leader.id_for_label }}" class="col-sm-3 control-label">
+                        Name of Sales Leader
+                    </label>
+                    <div class="col-sm-8">
+                        <input type="text" id="sales_leader-autocomplete" class="form-control">
+                        {{ form.sales_leader }}
+                        {% for error in form.sales_leader.errors %}
+                            <span class="help-block">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="form-group {% if form.referral.errors %} has-error {% endif %}">
+                    <label for="{{ form.referral.id_for_label }}" class="col-sm-3 control-label">
+                        Name of Referral
+                    </label>
+                    <div class="col-sm-8">
+                        <input type="text" id="referral-autocomplete" class="form-control">
+                        {{ form.referral }}
+                        {% for error in form.referral.errors %}
+                            <span class="help-block">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="form-group {% if form.sold_by.errors %} has-error {% endif %}">
+                    <label for="{{ form.sold_by.id_for_label }}" class="col-sm-3 control-label">
+                        Sold By?
+                    </label>
+                    <div class="col-sm-8">
+                        {{ form.sold_by }}
+                        {% for error in form.sold_by.errors %}
+                            <span class="help-block">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                <hr>
 
                 <div class="form-group {% if form.remarks.errors %} has-error {% endif %}">
                     <label for="{{ form.remarks.id_for_label }}" class="col-sm-3 control-label">
@@ -242,6 +327,42 @@
     $(document).ready( function() {
         $(".datepicker").datepicker({
             autoclose: true
+        });
+        $("#lot-autocomplete").autocomplete({
+            nameProperty: "name",
+            valueProperty: "id",
+            valueField: "#id_lot",
+            dataSource: "/lookup/lot"
+        });
+        $("#client-autocomplete").autocomplete({
+            nameProperty: "name",
+            valueProperty: "id",
+            valueField: "#id_client",
+            dataSource: "/lookup/client"
+        });
+        $("#sales_agent-autocomplete").autocomplete({
+            nameProperty: "name",
+            valueProperty: "id",
+            valueField: "#id_sales_agent",
+            dataSource: "/lookup/agent"
+        });
+        $("#unit_manager-autocomplete").autocomplete({
+            nameProperty: "name",
+            valueProperty: "id",
+            valueField: "#id_unit_manager",
+            dataSource: "/lookup/agent"
+        });
+        $("#sales_leader-autocomplete").autocomplete({
+            nameProperty: "name",
+            valueProperty: "id",
+            valueField: "#id_sales_leader",
+            dataSource: "/lookup/agent"
+        });
+        $("#referral-autocomplete").autocomplete({
+            nameProperty: "name",
+            valueProperty: "id",
+            valueField: "#id_referral",
+            dataSource: "/lookup/agent"
         });
     });
 </script>

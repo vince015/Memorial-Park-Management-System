@@ -33,6 +33,7 @@ class CommissionForm(forms.ModelForm):
         fields = [
                     'date',
                     'amount',
+                    'recipient',
                     'remarks'
                 ]
         widgets = {
@@ -43,6 +44,8 @@ class CommissionForm(forms.ModelForm):
                                                'min': 0.00,
                                                'value': 0.00,
                                                'class': 'form-control'}),
+            'recipient': forms.Select(attrs={'class': 'form-control',
+                                             'placeholder': 'Recipient'}),
             'remarks': forms.Textarea(attrs={'class': 'form-control',
                                              'rows': 3,
                                              'placeholder': 'Remarks'}),

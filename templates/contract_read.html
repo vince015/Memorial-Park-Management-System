@@ -28,10 +28,12 @@
     <div class="col-md-3">
         <div class="box box-primary">
             <div class="box-body box-profile">
-                <h3 class="profile-username text-center">
-                    <b>{{ contract.client.last_name | upper }}, </b>
-                    {{ contract.client.first_name }}
-                </h3>
+                <a href="{% url 'client_update' client_id=contract.client.id %}">
+                    <h3 class="profile-username text-center">
+                        <b>{{ contract.client.last_name | upper }}, </b>
+                        {{ contract.client.first_name }}
+                    </h3>
+                </a>
 
                 <p class="text-muted text-center">
                     Client
@@ -67,10 +69,6 @@
         <div class="box box-primary">
             <div class="box-header with-border">
                 <h3 class="box-title">Info</h3>
-
-                <a href="{% url 'client_update' contract_id=contract.id client_id=contract.client.id %}" class="btn btn-box-tool pull-right">
-                    <i class="fa fa-pencil"></i>
-                </a>
             </div>
 
             <div class="box-body">
@@ -101,28 +99,75 @@
                 </p>
                 {% endif %}
             </div> 
-       </div>
+        </div>
 
         <div class="box box-primary">
-            <div class="box-body box-profile">
-                <p class="text-center">
-                    <b>{{ contract.agent.last_name | upper }}, </b>
-                    {{ contract.agent.first_name }}
-                </p>
-
-                <p class="text-muted text-center">
-                    Sales Agent
-                </p>
-
-                <ul class="list-group list-group-unbordered">
-                    <li class="list-group-item">
-                        <b>Commissionable<br> Amount</b>
-                        <a class="pull-right">
-                            Php {{ contract.total_commissionable_amount | floatformat:2 | intcomma }}
-                        </a>
-                    </li>
-                </ul>
+            <div class="box-header with-border">
+                <h3 class="box-title">Commision</h3>
             </div>
+
+            <div class="box-body">
+                <b>Commissionable<br> Amount</b>
+                <p class="text-muted pull-right">
+                    Php {{ contract.total_commissionable_amount | floatformat:2 | intcomma }}
+                </p>
+
+                {% if contract.sales_agent %}
+                <hr>
+                <a href="{% url 'agent_update' agent_id=contract.sales_agent.id %}">
+                    <b>{{ contract.sales_agent.last_name | upper }}, </b>
+                    {{ contract.sales_agent.first_name }}
+                </a>
+                <p class="text-muted">
+                    Sales Agent
+                    <b class="pull-right">
+                        Php {{ commission_dist.sales_agent | floatformat:2 | intcomma }}
+                    </b>
+                </p>
+                {% endif %}
+
+                {% if contract.unit_manager %}
+                <hr>
+                <a href="{% url 'agent_update' agent_id=contract.unit_manager.id %}">
+                    <b>{{ contract.unit_manager.last_name | upper }}, </b>
+                    {{ contract.unit_manager.first_name }}
+                </a>
+                <p class="text-muted">
+                    Unit Manager
+                    <b class="pull-right">
+                        Php {{ commission_dist.unit_manager | floatformat:2 | intcomma }}
+                    </b>
+                </p>
+                {% endif %}
+
+                {% if contract.sales_leader %}
+                <hr>
+                <a href="{% url 'agent_update' agent_id=contract.sales_leader.id %}">
+                    <b>{{ contract.sales_leader.last_name | upper }}, </b>
+                    {{ contract.sales_leader.first_name }}
+                </a>
+                <p class="text-muted">
+                    Sales Leader
+                    <b class="pull-right">
+                        Php {{ commission_dist.sales_leader | floatformat:2 | intcomma }}
+                    </b>
+                </p>
+                {% endif %}
+
+                {% if contract.referral %}
+                <hr>
+                <a href="{% url 'agent_update' agent_id=contract.referral.id %}">
+                    <b>{{ contract.referral.last_name | upper }}, </b>
+                    {{ contract.referral.first_name }}
+                </a>
+                <p class="text-muted">
+                    Sales Agent (Referral)
+                    <b class="pull-right">
+                        Php {{ commission_dist.referral | floatformat:2 | intcomma }}
+                    </b>
+                </p>
+                {% endif %}
+            </div> 
         </div>
     </div>
 
@@ -437,6 +482,9 @@
                                                 <a>
                                                     Php {{ commission.amount  | floatformat:2 | intcomma}}
                                                 </a>
+                                                <span class="text-muted">
+                                                    | {{ commission.get_recipient_display }}
+                                                </span>
                                             </h3>
                                             {% if commission.remarks %}
                                             <div class="timeline-body">

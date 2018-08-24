@@ -85,6 +85,17 @@
                         {% endfor %}
                     </div>
                 </div>
+                <div class="form-group {% if form.recipient.errors %} has-error {% endif %}">
+                    <label for="{{ form.recipient.id_for_label }}" class="col-sm-2 control-label">
+                        Recipient *
+                    </label>
+                    <div class="col-sm-8">
+                        {{ form.recipient }}
+                        {% for error in form.recipient.errors %}
+                            <span class="help-block">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
                 <div class="form-group {% if form.remarks.errors %} has-error {% endif %}">
                     <label for="{{ form.remarks.id_for_label }}" class="col-sm-2 control-label">
                         Remarks

@@ -60,8 +60,19 @@
                                     </a>
                                     <ul class="dropdown-menu" role="menu">
                                         <li>
+                                            <a href="{% url 'client_list' %}">
+                                                View all Clients
+                                            </a>
+                                        </li>
+                                        <li>
                                             <a href="{% url 'client_create' %}">
                                                 Add new Client
+                                            </a>
+                                        </li>
+                                        <li class="divider"></li>
+                                        <li>
+                                            <a href="{% url 'agent_list' %}">
+                                                View all Agents
                                             </a>
                                         </li>
                                         <li>
@@ -71,10 +82,23 @@
                                         </li>
                                         <li class="divider"></li>
                                         <li>
+                                            <a href="{% url 'home' %}">
+                                                View all Contracts
+                                            </a>
+                                        </li>
+                                        <li>
                                             <a href="{% url 'contract_create' %}">
                                                 Add new Contract
                                             </a>
                                         </li>
+                                        {% if request.user.is_superuser %}
+                                        <li class="divider"></li>
+                                        <li>
+                                            <a href="{% url 'admin:index' %}">
+                                                Go to Admin Site
+                                            </a>
+                                        </li>
+                                        {% endif %}
                                     </ul>
                                 </li>
                             </ul>
@@ -84,12 +108,12 @@
                         <div class="navbar-custom-menu">
                             <ul class="nav navbar-nav">
                                 <li>
-                                    <a href="#">
-                                        Username
+                                    <a href="{% url 'login' %}">
+                                        {{ request.user.username }}
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="#">
+                                    <a href="{% url 'logout' %}">
                                         <i class="fa fa-sign-out"></i>
                                     </a>
                                 </li>
@@ -107,7 +131,7 @@
                 <!-- error messages -->
                 <section class="content">
                     {% for message in messages %}
-                    <div class="alert {{ message.tags }} alert-dismissible">
+                    <div class="alert alert-{{ message.tags }} alert-dismissible">
                         <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
                         {{ message }}
                     </div>
