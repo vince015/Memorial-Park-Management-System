@@ -91,6 +91,17 @@
                                                 Add new Contract
                                             </a>
                                         </li>
+                                        <li class="divider"></li>
+                                        <li>
+                                            <a href="{% url 'expense_list' %}">
+                                                View all Expenses
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="{% url 'expense_create' %}">
+                                                Add new Expense
+                                            </a>
+                                        </li>
                                         {% if request.user.is_superuser %}
                                         <li class="divider"></li>
                                         <li>

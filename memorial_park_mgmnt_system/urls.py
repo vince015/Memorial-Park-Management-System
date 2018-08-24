@@ -21,5 +21,6 @@ from django.conf.urls import include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    url(r'^', include('memorial_park_mgmnt_app.urls'))
+    url(r'^', include('memorial_park_mgmnt_app.urls')),
+    url(r'^', include('expense_report.urls'))
 ]

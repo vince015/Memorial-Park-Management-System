@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'import_export',
     'django.contrib.humanize',
-    'memorial_park_mgmnt_app'
+    'memorial_park_mgmnt_app',
+    'expense_report'
 ]
 
 MIDDLEWARE = [

@@ -360,7 +360,7 @@ class ClientCreateView(TemplateView):
             msg = 'Successfully created new client: {0}'.format(str(instance))
             messages.success(request, msg)
 
-            return redirect(reverse('home'))
+            return redirect(reverse('client_list'))
 
         else:
             context_dict = {
@@ -389,7 +389,7 @@ class ClientJson(BaseDatatableView):
 
     def render_column(self, row, column):
         if column == 'name':
-            url = reverse('agent_update', kwargs={'agent_id': row.id})
+            url = reverse('client_update', kwargs={'client_id': row.id})
             text = '{0}, {1}'.format(row.last_name.upper(), row.first_name)
             html = '<a href="{0}">{1}</a>'.format(url, text)
             return html

@@ -124,24 +124,24 @@ class Client(models.Model):
 class Contract(models.Model):
     date = models.DateField(null=False, blank=False, default=timezone.now)
     buyer_type = models.CharField(max_length=32, blank=False, null=False, choices=BUYER_TYPES, default='PRE-NEED')
-    lot_price = models.FloatField(default=0.00)
-    care_fund = models.FloatField(default=0.00)
+    lot_price = models.FloatField(default=0.01)
+    care_fund = models.FloatField(default=0.01)
 
     # Discounts
-    discount_spot_cash = models.FloatField(default=0.00)
-    discount_spot_dp = models.FloatField(default=0.00)
+    discount_spot_cash = models.FloatField(default=0.01)
+    discount_spot_dp = models.FloatField(default=0.01)
 
     # Interset
-    interest_on_installment = models.FloatField(default=0.00)
+    interest_on_installment = models.FloatField(default=0.01)
 
     # Fees
-    certificate_of_ownership = models.FloatField(default=0.00)
-    change_of_title = models.FloatField(default=0.00)
-    interment = models.FloatField(default=0.00)
+    certificate_of_ownership = models.FloatField(default=0.01)
+    change_of_title = models.FloatField(default=0.01)
+    interment = models.FloatField(default=0.01)
 
     # Others
-    reservation_loi = models.FloatField(default=0.00)
-    spot_cash_payment = models.FloatField(default=0.00)
+    reservation_loi = models.FloatField(default=0.01)
+    spot_cash_payment = models.FloatField(default=0.01)
 
     # Misc
     remarks = models.CharField(max_length=256, blank=True, null=True)
@@ -290,7 +290,7 @@ class Downpayment(models.Model):
     updated = models.DateTimeField(auto_now=True)
 
     date = models.DateField(null=False, blank=False, default=timezone.now)
-    amount = models.FloatField(default=0.00)
+    amount = models.FloatField(default=0.01)
     remarks = models.CharField(max_length=256, blank=True, null=True)
 
     contract = models.ForeignKey(Contract, null=False, blank=False, related_name='downpayments', on_delete=models.CASCADE)
@@ -301,7 +301,7 @@ class Commission(models.Model):
     updated = models.DateTimeField(auto_now=True)
 
     date = models.DateField(null=False, blank=False, default=timezone.now)
-    amount = models.FloatField(default=0.00)
+    amount = models.FloatField(default=0.01)
     recipient = models.CharField(max_length=32, blank=False, null=False, choices=AGENT_TYPES, default='SALES_AGENT')
     remarks = models.CharField(max_length=256, blank=True, null=True)
 
