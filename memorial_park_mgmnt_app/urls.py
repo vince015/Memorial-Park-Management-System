@@ -14,4 +14,8 @@ urlpatterns = [
     url(r'^client/create$', views.ClientCreateView.as_view(), name='client_create'),
     url(r'^agent/update/(?P<contract_id>[\d]+)/(?P<agent_id>[\d]+)$', views.AgentUpdateView.as_view(), name='agent_update'),
     url(r'^agent/create$', views.AgentCreateView.as_view(), name='agent_create'),
+    ### lookups ###
+    url(r'^lookup/lot$', views.lot_lookup, name='lot_lookup'),
+    url(r'^lookup/client$', views.client_lookup, name='client_lookup'),
+    url(r'^lookup/agent$', views.agent_lookup, name='agent_lookup')
 ]

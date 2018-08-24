@@ -1,5 +1,4 @@
 from django import forms
-from dal import autocomplete
 
 from memorial_park_mgmnt_app import models
 
@@ -172,6 +171,7 @@ class ContractForm(forms.ModelForm):
         fields = [
                     'date',
                     'lot',
+                    'client',
                     'buyer_type',
                     'lot_price',
                     'care_fund',
@@ -183,16 +183,22 @@ class ContractForm(forms.ModelForm):
                     'interment',
                     'reservation_loi',
                     'spot_cash_payment',
+                    'sales_agent',
+                    'unit_manager',
+                    'sales_leader',
+                    'referral',
+                    'sold_by',
                     'remarks'
                 ]
+
         widgets = {
             'date': forms.DateInput(format='%m/%d/%Y',
                                     attrs={'class': 'form-control datepicker',
                                            'placeholder': 'Date'}),
-            'lot': autocomplete.ListSelect2(url='lot_autocomplete',
-                                             attrs={'class': 'form-control'}),
             'buyer_type': forms.Select(attrs={'class': 'form-control',
                                               'placeholder': 'Buyer Type'}),
+            'lot': forms.HiddenInput(),
+            'client': forms.HiddenInput(),
             'lot_price': forms.NumberInput(attrs={'step': 0.01,
                                                   'min': 0.00,
                                                   'value': 0.00,
@@ -233,6 +239,12 @@ class ContractForm(forms.ModelForm):
                                                            'min': 0.00,
                                                            'value': 0.00,
                                                            'class': 'form-control'}),
+            'sales_agent': forms.HiddenInput(),
+            'unit_manager': forms.HiddenInput(),
+            'sales_leader': forms.HiddenInput(),
+            'referral': forms.HiddenInput(),
+            'sold_by': forms.Select(attrs={'class': 'form-control',
+                                           'placeholder': 'Buyer Type'}),
             'remarks': forms.Textarea(attrs={'class': 'form-control',
                                              'rows': 3,
                                              'placeholder': 'Remarks'}),

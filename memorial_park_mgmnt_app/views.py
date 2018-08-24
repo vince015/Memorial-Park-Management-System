@@ -113,8 +113,8 @@ class ContractCreateView(TemplateView):
 
         return render(request, self.template_name, context_dict)
 
-    def post(self, request, contract_id):
-        form = forms.contractForm(request.POST)
+    def post(self, request):
+        form = forms.ContractForm(request.POST)
 
         if form.is_valid():
             instance = form.save(commit=False)
@@ -374,3 +374,66 @@ class AgentCreateView(TemplateView):
             }
 
             return render(request, self.template_name, context_dict)
+
+### Lookups ###
+from django.http import JsonResponse
+
+def lot_lookup(request):
+    if request.method == 'GET':
+        queryset = models.Lot.objects.all()
+        if request.GET.get('q'):
+            queryset = queryset.filter(Q(block__icontains=q) |
+                                       Q(lot__icontains=q) |
+                                       Q(unit__icontains=q))
+
+        queryset = queryset.order_by('block', 'lot', 'unit')
+
+        res = []
+        for item in queryset:
+            res.append({
+                    'id': item.id,
+                    'name': str(item),
+                    'ignore': False
+                })
+
+        return JsonResponse(res, safe=False)
+
+def client_lookup(request):
+    if request.method == 'GET':
+        queryset = models.Client.objects.all()
+        if request.GET.get('q'):
+            queryset = queryset.filter(Q(first_name__icontains=q) |
+                                       Q(last_name__icontains=q) |
+                                       Q(middle_name__icontains=q))
+
+        queryset = queryset.order_by('last_name', 'first_name', 'middle_name')
+
+        res = []
+        for item in queryset:
+            res.append({
+                    'id': item.id,
+                    'name': str(item),
+                    'ignore': False
+                })
+
+        return JsonResponse(res, safe=False)
+
+def agent_lookup(request):
+    if request.method == 'GET':
+        queryset = models.Agent.objects.all()
+        if request.GET.get('q'):
+            queryset = queryset.filter(Q(first_name__icontains=q) |
+                                       Q(last_name__icontains=q) |
+                                       Q(middle_name__icontains=q))
+
+        queryset = queryset.order_by('last_name', 'first_name', 'middle_name')
+
+        res = []
+        for item in queryset:
+            res.append({
+                    'id': item.id,
+                    'name': str(item),
+                    'ignore': False
+                })
+
+        return JsonResponse(res, safe=False)
