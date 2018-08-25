@@ -60,7 +60,24 @@ class LotAdmin(ImportExportModelAdmin):
 admin.site.register(models.Lot, LotAdmin)
 
 
-class ClientAdmin(admin.ModelAdmin):
+class ClientResource(resources.ModelResource):
+
+
+    class Meta:
+        model = models.Client
+        fields = ('id',
+                  'last_name',
+                  'first_name',
+                  'middle_name',
+                  'house_number',
+                  'street',
+                  'barangay',
+                  'town',
+                  'province',
+                  'contact_number')
+
+
+class ClientAdmin(ImportExportModelAdmin):
     list_display = ('id',
                     'last_name',
                     'first_name',
@@ -71,11 +88,29 @@ class ClientAdmin(admin.ModelAdmin):
                      'last_name',
                      'first_name')
     list_per_page = 50
+    resource_class = ClientResource
 
 admin.site.register(models.Client, ClientAdmin)
 
 
-class AgentAdmin(admin.ModelAdmin):
+class AgentResource(resources.ModelResource):
+
+
+    class Meta:
+        model = models.Agent
+        fields = ('id',
+                  'last_name',
+                  'first_name',
+                  'middle_name',
+                  'house_number',
+                  'street',
+                  'barangay',
+                  'town',
+                  'province',
+                  'contact_number')
+
+
+class AgentAdmin(ImportExportModelAdmin):
     list_display = ('id',
                     'last_name',
                     'first_name',
@@ -85,6 +120,7 @@ class AgentAdmin(admin.ModelAdmin):
     search_fields = ('id',
                      'last_name',
                      'first_name')
+    resource_class = AgentResource
     list_per_page = 50
 
 admin.site.register(models.Agent, AgentAdmin)
@@ -109,7 +145,19 @@ class ContractAdmin(admin.ModelAdmin):
 admin.site.register(models.Contract, ContractAdmin)
 
 
-class DownpaymentAdmin(admin.ModelAdmin):
+class DownpaymentResource(resources.ModelResource):
+
+
+    class Meta:
+        model = models.Downpayment
+        fields = ('id',
+                  'date',
+                  'amount',
+                  'remarks',
+                  'contract')
+
+
+class DownpaymentAdmin(ImportExportModelAdmin):
     list_display = ('id',
                     'date',
                     'amount',
@@ -122,6 +170,7 @@ class DownpaymentAdmin(admin.ModelAdmin):
                      'contract__lot__block',
                      'contract__lot__lot'
                      'contract__lot__unit')
+    resource_class = DownpaymentResource
     list_per_page = 50
 
     def get_client(self, obj):
@@ -137,7 +186,20 @@ class DownpaymentAdmin(admin.ModelAdmin):
 admin.site.register(models.Downpayment, DownpaymentAdmin)
 
 
-class CommissionAdmin(admin.ModelAdmin):
+class CommissionResource(resources.ModelResource):
+
+
+    class Meta:
+        model = models.Commission
+        fields = ('id',
+                  'date',
+                  'amount',
+                  'remarks',
+                  'recipient',
+                  'contract')
+
+
+class CommissionAdmin(ImportExportModelAdmin):
     list_display = ('id',
                     'date',
                     'amount',
@@ -149,6 +211,7 @@ class CommissionAdmin(admin.ModelAdmin):
                      'contract__client__first_name',
                      'contract__agent__last_name',
                      'contract__agent__first_name')
+    resource_class = CommissionResource
     list_per_page = 50
 
     def get_client(self, obj):
