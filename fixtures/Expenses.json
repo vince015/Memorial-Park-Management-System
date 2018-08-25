@@ -1,0 +1,310 @@
+[
+{
+    "model": "expense_report.expense",
+    "pk": 1,
+    "fields": {
+        "created": "2018-08-24T11:03:14.833Z",
+        "updated": "2018-08-24T11:03:14.833Z",
+        "date": "2018-02-20",
+        "reference_number": "",
+        "payee": "Nelson Balondo",
+        "amount": 500.0,
+        "category": "Labor Fees",
+        "description": "1 day of work making cabinet"
+    }
+},
+{
+    "model": "expense_report.expense",
+    "pk": 2,
+    "fields": {
+        "created": "2018-08-24T11:03:14.837Z",
+        "updated": "2018-08-24T11:03:14.837Z",
+        "date": "2018-02-20",
+        "reference_number": "",
+        "payee": "Jeffrey Cruz",
+        "amount": 450.0,
+        "category": "Labor Fees",
+        "description": "1 day of work making cabinet"
+    }
+},
+{
+    "model": "expense_report.expense",
+    "pk": 3,
+    "fields": {
+        "created": "2018-08-24T11:03:14.840Z",
+        "updated": "2018-08-24T11:03:14.840Z",
+        "date": "2018-02-20",
+        "reference_number": "",
+        "payee": "Marlon Sevilla",
+        "amount": 500.0,
+        "category": "Labor Fees",
+        "description": "1 day of work making cabinet"
+    }
+},
+{
+    "model": "expense_report.expense",
+    "pk": 4,
+    "fields": {
+        "created": "2018-08-24T11:03:14.843Z",
+        "updated": "2018-08-24T11:03:14.843Z",
+        "date": "2018-02-21",
+        "reference_number": "",
+        "payee": "Krystal Shell Service",
+        "amount": 329.26,
+        "category": "Repair & Maintenance",
+        "description": "Gas and 2T for Grasscutter"
+    }
+},
+{
+    "model": "expense_report.expense",
+    "pk": 5,
+    "fields": {
+        "created": "2018-08-24T11:03:14.846Z",
+        "updated": "2018-08-24T11:03:14.846Z",
+        "date": "2018-02-22",
+        "reference_number": "",
+        "payee": "Atty. Rolando Castro",
+        "amount": 400.0,
+        "category": "Professional Fees",
+        "description": "Notarial Fee (4 CO)"
+    }
+},
+{
+    "model": "expense_report.expense",
+    "pk": 6,
+    "fields": {
+        "created": "2018-08-24T11:03:14.849Z",
+        "updated": "2018-08-24T11:03:14.849Z",
+        "date": "2018-02-23",
+        "reference_number": "",
+        "payee": "BMJ Ind. Farm Supply",
+        "amount": 500.0,
+        "category": "Repair & Maintenance",
+        "description": "Clutch Sheo Grasscutter"
+    }
+},
+{
+    "model": "expense_report.expense",
+    "pk": 7,
+    "fields": {
+        "created": "2018-08-24T11:03:14.852Z",
+        "updated": "2018-08-24T11:03:14.852Z",
+        "date": "2018-02-23",
+        "reference_number": "",
+        "payee": "SteadFast Gas",
+        "amount": 280.0,
+        "category": "Repair & Maintenance",
+        "description": "Gas and 2T for Grasscutter"
+    }
+},
+{
+    "model": "expense_report.expense",
+    "pk": 8,
+    "fields": {
+        "created": "2018-08-24T11:03:14.856Z",
+        "updated": "2018-08-24T11:03:14.856Z",
+        "date": "2018-02-23",
+        "reference_number": "",
+        "payee": "RCS Supermarket",
+        "amount": 1210.8,
+        "category": "Office Supplies",
+        "description": "Cleaning Supplies"
+    }
+},
+{
+    "model": "expense_report.expense",
+    "pk": 9,
+    "fields": {
+        "created": "2018-08-24T11:03:14.859Z",
+        "updated": "2018-08-24T11:03:14.859Z",
+        "date": "2018-02-23",
+        "reference_number": "",
+        "payee": "Poncing Mempin",
+        "amount": 70.0,
+        "category": "Transportation",
+        "description": "Transpo to Bayan and RCS"
+    }
+},
+{
+    "model": "expense_report.expense",
+    "pk": 10,
+    "fields": {
+        "created": "2018-08-24T11:03:14.862Z",
+        "updated": "2018-08-24T11:03:14.862Z",
+        "date": "2018-02-23",
+        "reference_number": "",
+        "payee": "Poncing Mempin",
+        "amount": 30.0,
+        "category": "Transportation",
+        "description": "Transpo to Salacot Buy Gas"
+    }
+},
+{
+    "model": "expense_report.expense",
+    "pk": 11,
+    "fields": {
+        "created": "2018-08-24T11:03:14.865Z",
+        "updated": "2018-08-24T11:03:14.865Z",
+        "date": "2018-03-01",
+        "reference_number": "",
+        "payee": "Ink Jourdan",
+        "amount": 950.0,
+        "category": "Office Supplies",
+        "description": "Printer Ink"
+    }
+},
+{
+    "model": "expense_report.expense",
+    "pk": 12,
+    "fields": {
+        "created": "2018-08-24T11:03:14.868Z",
+        "updated": "2018-08-24T11:03:14.868Z",
+        "date": "2018-03-16",
+        "reference_number": "",
+        "payee": "Resty Aircon",
+        "amount": 1500.0,
+        "category": "Repair & Maintenance",
+        "description": "Aircon Cleaning and Additional Frion"
+    }
+},
+{
+    "model": "expense_report.expense",
+    "pk": 13,
+    "fields": {
+        "created": "2018-08-24T11:03:14.871Z",
+        "updated": "2018-08-24T11:03:14.871Z",
+        "date": "2018-03-17",
+        "reference_number": "",
+        "payee": "Reymart Dela Cruz",
+        "amount": 225.0,
+        "category": "Miscellaneous",
+        "description": "Send Emails"
+    }
+},
+{
+    "model": "expense_report.expense",
+    "pk": 14,
+    "fields": {
+        "created": "2018-08-24T11:03:14.874Z",
+        "updated": "2018-08-24T11:03:14.875Z",
+        "date": "2018-03-17",
+        "reference_number": "",
+        "payee": "Gina",
+        "amount": 305.0,
+        "category": "Utilities",
+        "description": "Globe Load Gina"
+    }
+},
+{
+    "model": "expense_report.expense",
+    "pk": 15,
+    "fields": {
+        "created": "2018-08-24T11:03:14.878Z",
+        "updated": "2018-08-24T11:03:14.878Z",
+        "date": "2018-03-19",
+        "reference_number": "",
+        "payee": "BDO",
+        "amount": 100.0,
+        "category": "Miscellaneous",
+        "description": "Transaction Charge"
+    }
+},
+{
+    "model": "expense_report.expense",
+    "pk": 16,
+    "fields": {
+        "created": "2018-08-24T11:03:14.881Z",
+        "updated": "2018-08-24T11:03:14.881Z",
+        "date": "2018-03-19",
+        "reference_number": "",
+        "payee": "BDO",
+        "amount": 100.0,
+        "category": "Miscellaneous",
+        "description": "Transaction Charge"
+    }
+},
+{
+    "model": "expense_report.expense",
+    "pk": 17,
+    "fields": {
+        "created": "2018-08-24T11:03:14.884Z",
+        "updated": "2018-08-24T11:03:14.884Z",
+        "date": "2018-03-21",
+        "reference_number": "",
+        "payee": "Carwin Auto Supply",
+        "amount": 1750.0,
+        "category": "Repair & Maintenance",
+        "description": "Spare Parts of Lobo Hafei"
+    }
+},
+{
+    "model": "expense_report.expense",
+    "pk": 18,
+    "fields": {
+        "created": "2018-08-24T11:03:14.887Z",
+        "updated": "2018-08-24T11:03:14.887Z",
+        "date": "2018-03-23",
+        "reference_number": "",
+        "payee": "Cash",
+        "amount": 100.0,
+        "category": "Miscellaneous",
+        "description": "Nescafe"
+    }
+},
+{
+    "model": "expense_report.expense",
+    "pk": 19,
+    "fields": {
+        "created": "2018-08-24T11:03:14.890Z",
+        "updated": "2018-08-24T11:03:14.890Z",
+        "date": "2018-03-24",
+        "reference_number": "",
+        "payee": "Pandayan Bookshop",
+        "amount": 592.0,
+        "category": "Office Supplies",
+        "description": "3 Rims Bond Papers"
+    }
+},
+{
+    "model": "expense_report.expense",
+    "pk": 20,
+    "fields": {
+        "created": "2018-08-24T11:03:14.893Z",
+        "updated": "2018-08-24T11:03:14.893Z",
+        "date": "2018-03-24",
+        "reference_number": "",
+        "payee": "Bryan Villaflor",
+        "amount": 500.0,
+        "category": "Repair & Maintenance",
+        "description": "Computer Repair"
+    }
+},
+{
+    "model": "expense_report.expense",
+    "pk": 21,
+    "fields": {
+        "created": "2018-08-24T11:03:14.896Z",
+        "updated": "2018-08-24T11:03:14.896Z",
+        "date": "2018-03-25",
+        "reference_number": "",
+        "payee": "Digitel Philippines",
+        "amount": 936.0,
+        "category": "Utilities",
+        "description": "Sun Cellular Jul"
+    }
+},
+{
+    "model": "expense_report.expense",
+    "pk": 22,
+    "fields": {
+        "created": "2018-08-24T11:33:38.201Z",
+        "updated": "2018-08-24T11:33:38.201Z",
+        "date": "2018-03-25",
+        "reference_number": null,
+        "payee": "Digitel Philippines",
+        "amount": 936.0,
+        "category": "Utilities",
+        "description": "Sun Cellular July"
+    }
+}
+]

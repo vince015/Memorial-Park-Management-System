@@ -1,0 +1,28 @@
+[
+{
+    "model": "memorial_park_mgmnt_app.contract",
+    "pk": 1,
+    "fields": {
+        "date": "2017-08-28",
+        "buyer_type": "PRE-NEED",
+        "lot_price": 55000.0,
+        "care_fund": 5000.0,
+        "discount_spot_cash": 0.0,
+        "discount_spot_dp": 0.0,
+        "interest_on_installment": 0.0,
+        "certificate_of_ownership": 0.0,
+        "change_of_title": 0.0,
+        "interment": 0.0,
+        "reservation_loi": 0.0,
+        "spot_cash_payment": 0.0,
+        "remarks": null,
+        "lot": 9,
+        "client": 1,
+        "sales_agent": 1,
+        "unit_manager": null,
+        "sales_leader": 2,
+        "referral": null,
+        "sold_by": "SALES_AGENT"
+    }
+}
+]
