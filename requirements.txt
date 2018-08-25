@@ -1,5 +1,6 @@
 diff-match-patch==20121119
 Django==2.0
+django-ajax-selects==1.7.1
 django-datatables-view==1.16.0
 django-import-export==1.0.1
 et-xmlfile==1.0.1
