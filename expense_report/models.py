@@ -25,6 +25,7 @@ class Expense(models.Model):
     payee = models.CharField(max_length=256, blank=False, null=False)
     amount = models.FloatField(default=0.01)
     category = models.CharField(max_length=128, blank=False, null=False, choices=CATEGORIES, default='Salaries')
+    from_petty_cash = models.BooleanField(default=False)
     description = models.CharField(max_length=512, blank=True, null=True)
 
     def __str__(self):

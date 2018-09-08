@@ -26,8 +26,8 @@ class ExpenseListView(TemplateView):
 @method_decorator(login_required, name='dispatch')
 class ExpenseJson(BaseDatatableView):
     model = models.Expense
-    columns = ['date', 'reference_number', 'payee', 'amount']
-    order_columns = ['date', 'reference_number', 'payee', 'amount']
+    columns = ['date', 'payee', 'category', 'amount', 'from_petty_cash']
+    order_columns = ['date', 'payee', 'category', 'amount', 'from_petty_cash']
 
     def get_initial_queryset(self):
         return models.Expense.objects.all()
@@ -37,6 +37,12 @@ class ExpenseJson(BaseDatatableView):
             url = reverse('expense_update', kwargs={'expense_id': row.id})
             text = row.date.strftime('%Y-%m-%d')
             html = '<a href="{0}">{1}</a>'.format(url, text)
+            return html
+        elif column == 'from_petty_cash':
+            if row.from_petty_cash:
+                html = '<i class="glyphicon glyphicon-ok"></i>'
+            else:
+                html = '<i class="glyphicon glyphicon-remove"></i>'
             return html
         else:
             return super(ExpenseJson, self).render_column(row, column)
@@ -118,3 +124,27 @@ class ExpenseUpdateView(TemplateView):
             }
 
             return render(request, self.template_name, context_dict)
+
+
+from django.http import JsonResponse
+from django.utils import timezone
+from datetime import datetime, timedelta
+
+def expense_report(request):
+
+    if request.method == 'GET':
+        ret = {
+            'range': [],
+            'vals': []
+        }
+
+        start = timezone.now()
+        end = start - timedelta(days=30)
+        print(0, start.strftime('%Y-%m-%d'), end.strftime('%Y-%m-%d'))
+
+        for cnt in range(1, 12):
+            start = end - timedelta(days=1)
+            end = end - timedelta(days=30*cnt)
+            print(cnt, start.strftime('%Y-%m-%d'), end.strftime('%Y-%m-%d'))
+
+        return JsonResponse(ret, safe=False)

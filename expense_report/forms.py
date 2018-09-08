@@ -13,6 +13,7 @@ class ExpenseForm(forms.ModelForm):
                     'payee',
                     'amount',
                     'category',
+                    'from_petty_cash',
                     'description'
                 ]
         widgets = {
@@ -29,6 +30,7 @@ class ExpenseForm(forms.ModelForm):
                                                'class': 'form-control'}),
             'category': forms.Select(attrs={'class': 'form-control',
                                             'placeholder': 'Category'}),
+            'from_petty_cash': forms.CheckboxInput(),
             'description': forms.Textarea(attrs={'class': 'form-control',
                                                  'rows': 3,
                                                  'placeholder': 'Description'}),

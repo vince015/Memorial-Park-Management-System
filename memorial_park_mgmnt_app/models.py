@@ -1,20 +1,40 @@
 import os
 import uuid
+from datetime import date, datetime, timedelta
 
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
 from django.db.models import Sum
+from django.contrib.auth.models import Group
 
 # Constants
+LOT_TYPES = (('SPL', 'Special'),
+             ('REG', 'Regular'))
+
 BUYER_TYPES = (('PRE-NEED', 'Pre-Need'),
                ('IN-NEED', 'In-Need'))
+
+CONTRACT_STATUSES = (('NEW', 'New'),
+                     ('REVIEWED', 'Reviewed'),
+                     ('FORFEITED', 'Forfeited'))
+
+CONTRACT_TYPES = (('SPOT', 'Spot'),
+                  ('INSTALLMENT', 'Installment'))
 
 AGENT_TYPES = (('SALES_AGENT', 'Sales Agent'),
                ('UNIT_MNGR', 'Unit Manager'),
                ('SALES_LEADER', 'Sales Leader'),
                ('REFERRAL', 'Referral'))
+
+SERVICE_TYPES = (('CERTIFICATE_OF_OWNERSHIP', 'Certificate of Ownership'),
+                 ('CHANGE_OF_TITLE', 'Change of Title'),
+                 ('CHANGE_OF_LOT', 'Change of Lot'),
+                 ('INTERMENT', 'Interment'))
+
+PAYMENT_TYPES = (('DOWNPAYMENT', 'Downpayment'),
+                 ('INSTALLMENT', 'Installment'))
 
 def valid_id_directory_path(instance, filename):
     ext  = os.path.splitext(filename)[1]
@@ -27,6 +47,7 @@ def valid_id_directory_path(instance, filename):
 class Branch(models.Model):
     name = models.CharField(max_length=128, null=False, blank=False)
     address = models.CharField(max_length=512, null=True, blank=True)
+    group = models.OneToOneField(Group, null=True, blank=True, on_delete=models.SET_NULL)
 
     def __str__(self):
         return self.name
@@ -39,6 +60,10 @@ class Lot(models.Model):
     block = models.CharField(max_length=32, blank=False, null=False)
     lot = models.CharField(max_length=32, blank=False, null=False)
     unit = models.CharField(max_length=32, blank=False, null=False)
+
+    price = models.FloatField(default=0.00)
+    lot_type = models.CharField(max_length=32, blank=False, null=False, choices=LOT_TYPES, default='REG')
+
     branch = models.ForeignKey(Branch, null=True, blank=True, related_name='lots', on_delete=models.SET_NULL)
 
     def __str__(self):
@@ -50,21 +75,24 @@ class Agent(models.Model):
     first_name = models.CharField(max_length=56, blank=False, null=False)
     middle_name = models.CharField(max_length=56, blank=True, null=True)
 
+    mobile = models.CharField(max_length=18, blank=True, null=True)
+    landline = models.CharField(max_length=18, blank=True, null=True)
+    email = models.EmailField(blank=True, null=True)
+
     # Address
     house_number = models.CharField(max_length=8, blank=True, null=True)
     street = models.CharField(max_length=128, blank=True, null=True)
-    barangay = models.CharField(max_length=128, blank=False, null=False)
-    town = models.CharField(max_length=128, blank=False, null=False)
-    province = models.CharField(max_length=128, blank=False, null=False)
+    barangay = models.CharField(max_length=128, blank=True, null=True)
+    town = models.CharField(max_length=128, blank=True, null=True)
+    province = models.CharField(max_length=128, blank=True, null=True)
 
-    contact_number = models.CharField(max_length=16, blank=True, null=True)
     valid_id = models.FileField(upload_to=valid_id_directory_path, blank=True, null=True)
     birthdate = models.DateField(blank=True, null=True)
-
     other_address = models.CharField(max_length=512, blank=True, null=True)
     business_name = models.CharField(max_length=512, blank=True, null=True)
     business_address = models.CharField(max_length=512, blank=True, null=True)
-    email = models.EmailField(blank=True, null=True)
+
+    branch = models.ForeignKey(Branch, null=True, blank=True, related_name='agents', on_delete=models.SET_NULL)
 
     def __str__(self):
         fullname = '{0} {1}'.format(self.last_name, self.first_name)
@@ -73,8 +101,20 @@ class Agent(models.Model):
         return fullname
 
     @property
+    def contact_number(self):
+        if self.mobile:
+            return self.mobile
+        elif self.landline:
+            return self.landline
+        else:
+            return ''
+
+
+    @property
     def main_address(self):
-        addr = '{barangay}, {town}, {province}'.format(barangay=self.barangay, town=self.town, province=self.province)
+        addr = '{barangay}, {town}, {province}'.format(barangay=self.barangay or '', 
+                                                       town=self.town or '', 
+                                                       province=self.province or '')
         if self.street:
             addr = '{street}, {address}'.format(street=self.street, address=addr)
         if self.house_number:
@@ -88,6 +128,10 @@ class Client(models.Model):
     first_name = models.CharField(max_length=56, blank=False, null=False)
     middle_name = models.CharField(max_length=56, blank=True, null=True)
 
+    mobile = models.CharField(max_length=18, blank=True, null=True)
+    landline = models.CharField(max_length=18, blank=True, null=True)
+    email = models.EmailField(blank=True, null=True)
+
     # Address
     house_number = models.CharField(max_length=8, blank=True, null=True)
     street = models.CharField(max_length=128, blank=True, null=True)
@@ -95,14 +139,14 @@ class Client(models.Model):
     town = models.CharField(max_length=128, blank=False, null=False)
     province = models.CharField(max_length=128, blank=False, null=False)
 
-    contact_number = models.CharField(max_length=16, blank=True, null=True)
     valid_id = models.FileField(upload_to=valid_id_directory_path, blank=True, null=True)
     birthdate = models.DateField(blank=True, null=True)
-
     other_address = models.CharField(max_length=512, blank=True, null=True)
     business_name = models.CharField(max_length=512, blank=True, null=True)
     business_address = models.CharField(max_length=512, blank=True, null=True)
     email = models.EmailField(blank=True, null=True)
+
+    branch = models.ForeignKey(Branch, null=True, blank=True, related_name='clients', on_delete=models.SET_NULL)
 
     def __str__(self):
         fullname = '{0} {1}'.format(self.last_name, self.first_name)
@@ -120,31 +164,52 @@ class Client(models.Model):
 
         return addr
 
+    @property
+    def contact_number(self):
+        if self.mobile:
+            return self.mobile
+        elif self.landline:
+            return self.landline
+        else:
+            return ''
+
+
+class Downpayment(models.Model):
+
+    name = models.CharField(max_length=64, blank=False, null=False)
+    split = models.PositiveSmallIntegerField(default=1)
+    discount = models.FloatField(default=0.00)
+
+    def __str__(self):
+        return '{0} ({1}% OFF)'.format(self.name, (self.discount * 100))
+
+class Installment(models.Model):
+
+    name = models.CharField(max_length=64, blank=False, null=False)
+    years = models.PositiveSmallIntegerField(default=2)
+    interest = models.FloatField(default=0.00)
+
+    def __str__(self):
+        return '{0} ({1}% INTEREST)'.format(self.name, (self.interest * 100))
+
 
 class Contract(models.Model):
-    date = models.DateField(null=False, blank=False, default=timezone.now)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    date = models.DateField(null=False, blank=False, default=date.today)
     buyer_type = models.CharField(max_length=32, blank=False, null=False, choices=BUYER_TYPES, default='PRE-NEED')
-    lot_price = models.FloatField(default=0.01)
-    care_fund = models.FloatField(default=0.01)
+    care_fund = models.FloatField(default=0.00)
 
-    # Discounts
-    discount_spot_cash = models.FloatField(default=0.01)
-    discount_spot_dp = models.FloatField(default=0.01)
-
-    # Interset
-    interest_on_installment = models.FloatField(default=0.01)
-
-    # Fees
-    certificate_of_ownership = models.FloatField(default=0.01)
-    change_of_title = models.FloatField(default=0.01)
-    interment = models.FloatField(default=0.01)
-
-    # Others
-    reservation_loi = models.FloatField(default=0.01)
-    spot_cash_payment = models.FloatField(default=0.01)
-
-    # Misc
+    contract_type = models.CharField(max_length=256, blank=False, null=False, choices=CONTRACT_TYPES, default='SPOT')
+    status = models.CharField(max_length=64, blank=False, null=False, choices=CONTRACT_STATUSES, default='NEW')
+    reservation = models.FloatField(default=0.00)
     remarks = models.CharField(max_length=256, blank=True, null=True)
+
+    spot_discount = models.FloatField(default=0.15)
+    spot_cash_payment = models.FloatField(default=0.00)
+
+    downpayment_option = models.ForeignKey(Downpayment, null=True, blank=True, on_delete=models.SET_NULL)
+    installment_option = models.ForeignKey(Installment, null=True, blank=True, on_delete=models.SET_NULL)
 
     lot = models.OneToOneField(Lot, null=False, blank=False, related_name='lot_contract', on_delete=models.CASCADE)
     client = models.ForeignKey(Client, null=False, blank=False, related_name='client_contracts', on_delete=models.CASCADE)
@@ -165,74 +230,128 @@ class Contract(models.Model):
         return '{0} - {1}'.format(str(self.client), str(self.lot))
 
     @property
-    def contract_price(self):
-        return self.lot_price + self.care_fund - self.discount_spot_cash - self.discount_spot_dp + self.interest_on_installment
-
-    @property
     def installment_amount(self):
-        return ((self.lot_price + self.care_fund) * 0.8) + self.interest_on_installment
+        # base = self.lot.price + self.care_fund
+        installment = self.lot.price * 0.8
+        if self.installment_option:
+            installment = installment + (installment * self.installment_option.interest)
+
+        return installment
 
     @property
-    def downpayment_amount(self):
-        return ((self.lot_price + self.care_fund) * 0.2) - self.reservation_loi
+    def installment_monthly(self):
+        monthly = self.installment_amount
+        if self.installment_option:
+            monthly = self.installment_amount / (self.installment_option.years * 12)
+
+        return monthly
 
     @property
-    def installment_downpayment_balance(self):
-        balance = self.downpayment_amount - self.discount_spot_dp
-        downpayments = self.downpayments.aggregate(Sum('amount')).get('amount__sum', 0.00)
-        if downpayments is not None:
-            balance = balance - downpayments
+    def installment_paid(self):
+        paid = 0
+        for bill in self.bills.all():
+            bill_paid = 0
+            for payment in bill.payments.filter(payment_type='INSTALLMENT'):
+                bill_paid = bill_paid + payment.amount
 
-        return balance
+            if bill_paid < bill.amount_due:
+                paid = paid + bill_paid
+            else:
+                paid = paid + bill.amount_due
+
+        return paid
 
     @property
     def installment_balance(self):
-        balance = self.installment_amount - self.spot_cash_payment
-
-        downpayments = self.downpayments.aggregate(Sum('amount')).get('amount__sum', 0.00)
-        if downpayments is not None:
-            balance = balance - downpayments
-
-        return balance
+        return self.installment_amount - self.installment_paid
 
     @property
-    def unpaid_balance(self):
-        return self.installment_downpayment_balance + self.installment_balance - self.discount_spot_cash
+    def downpayment_amount(self):
+        # base = self.lot.price + self.care_fund
+        downpayment = self.lot.price * 0.2
+        if self.downpayment_option:
+            downpayment = downpayment - (downpayment * self.installment_option.discount)
+
+        return downpayment
 
     @property
-    def total_commissionable_amount(self):
-        lot_price_less_discount = self.lot_price - self.discount_spot_cash - self.discount_spot_dp
-        net_vat = lot_price_less_discount / 1.12 # Net of 12% VAT
-        gross_commission = net_vat * 0.09 # Gross 9% Commission
-        return gross_commission * 0.9
+    def downpayment_monthly(self):
+        monthly = self.downpayment_amount
+        if self.downpayment_option:
+            monthly = self.downpayment_amount / (self.downpayment_option.split)
+
+        return monthly
 
     @property
-    def total_commission_paid(self):
-        commissions = self.commissions.aggregate(Sum('amount')).get('amount__sum', 0.00)
-        if commissions is None:
-            commissions = 0.00
+    def downpayment_paid(self):
+        paid = 0
+        for bill in self.bills.all():
+            bill_paid = 0
+            for payment in bill.payments.filter(payment_type='DOWNPAYMENT'):
+                bill_paid = bill_paid + payment.amount
 
-        return commissions
+            if bill_paid < bill.amount_due:
+                paid = paid + bill_paid
+            else:
+                paid = paid + bill.amount_due
+
+        return paid
 
     @property
-    def commission_balance(self):
-        return self.total_commissionable_amount - self.total_commission_paid
+    def downpayment_balance(self):
+        return self.downpayment_amount - self.downpayment_paid
 
     @property
-    def total_payment(self):
-        # Fees
-        total = self.certificate_of_ownership + self.change_of_title + self.interment
-        # Others
-        total = total + self.reservation_loi + self.spot_cash_payment
-        # Downpayments
-        downpayments = self.downpayments.aggregate(Sum('amount')).get('amount__sum', 0.00)
-        if downpayments is not None:
-            total = total + downpayments
+    def contract_price(self):
+        # return self.lot_price + self.care_fund - self.discount_spot_cash - self.discount_spot_dp + self.interest_on_installment
 
-        return total
+        if self.buyer_type == 'IN-NEED':
+            # return self.lot.price + (self.lot.price * 0.5)
+            return self.lot.price + (self.lot.price * 0.5) + self.care_fund
+        else: # PRE-NEED
+            if self.contract_type == 'SPOT':
+                # return self.lot.price - (self.lot.price * self.spot_discount)
+                return self.lot.price - (self.lot.price * self.spot_discount) + self.care_fund
+            else:
+                return self.downpayment_amount + self.installment_amount + self.care_fund
+
+    @property
+    def commissionable_amount(self):
+        if self.contract_type == 'SPOT':
+            discount = self.lot.price * self.spot_discount
+
+            gross = self.lot.price - discount - self.care_fund
+            vat = gross - (gross / 1.12)
+            net = gross - vat
+
+            gross_commission = net * 0.07
+            net_commission = gross_commission - (gross_commission * 0.1)
+
+            return net_commission
+        else:
+            discount = 0
+            if self.downpayment_option:
+                discount = self.lot.price * self.downpayment_option.discount
+
+            gross = self.lot.price - discount - self.care_fund
+            vat = gross - (gross / 1.12)
+            net = gross - vat
+
+            gross_commission = net * 0.07
+            net_commission = gross_commission - (gross_commission * 0.1)
+
+            return net_commission
+
+    @property
+    def commission_monthly(self):
+        monthly = self.commissionable_amount
+        if self.downpayment_option:
+            monthly = self.downpayment_amount / (self.downpayment_option.split)
+
+        return monthly
 
     def get_commissions(self):
-        base = self.total_commissionable_amount
+        base = self.commissionable_amount
         commissions = {
                 'sales_agent': 0,
                 'unit_manager': 0,
@@ -284,25 +403,103 @@ class Contract(models.Model):
 
         return commissions
 
+    def get_monthly_commissions(self):
+        commissions = self.get_commissions()
+        if self.downpayment_option:
+            for key in list(commissions.keys()):
+                commissions[key] = commissions[key] / self.downpayment_option.split
 
-class Downpayment(models.Model):
+        return commissions
+
+
+class Service(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
-    date = models.DateField(null=False, blank=False, default=timezone.now)
+    date = models.DateField(null=False, blank=False, default=date.today)
     amount = models.FloatField(default=0.01)
+    service_type = models.CharField(max_length=256, blank=True, null=True, choices=SERVICE_TYPES, default='INTERMENT')
     remarks = models.CharField(max_length=256, blank=True, null=True)
 
     contract = models.ForeignKey(Contract, null=False, blank=False, related_name='downpayments', on_delete=models.CASCADE)
 
+    def __str__(self):
+        return '{0} {1}'.format(self.service_type, self.amount)
 
-class Commission(models.Model):
+
+class Bill(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
-    date = models.DateField(null=False, blank=False, default=timezone.now)
-    amount = models.FloatField(default=0.01)
-    recipient = models.CharField(max_length=32, blank=False, null=False, choices=AGENT_TYPES, default='SALES_AGENT')
+    start = models.DateField(null=False, blank=False, default=date.today)
+    end = models.DateField(null=False, blank=False, default=date.today)
+
+    # 5 days before contract date
+    issue_date = models.DateField(null=False, blank=False, default=date.today)
+    # Same day as contract date
+    due_date = models.DateField(null=False, blank=False, default=date.today)
+
+    amount_due = models.FloatField(default=0.00)
     remarks = models.CharField(max_length=256, blank=True, null=True)
 
-    contract = models.ForeignKey(Contract, null=False, blank=False, related_name='commissions', on_delete=models.CASCADE)
+    contract = models.ForeignKey(Contract, null=False, blank=False, related_name='bills', on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('contract', 'issue_date')
+
+    def __str__(self):
+        return '{0}: {1} - {2}'.format(str(self.contract),
+                                       self.start.strftime('%b %d, %Y'),
+                                       self.end.strftime('%b %d, %Y'))
+
+    @property
+    def is_paid(self):
+        paid = 0
+        for payment in self.payments.all():
+            paid = paid + payment.amount
+        if paid < self.amount_due:
+            return False
+
+        return True
+
+    @property
+    def is_overdue(self):
+        if not self.is_paid:
+            pst = datetime.utcnow() + timedelta(hours=8)
+            if pst.date() > self.due_date:
+                return True
+
+        return False
+
+    @property
+    def interest(self):
+        interest = 0
+
+        bills = self.contract.bills.all()
+        last_bill = bills.exclude(pk=self.id).order_by('-issue_date').first()
+
+        if last_bill.is_overdue:
+            interest = last_bill.total_amount_due * 0.02
+
+        return interest
+
+    @property
+    def total_amount_due(self):
+        return self.amount_due + self.interest
+
+
+class Payment(models.Model):
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    number = models.CharField(max_length=256, blank=False, null=False, unique=True)
+    date = models.DateField(null=False, blank=False, default=date.today)
+    amount = models.FloatField(default=0.01)
+    payment_type = models.CharField(max_length=256, blank=True, null=True, choices=PAYMENT_TYPES, default='DOWNPAYMENT')
+    remarks = models.CharField(max_length=256, blank=True, null=True)
+
+    bill = models.ForeignKey(Bill, null=False, blank=False, related_name='payments', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.number
+
