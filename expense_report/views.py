@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 from django.views.generic import TemplateView
 from django.shortcuts import render
 from django.utils.html import escape
@@ -19,8 +21,24 @@ from expense_report import forms
 class ExpenseListView(TemplateView):
     template_name = 'expense_list.html'
 
+    def __compute_petty_cash_monthly(self):
+        pst = datetime.utcnow() + timedelta(hours=8)
+        month_expenses = models.Expense.filter(from_petty_cash=True,
+                                               date__month=pst.month)
+
+        total = 0
+        for expense in month_expenses:
+            total = total + expense.amount
+
+        return total
+
     def get(self, request):
-        return render(request, self.template_name)
+        month_expense = self.__compute_petty_cash_monthly()
+        context_dict = {
+            'month_expense': month_expense,
+            'remaining_petty_cash': 50000 - month_expense
+        }
+        return render(request, self.template_name, context_dict)
 
 
 @method_decorator(login_required, name='dispatch')
