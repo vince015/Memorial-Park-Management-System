@@ -205,8 +205,8 @@ class Contract(models.Model):
     reservation = models.FloatField(default=0.00)
     remarks = models.CharField(max_length=256, blank=True, null=True)
 
-    spot_discount = models.FloatField(default=0.15)
     spot_cash_payment = models.FloatField(default=0.00)
+    spot_discount = models.FloatField(default=0.15)
 
     downpayment_option = models.ForeignKey(Downpayment, null=True, blank=True, on_delete=models.SET_NULL)
     installment_option = models.ForeignKey(Installment, null=True, blank=True, on_delete=models.SET_NULL)
@@ -475,8 +475,8 @@ class Bill(models.Model):
     def interest(self):
         interest = 0
 
-        bills = self.contract.bills.all()
-        last_bill = bills.exclude(pk=self.id).order_by('-issue_date').first()
+        bills = self.contract.bills.filter(issue_date__lt=self.issue_date)
+        last_bill = bills.order_by('-issue_date').first()
 
         if last_bill.is_overdue:
             interest = last_bill.total_amount_due * 0.02
