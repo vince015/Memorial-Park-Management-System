@@ -89,6 +89,49 @@
                 </div>
                 <hr>
 
+                <div class="form-group">
+                    <ul>
+                        <li class="help-block">
+                            <i class="fa fa-info-circle"></i>
+                            <b>Please enter at least one contact number.</b>
+                        </li>
+                    </ul>
+                </div>
+                <div class="form-group {% if form.mobile.errors %} has-error {% endif %}">
+                    <label for="{{ form.mobile.id_for_label }}" class="col-sm-2 control-label">
+                        Mobile Number
+                    </label>
+                    <div class="col-sm-8">
+                        {{ form.mobile }}
+                        {% for error in form.mobile.errors %}
+                            <span class="help-block">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="form-group {% if form.landline.errors %} has-error {% endif %}">
+                    <label for="{{ form.landline.id_for_label }}" class="col-sm-2 control-label">
+                        Landline Number
+                    </label>
+                    <div class="col-sm-8">
+                        {{ form.landline }}
+                        {% for error in form.landline.errors %}
+                            <span class="help-block">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="form-group {% if form.email.errors %} has-error {% endif %}">
+                    <label for="{{ form.email.id_for_label }}" class="col-sm-2 control-label">
+                        Email Address
+                    </label>
+                    <div class="col-sm-8">
+                        {{ form.email }}
+                        {% for error in form.email.errors %}
+                            <span class="help-block">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                <hr>
+
                 <div class="form-group {% if form.street.errors %} has-error {% endif %}">
                     <label for="{{ form.house_number.id_for_label }}" class="col-sm-2 control-label">
                         House No.
@@ -160,17 +203,6 @@
                         {% endfor %}
                     </div>
                 </div>
-                <div class="form-group {% if form.contact_number.errors %} has-error {% endif %}">
-                    <label for="{{ form.contact_number.id_for_label }}" class="col-sm-2 control-label">
-                        Contact Number
-                    </label>
-                    <div class="col-sm-8">
-                        {{ form.contact_number }}
-                        {% for error in form.contact_number.errors %}
-                            <span class="help-block">{{ error }}</span>
-                        {% endfor %}
-                    </div>
-                </div>
                 <div class="form-group {% if form.birthdate.errors %} has-error {% endif %}">
                     <label for="{{ form.birthdate.id_for_label }}" class="col-sm-2 control-label">
                         Birthdate
@@ -178,17 +210,6 @@
                     <div class="col-sm-8">
                         {{ form.birthdate }}
                         {% for error in form.birthdate.errors %}
-                            <span class="help-block">{{ error }}</span>
-                        {% endfor %}
-                    </div>
-                </div>
-                <div class="form-group {% if form.email.errors %} has-error {% endif %}">
-                    <label for="{{ form.email.id_for_label }}" class="col-sm-2 control-label">
-                        Email Address
-                    </label>
-                    <div class="col-sm-8">
-                        {{ form.email }}
-                        {% for error in form.email.errors %}
                             <span class="help-block">{{ error }}</span>
                         {% endfor %}
                     </div>

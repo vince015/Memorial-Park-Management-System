@@ -1,8 +1,17 @@
+from functools import wraps
+from urllib.parse import urlparse
 
-def get_user_branch(user):
-    grp_names = ['Baliwag', 'San Rafael', 'San Miguel']
+from django.conf import settings
+from django.contrib.auth.views import redirect_to_login
+from django.shortcuts import resolve_url
+from django.urls import reverse
 
-    user_grp = user.groups.filter(name__in=grp_names).first()
-    branch = user_grp.branch_set
+def get_branches(user):
+    group_names = ['Baliwag', 'San Rafael', 'San Miguel']
 
-    return branch
+    user_groups = user.groups.filter(name__in=group_names)
+    branches = []
+    for user_group in user_groups:
+        branches.append(user_group.branch)
+
+    return branches

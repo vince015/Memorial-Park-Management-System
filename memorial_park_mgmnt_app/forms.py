@@ -143,42 +143,44 @@ class AgentForm(forms.ModelForm):
                                          'landline': ['Enter at least one contact number (mobile or landline)']})
 
 
-class DownpaymentForm(forms.ModelForm)
+class SpotCashForm(forms.ModelForm):
 
     class Meta:
-        model = models.Downpayment
-        fields = ['name',
-                  'split',
+        model = models.SpotCash
+        fields = ['payment',
                   'discount']
 
         widgets = {
-            'name': forms.TextInput(attrs={'class': 'form-control',
-                                           'placeholder': 'Input name'}),
-            'split': forms.NumberInput(attrs={'step': 1,
-                                              'min': 1
-                                              'class': 'form-control'}),
+            'payment': forms.NumberInput(attrs={'step': 1,
+                                                'min': 1,
+                                                'class': 'form-control'}),
             'discount': forms.NumberInput(attrs={'step': 0.01,
-                                                 'min': 0.00
+                                                 'min': 0.00,
                                                  'class': 'form-control'}),
         }
 
 
-class InstallmentForm(forms.ModelForm)
+class InstallmentPlanForm(forms.ModelForm):
 
     class Meta:
-        model = models.Installment
-        fields = ['name',
-                  'split',
-                  'discount']
+        model = models.InstallmentPlan
+        fields = ['split',
+                  'discount',
+                  'years',
+                  'interest']
 
         widgets = {
-            'name': forms.TextInput(attrs={'class': 'form-control',
-                                           'placeholder': 'Input name'}),
+            'split': forms.NumberInput(attrs={'step': 1,
+                                              'min': 1,
+                                              'class': 'form-control'}),
+            'discount': forms.NumberInput(attrs={'step': 0.01,
+                                                 'min': 0.00,
+                                                 'class': 'form-control'}),
             'years': forms.NumberInput(attrs={'step': 1,
-                                              'min': 1
+                                              'min': 1,
                                               'class': 'form-control'}),
             'interest': forms.NumberInput(attrs={'step': 0.01,
-                                                 'min': 0.00
+                                                 'min': 0.00,
                                                  'class': 'form-control'}),
         }
 
@@ -195,10 +197,6 @@ class ContractForm(forms.ModelForm):
                     'client',
                     'care_fund',
                     'reservation',
-                    'spot_cash_payment',
-                    'spot_discount',
-                    'downpayment_option',
-                    'installment_option',
                     'sales_agent',
                     'unit_manager',
                     'sales_leader',
@@ -211,28 +209,18 @@ class ContractForm(forms.ModelForm):
             'date': forms.DateInput(format='%m/%d/%Y',
                                     attrs={'class': 'form-control datepicker',
                                            'placeholder': 'Date'}),
+            'lot': forms.HiddenInput(),
+            'client': forms.HiddenInput(),
             'buyer_type': forms.Select(attrs={'class': 'form-control',
                                               'placeholder': 'Buyer Type'}),
             'contract_type': forms.Select(attrs={'class': 'form-control',
                                                  'placeholder': 'Contract Type'}),
-            'lot': forms.HiddenInput(),
-            'client': forms.HiddenInput(),
             'care_fund': forms.NumberInput(attrs={'step': 0.01,
-                                                  'min': 0.00
+                                                  'min': 0.00,
                                                   'class': 'form-control'}),
             'reservation': forms.NumberInput(attrs={'step': 0.01,
-                                                    'min': 0.00
+                                                    'min': 0.00,
                                                     'class': 'form-control'}),
-            'spot_cash_payment': forms.NumberInput(attrs={'step': 0.01,
-                                                          'min': 0.00
-                                                          'class': 'form-control'}),
-            'spot_discount': forms.NumberInput(attrs={'step': 0.01,
-                                                      'min': 0.00
-                                                      'class': 'form-control'}),
-            'downpayment_option': forms.Select(attrs={'class': 'form-control',
-                                                      'placeholder': 'N/A'}),
-            'installment_option': forms.Select(attrs={'class': 'form-control',
-                                                      'placeholder': 'N/A'}),
             'sales_agent': forms.HiddenInput(),
             'unit_manager': forms.HiddenInput(),
             'sales_leader': forms.HiddenInput(),
@@ -245,7 +233,7 @@ class ContractForm(forms.ModelForm):
         }
 
 
-class ServiceForm(forms.ModelForm)
+class ServiceForm(forms.ModelForm):
 
     class Meta:
         model = models.Service
@@ -259,7 +247,7 @@ class ServiceForm(forms.ModelForm)
                                     attrs={'class': 'form-control datepicker',
                                            'placeholder': 'Date'}),
             'amount': forms.NumberInput(attrs={'step': 0.01,
-                                               'min': 0.00
+                                               'min': 0.00,
                                                'class': 'form-control'}),
             'service_type': forms.Select(attrs={'class': 'form-control',
                                                 'placeholder': 'Service Type'}),
@@ -269,7 +257,7 @@ class ServiceForm(forms.ModelForm)
         }
 
 
-class BillForm(forms.ModelForm)
+class BillForm(forms.ModelForm):
 
     class Meta:
         model = models.Bill
@@ -294,7 +282,7 @@ class BillForm(forms.ModelForm)
                                         attrs={'class': 'form-control datepicker',
                                                'placeholder': 'Date'}),
             'amount_due': forms.NumberInput(attrs={'step': 0.01,
-                                                   'min': 0.00
+                                                   'min': 0.00,
                                                    'class': 'form-control'}),
             'remarks': forms.Textarea(attrs={'class': 'form-control',
                                              'rows': 3,
@@ -302,7 +290,7 @@ class BillForm(forms.ModelForm)
         }
 
 
-class PaymentForm(forms.ModelForm)
+class PaymentForm(forms.ModelForm):
 
     class Meta:
         model = models.Payment
@@ -319,7 +307,7 @@ class PaymentForm(forms.ModelForm)
                                      attrs={'class': 'form-control datepicker',
                                             'placeholder': 'Date'}),
             'amount': forms.NumberInput(attrs={'step': 0.01,
-                                               'min': 0.00
+                                               'min': 0.00,
                                                'class': 'form-control'}),
             'payment_type': forms.Select(attrs={'class': 'form-control',
                                                 'placeholder': 'Service Type'}),

@@ -8,7 +8,7 @@
 
 {% block breadcrumb %}
 <h1>
-    New Expense
+    Update Expense
 </h1>
 
 <ol class="breadcrumb">
@@ -22,8 +22,8 @@
             Expenses
         </a>
     </li>
-        <li class="active">
-        New Expense
+    <li class="active">
+        Update Expense
     </li>
 </ol>
 {% endblock %}
@@ -111,6 +111,16 @@
                     <div class="col-sm-8">
                         {{ form.category }}
                         {% for error in form.category.errors %}
+                            <span class="help-block">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="form-group {% if form.from_petty_cash.errors %} has-error {% endif %}">
+                    <label for="{{ form.from_petty_cash.id_for_label }}" class="col-sm-2 control-label">
+                        {{ form.from_petty_cash }}&nbsp;&nbsp;From Petty Cash?
+                    </label>
+                    <div class="col-sm-8">
+                        {% for error in form.from_petty_cash.errors %}
                             <span class="help-block">{{ error }}</span>
                         {% endfor %}
                     </div>

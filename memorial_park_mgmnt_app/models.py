@@ -174,23 +174,26 @@ class Client(models.Model):
             return ''
 
 
-class Downpayment(models.Model):
+class InstallmentPlan(models.Model):
 
-    name = models.CharField(max_length=64, blank=False, null=False)
+    # Downpayment
     split = models.PositiveSmallIntegerField(default=1)
     discount = models.FloatField(default=0.00)
 
-    def __str__(self):
-        return '{0} ({1}% OFF)'.format(self.name, (self.discount * 100))
-
-class Installment(models.Model):
-
-    name = models.CharField(max_length=64, blank=False, null=False)
+    # Installment
     years = models.PositiveSmallIntegerField(default=2)
     interest = models.FloatField(default=0.00)
 
     def __str__(self):
-        return '{0} ({1}% INTEREST)'.format(self.name, (self.interest * 100))
+        return '{0}-SPLIT ({1}% OFF) | {2} YRS ({3}% INTEREST )'.format(self.split,
+                                                                        self.discount,
+                                                                        self.years,
+                                                                        self.interest)
+
+
+class SpotCash(models.Model):
+    payment = models.FloatField(default=0.00)
+    discount = models.FloatField(default=0.00)
 
 
 class Contract(models.Model):
@@ -205,11 +208,8 @@ class Contract(models.Model):
     reservation = models.FloatField(default=0.00)
     remarks = models.CharField(max_length=256, blank=True, null=True)
 
-    spot_cash_payment = models.FloatField(default=0.00)
-    spot_discount = models.FloatField(default=0.15)
-
-    downpayment_option = models.ForeignKey(Downpayment, null=True, blank=True, on_delete=models.SET_NULL)
-    installment_option = models.ForeignKey(Installment, null=True, blank=True, on_delete=models.SET_NULL)
+    spot_cash = models.OneToOneField(SpotCash, null=True, blank=True, on_delete=models.SET_NULL)
+    installment_plan = models.OneToOneField(InstallmentPlan, null=True, blank=True, on_delete=models.SET_NULL)
 
     lot = models.OneToOneField(Lot, null=False, blank=False, related_name='lot_contract', on_delete=models.CASCADE)
     client = models.ForeignKey(Client, null=False, blank=False, related_name='client_contracts', on_delete=models.CASCADE)
@@ -233,16 +233,16 @@ class Contract(models.Model):
     def installment_amount(self):
         # base = self.lot.price + self.care_fund
         installment = self.lot.price * 0.8
-        if self.installment_option:
-            installment = installment + (installment * self.installment_option.interest)
+        if self.installment_plan:
+            installment = installment + (installment * self.installment_plan.interest)
 
         return installment
 
     @property
     def installment_monthly(self):
         monthly = self.installment_amount
-        if self.installment_option:
-            monthly = self.installment_amount / (self.installment_option.years * 12)
+        if self.installment_plan:
+            monthly = self.installment_amount / (self.installment_plan.years * 12)
 
         return monthly
 
@@ -269,16 +269,16 @@ class Contract(models.Model):
     def downpayment_amount(self):
         # base = self.lot.price + self.care_fund
         downpayment = self.lot.price * 0.2
-        if self.downpayment_option:
-            downpayment = downpayment - (downpayment * self.installment_option.discount)
+        if self.installment_plan:
+            downpayment = downpayment - (downpayment * self.installment_plan.discount)
 
         return downpayment
 
     @property
     def downpayment_monthly(self):
         monthly = self.downpayment_amount
-        if self.downpayment_option:
-            monthly = self.downpayment_amount / (self.downpayment_option.split)
+        if self.installment_plan:
+            monthly = self.downpayment_amount / (self.installment_plan.split)
 
         return monthly
 
@@ -311,14 +311,14 @@ class Contract(models.Model):
         else: # PRE-NEED
             if self.contract_type == 'SPOT':
                 # return self.lot.price - (self.lot.price * self.spot_discount)
-                return self.lot.price - (self.lot.price * self.spot_discount) + self.care_fund
+                return self.lot.price - (self.lot.price * self.spot_cash.discount) + self.care_fund
             else:
                 return self.downpayment_amount + self.installment_amount + self.care_fund
 
     @property
     def commissionable_amount(self):
         if self.contract_type == 'SPOT':
-            discount = self.lot.price * self.spot_discount
+            discount = self.lot.price * self.spot_cash.discount
 
             gross = self.lot.price - discount - self.care_fund
             vat = gross - (gross / 1.12)
@@ -330,8 +330,8 @@ class Contract(models.Model):
             return net_commission
         else:
             discount = 0
-            if self.downpayment_option:
-                discount = self.lot.price * self.downpayment_option.discount
+            if self.installment_plan:
+                discount = self.lot.price * self.installment_plan.discount
 
             gross = self.lot.price - discount - self.care_fund
             vat = gross - (gross / 1.12)
@@ -345,8 +345,8 @@ class Contract(models.Model):
     @property
     def commission_monthly(self):
         monthly = self.commissionable_amount
-        if self.downpayment_option:
-            monthly = self.downpayment_amount / (self.downpayment_option.split)
+        if self.installment_plan:
+            monthly = self.downpayment_amount / (self.installment_plan.split)
 
         return monthly
 
@@ -405,9 +405,9 @@ class Contract(models.Model):
 
     def get_monthly_commissions(self):
         commissions = self.get_commissions()
-        if self.downpayment_option:
+        if self.installment_plan:
             for key in list(commissions.keys()):
-                commissions[key] = commissions[key] / self.downpayment_option.split
+                commissions[key] = commissions[key] / self.installment_plan.downpayment.split
 
         return commissions
 

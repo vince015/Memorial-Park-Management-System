@@ -1,27 +1,20 @@
 {% extends "base.html" %}
 
 {% load staticfiles %}
-{% block pagetitle %}Agents{% endblock %}
+{% block pagetitle %}Home{% endblock %}
 
 {% block pagestylesheets %}
 {% endblock %}
 
 {% block breadcrumb %}
 <h1>
-    Expenses
-    <a href="{% url 'expense_create' %}">
+    Contracts
+    <a href="{% url 'contract_create' %}">
         <i class="fa fa-plus-circle"></i>
     </a>
 </h1>
 <ol class="breadcrumb">
-    <li>
-        <a href="{% url 'home' %}">
-            <i class="fa fa-home"></i> Home
-        </a>
-    </li>
-    <li class="active">
-        Expenses
-    </li>
+    <li class="active"><i class="fa fa-home"></i> Home</a></li>
 </ol>
 {% endblock %}
 
@@ -30,13 +23,12 @@
         <div class="col-md-12">
             <div class="box">
                 <div class="box-body">
-                    <table id="expense_table" class="table table-bordered table-striped">
+                    <table id="contract_table" class="table table-bordered table-striped">
                         <thead>
                             <tr>
                                 <th>Date</th>
-                                <th>Ref No.</th>
-                                <th>Payee</th>
-                                <th>Amount</th>
+                                <th>Name</th>
+                                <th>Lot</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -52,12 +44,12 @@
 <script src="{% static "bower_components/datatables.net/js/jquery.dataTables.min.js" %}"></script>
 <script src="{% static "bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js" %}"></script>
 <script>
-    $(document).ready(function () {
-        $("#expense_table").dataTable({
+    $(function () {
+        $('#contract_table').DataTable({
             "order": [[0, "desc"]],
             "processing": true,
             "serverSide": true,
-            "ajax": "{% url 'expense_json' %}"
+            "ajax": "{% url 'contract_json' %}"
         });
     });
 </script>

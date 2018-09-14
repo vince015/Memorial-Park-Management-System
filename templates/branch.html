@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+
+{% load staticfiles %}
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+        <title>MPMS | Welcome </title>
+        <!-- <link rel="icon" type="image/png" href="{% static 'images/logo_mini.png' %}"> -->
+
+        <!-- Tell the browser to be responsive to screen width -->
+        <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+
+        <!-- Bootstrap 3.3.7 -->
+        <link rel="stylesheet" href="{% static "bower_components/bootstrap/dist/css/bootstrap.min.css" %}">
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="{% static "bower_components/font-awesome/css/font-awesome.min.css" %}">
+        <!-- Ionicons -->
+        <link rel="stylesheet" href="{% static "bower_components/Ionicons/css/ionicons.min.css" %}">
+        <!-- Theme style -->
+        <link rel="stylesheet" href="{% static "dist/css/AdminLTE.css" %}">
+
+        <!-- AdminLTE Skins. Choose a skin from the css/skins
+           folder instead of downloading all of them to reduce the load. -->
+        <link rel="stylesheet" href="{% static "dist/css/skins/_all-skins.min.css" %}">
+    </head>
+    <body class="hold-transition skin-blue">
+        <div class="login-box">
+            <!-- login-log -->
+            <div class="login-logo">
+                <p>
+                    <b>Memorial Park</b>
+                </p>
+                Management System
+                <h3>
+                    <i class="glyphicon glyphicon-user"></i>
+                    Welcome {{ request.user.username }}
+                </h3>
+            </div>
+            <!-- end login-logo -->
+
+            <!-- login-box-body -->
+            <div class="login-box-body">
+                {% for message in messages %}
+                    <div class="callout callout-{{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+
+                <!-- login form -->
+                <form action="{% url 'branch' %}?next={{ redirect_to }}" method="post">
+                    {% csrf_token %}
+                    <div class="form-group has-feedback">
+                        <label>Select desired branch</label>
+                        <select class="form-control">
+                            {% for branch in branches %}
+                                <option value="{{ branch.group.id }}">{{ branch.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-8">
+                            <div class="checkbox icheck">
+                            <!-- filler -->
+                            </div>
+                        </div>
+                        <!-- /.col -->
+                        <div class="col-xs-4">
+                            <button type="submit" class="btn btn-primary btn-block btn-flat">Continue</button>
+                        </div>
+                    </div>
+                </form>
+                <!-- end login form -->
+            </div>
+            <!-- end login-box-body -->
+        </div>
+    </body>
+</html>

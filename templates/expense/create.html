@@ -2,13 +2,13 @@
 
 {% load staticfiles %}
 {% load humanize %}
-{% block pagetitle %}Commissions{% endblock %}
+{% block pagetitle %}Clients{% endblock %}
 
 {% block pagestylesheets %}{% endblock %}
 
 {% block breadcrumb %}
 <h1>
-    Add Commission
+    New Expense
 </h1>
 
 <ol class="breadcrumb">
@@ -18,26 +18,22 @@
         </a>
     </li>
     <li>
-        <a href="{% url 'contract_read' contract_id=contract.id %}">
-            Contract {{ contract.id }}
+        <a href="{% url 'expense_list' %}">
+            Expenses
         </a>
     </li>
-    <li class="active">
-        Add Commission
+        <li class="active">
+        New Expense
     </li>
 </ol>
 {% endblock %}
-
 
 {% block main %}
 <div class="row">
     <div class="col-md-12">
         <div class="box box-primary">
-            <form class="form-horizontal" action="{% url 'commission_create' contract_id=contract.id %}" method="post">
+            <form class="form-horizontal" action="{% url 'expense_create' %}" method="post">
             {% csrf_token %}
-            <div class="box-header with-border">
-                <b>Contact {{ contract.id }}</b>
-            </div>
             <div class="box-body">
                 {% if form.non_field_errors %}
                 <div class="form-group has-error">
@@ -74,6 +70,29 @@
                         {% endfor %}
                     </div>
                 </div>
+                <div class="form-group {% if form.reference_number.errors %} has-error {% endif %}">
+                    <label for="{{ form.reference_number.id_for_label }}" class="col-sm-2 control-label">
+                        Reference No.
+                    </label>
+                    <div class="col-sm-8">
+                        {{ form.reference_number }}
+                        {% for error in form.reference_number.errors %}
+                            <span class="help-block">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="form-group {% if form.payee.errors %} has-error {% endif %}">
+                    <label for="{{ form.payee.id_for_label }}" class="col-sm-2 control-label">
+                        Payee *
+                    </label>
+                    <div class="col-sm-8">
+                        {{ form.payee }}
+                        {% for error in form.payee.errors %}
+                            <span class="help-block">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+
                 <div class="form-group {% if form.amount.errors %} has-error {% endif %}">
                     <label for="{{ form.amount.id_for_label }}" class="col-sm-2 control-label">
                         Amount *
@@ -85,28 +104,39 @@
                         {% endfor %}
                     </div>
                 </div>
-                <div class="form-group {% if form.recipient.errors %} has-error {% endif %}">
-                    <label for="{{ form.recipient.id_for_label }}" class="col-sm-2 control-label">
-                        Recipient *
+                <div class="form-group {% if form.category.errors %} has-error {% endif %}">
+                    <label for="{{ form.category.id_for_label }}" class="col-sm-2 control-label">
+                        Category *
                     </label>
                     <div class="col-sm-8">
-                        {{ form.recipient }}
-                        {% for error in form.recipient.errors %}
+                        {{ form.category }}
+                        {% for error in form.category.errors %}
                             <span class="help-block">{{ error }}</span>
                         {% endfor %}
                     </div>
                 </div>
-                <div class="form-group {% if form.remarks.errors %} has-error {% endif %}">
-                    <label for="{{ form.remarks.id_for_label }}" class="col-sm-2 control-label">
-                        Remarks
+                <div class="form-group {% if form.from_petty_cash.errors %} has-error {% endif %}">
+                    <label for="{{ form.from_petty_cash.id_for_label }}" class="col-sm-2 control-label">
+                        {{ form.from_petty_cash }}&nbsp;&nbsp;From Petty Cash?
                     </label>
                     <div class="col-sm-8">
-                        {{ form.remarks }}
-                        {% for error in form.remarks.errors %}
+                        {% for error in form.from_petty_cash.errors %}
                             <span class="help-block">{{ error }}</span>
                         {% endfor %}
                     </div>
                 </div>
+                <div class="form-group {% if form.description.errors %} has-error {% endif %}">
+                    <label for="{{ form.description.id_for_label }}" class="col-sm-2 control-label">
+                        Description *
+                    </label>
+                    <div class="col-sm-8">
+                        {{ form.description }}
+                        {% for error in form.description.errors %}
+                            <span class="help-block">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+
                 <div class="box-footer">
                     <button type="submit" class="btn btn-primary pull-right">Submit</button>
                 </div>

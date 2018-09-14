@@ -8,7 +8,7 @@
 
 {% block breadcrumb %}
 <h1>
-    New Agent
+    Update Agent
 </h1>
 
 <ol class="breadcrumb">
@@ -18,7 +18,7 @@
         </a>
     </li>
     <li class="active">
-        New Agent
+        Update Agent
     </li>
 </ol>
 {% endblock %}
@@ -27,7 +27,7 @@
 <div class="row">
     <div class="col-md-12">
         <div class="box box-primary">
-            <form class="form-horizontal" action="{% url 'agent_create' %}" method="post">
+            <form class="form-horizontal" action="{% url 'agent_update' agent_id=form.instance.id %}" method="post">
             {% csrf_token %}
             <div class="box-body">
                 {% if form.non_field_errors %}
@@ -36,7 +36,7 @@
                         {% for error in form.non_field_errors %}
                         <li class="help-block">
                             <i class="fa fa-times-circle-o"></i>
-                            <b>Error</b>
+                            <b>{{ error }}</b>
                         </li>
                         {% endfor %}
                     </ul>
@@ -89,6 +89,49 @@
                 </div>
                 <hr>
 
+                <div class="form-group">
+                    <ul>
+                        <li class="help-block">
+                            <i class="fa fa-info-circle"></i>
+                            <b>Please enter at least one contact number.</b>
+                        </li>
+                    </ul>
+                </div>
+                <div class="form-group {% if form.mobile.errors %} has-error {% endif %}">
+                    <label for="{{ form.mobile.id_for_label }}" class="col-sm-2 control-label">
+                        Mobile Number
+                    </label>
+                    <div class="col-sm-8">
+                        {{ form.mobile }}
+                        {% for error in form.mobile.errors %}
+                            <span class="help-block">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="form-group {% if form.landline.errors %} has-error {% endif %}">
+                    <label for="{{ form.landline.id_for_label }}" class="col-sm-2 control-label">
+                        Landline Number
+                    </label>
+                    <div class="col-sm-8">
+                        {{ form.landline }}
+                        {% for error in form.landline.errors %}
+                            <span class="help-block">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="form-group {% if form.email.errors %} has-error {% endif %}">
+                    <label for="{{ form.email.id_for_label }}" class="col-sm-2 control-label">
+                        Email Address
+                    </label>
+                    <div class="col-sm-8">
+                        {{ form.email }}
+                        {% for error in form.email.errors %}
+                            <span class="help-block">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                <hr>
+
                 <div class="form-group {% if form.street.errors %} has-error {% endif %}">
                     <label for="{{ form.house_number.id_for_label }}" class="col-sm-2 control-label">
                         House No.
@@ -113,7 +156,7 @@
                 </div>
                 <div class="form-group {% if form.barangay.errors %} has-error {% endif %}">
                     <label for="{{ form.barangay.id_for_label }}" class="col-sm-2 control-label">
-                        Barangay *
+                        Barangay
                     </label>
                     <div class="col-sm-8">
                         {{ form.barangay }}
@@ -124,7 +167,7 @@
                 </div>
                 <div class="form-group {% if form.town.errors %} has-error {% endif %}">
                     <label for="{{ form.town.id_for_label }}" class="col-sm-2 control-label">
-                        Town *
+                        Town
                     </label>
                     <div class="col-sm-8">
                         {{ form.town }}
@@ -135,7 +178,7 @@
                 </div>
                 <div class="form-group {% if form.province.errors %} has-error {% endif %}">
                     <label for="{{ form.province.id_for_label }}" class="col-sm-2 control-label">
-                        Province *
+                        Province
                     </label>
                     <div class="col-sm-8">
                         {{ form.province }}
@@ -160,17 +203,6 @@
                         {% endfor %}
                     </div>
                 </div>
-                <div class="form-group {% if form.contact_number.errors %} has-error {% endif %}">
-                    <label for="{{ form.contact_number.id_for_label }}" class="col-sm-2 control-label">
-                        Contact Number
-                    </label>
-                    <div class="col-sm-8">
-                        {{ form.contact_number }}
-                        {% for error in form.contact_number.errors %}
-                            <span class="help-block">{{ error }}</span>
-                        {% endfor %}
-                    </div>
-                </div>
                 <div class="form-group {% if form.birthdate.errors %} has-error {% endif %}">
                     <label for="{{ form.birthdate.id_for_label }}" class="col-sm-2 control-label">
                         Birthdate
@@ -182,19 +214,6 @@
                         {% endfor %}
                     </div>
                 </div>
-                <div class="form-group {% if form.email.errors %} has-error {% endif %}">
-                    <label for="{{ form.email.id_for_label }}" class="col-sm-2 control-label">
-                        Email Address
-                    </label>
-                    <div class="col-sm-8">
-                        {{ form.email }}
-                        {% for error in form.email.errors %}
-                            <span class="help-block">{{ error }}</span>
-                        {% endfor %}
-                    </div>
-                </div>
-                <hr>
-
                 <div class="form-group {% if form.other_address.errors %} has-error {% endif %}">
                     <label for="{{ form.other_address.id_for_label }}" class="col-sm-2 control-label">
                         Other Address
