@@ -29,6 +29,32 @@ class BranchAdmin(ImportExportModelAdmin):
 admin.site.register(models.Branch, BranchAdmin)
 
 
+class LotTypeResource(resources.ModelResource):
+
+    class Meta:
+        model = models.LotType
+        fields = ('id',
+                  'lot_type',
+                  'price',
+                  'vat',
+                  'care_fund')
+
+
+class LotTypeAdmin(ImportExportModelAdmin):
+    list_display = ('id',
+                    'lot_type',
+                    'price',
+                    'vat',
+                    'care_fund')
+    list_display_links = ('id',)
+    list_filter = ('lot_type',)
+    search_fields = ('id',)
+    list_per_page = 50
+    resource_class = LotTypeResource
+
+admin.site.register(models.LotType, LotTypeAdmin)
+
+
 class LotResource(resources.ModelResource):
 
     class Meta:
@@ -133,32 +159,175 @@ class AgentAdmin(ImportExportModelAdmin):
 admin.site.register(models.Agent, AgentAdmin)
 
 
-class InstallmentPlanResource(resources.ModelResource):
+class DownpaymentOptionResource(resources.ModelResource):
 
     class Meta:
-        model = models.InstallmentPlan
+        model = models.DownpaymentOption
         fields = ('id',
-                  'contract',
+                  'name',
                   'split',
-                  'discount',
-                  'years',
+                  'discount')
+
+
+class DownpaymentOptionAdmin(ImportExportModelAdmin):
+    list_display = ('id',
+                    'name',
+                    'split',
+                    'discount')
+    list_display_links = ('id',
+                          'name')
+    search_fields = ('id',
+                     'name')
+    resource_class = DownpaymentOptionResource
+    list_per_page = 50
+
+admin.site.register(models.DownpaymentOption, DownpaymentOptionAdmin)
+
+
+class InstallmentOptionResource(resources.ModelResource):
+
+    class Meta:
+        model = models.InstallmentOption
+        fields = ('id',
+                  'name',
+                  'months',
                   'interest')
 
 
-class InstallmentPlanAdmin(ImportExportModelAdmin):
+class InstallmentOptionAdmin(ImportExportModelAdmin):
     list_display = ('id',
-                    'contract',
-                    'split',
-                    'discount',
-                    'years',
+                    'name',
+                    'months',
                     'interest')
-    list_display_links = ('id',)
-    search_fields = ('id',)
-    resource_class = InstallmentPlanResource
+    list_display_links = ('id',
+                          'name')
+    search_fields = ('id',
+                     'name')
+    resource_class = InstallmentOptionResource
     list_per_page = 50
 
+admin.site.register(models.InstallmentOption, InstallmentOptionAdmin)
 
-admin.site.register(models.InstallmentPlan, InstallmentPlanAdmin)
+
+class SpotOptionResource(resources.ModelResource):
+
+    class Meta:
+        model = models.SpotOption
+        fields = ('id',
+                  'discount')
+
+
+class SpotOptionAdmin(ImportExportModelAdmin):
+    list_display = ('id',
+                    'discount')
+    list_display_links = ('id',)
+    search_fields = ('id',)
+    resource_class = SpotOptionResource
+    list_per_page = 50
+
+admin.site.register(models.SpotOption, SpotOptionAdmin)
+
+
+class PromoResource(resources.ModelResource):
+
+    class Meta:
+        model = models.Promo
+        fields = ('id',
+                  'code',
+                  'lot_price',
+                  'care_fund',
+                  'start_date',
+                  'end_date')
+
+
+class PromoAdmin(ImportExportModelAdmin):
+    list_display = ('id',
+                    'code',
+                    'lot_price',
+                    'care_fund',
+                    'start_date',
+                    'end_date')
+    list_display_links = ('id',
+                          'code')
+    search_fields = ('id',
+                     'code')
+    resource_class = PromoResource
+    list_per_page = 50
+
+admin.site.register(models.Promo, PromoAdmin)
+
+
+class ContractResource(resources.ModelResource):
+
+    class Meta:
+        model = models.Contract
+        fields = ('id',
+                  'date',
+                  'buyer_type',
+                  'payment_terms',
+                  'client',
+                  'lot')
+
+
+class ContractAdmin(ImportExportModelAdmin):
+    list_display = ('id',
+                    'date',
+                    'client',
+                    'lot',
+                    'payment_terms',
+                    'buyer_type')
+    list_display_links = ('id',)
+    list_filter = ('buyer_type',
+                   'payment_terms',
+                   'lot__branch')
+    search_fields = ('id',
+                     'client__last_name',
+                     'client__first_name',
+                     'lot__block',
+                     'lot__lot',
+                     'lot__unit')
+    resource_class = ContractResource
+    list_per_page = 50
+
+    def client(self, obj):
+        return str(obj.client)
+    client.short_description = 'Client'
+    client.admin_order_field = ['client__last_name',
+                                'client__first_name']
+
+    def lot(self, obj):
+        return str(obj.lot)
+    lot.short_description = 'Lot'
+    lot.admin_order_field = ['lot__block',
+                             'lot__lot',
+                             'lot__unit']
+
+admin.site.register(models.Contract, ContractAdmin)
+
+
+class ServiceResource(resources.ModelResource):
+
+    class Meta:
+        model = models.Service
+        fields = ('id',
+                  'date',
+                  'amount',
+                  'service_type',
+                  'contract')
+
+
+class ServiceAdmin(ImportExportModelAdmin):
+    list_display = ('id',
+                    'date',
+                    'amount',
+                    'service_type')
+    list_display_links = ('id',)
+    list_filter = ('service_type',)
+    search_fields = ('id',)
+    resource_class = ServiceResource
+    list_per_page = 50
+
+admin.site.register(models.Service, ServiceAdmin)
 
 
 class BillResource(resources.ModelResource):
@@ -217,78 +386,3 @@ class PaymentAdmin(ImportExportModelAdmin):
     list_per_page = 50
 
 admin.site.register(models.Payment, PaymentAdmin)
-
-
-class ServiceResource(resources.ModelResource):
-
-    class Meta:
-        model = models.Service
-        fields = ('id',
-                  'date',
-                  'amount',
-                  'service_type',
-                  'contract')
-
-
-class ServiceAdmin(ImportExportModelAdmin):
-    list_display = ('id',
-                    'date',
-                    'amount',
-                    'service_type')
-    list_display_links = ('id',)
-    list_filter = ('service_type',)
-    search_fields = ('id',)
-    resource_class = ServiceResource
-    list_per_page = 50
-
-admin.site.register(models.Service, ServiceAdmin)
-
-
-class ContractResource(resources.ModelResource):
-
-    class Meta:
-        model = models.Contract
-        fields = ('id',
-                  'date',
-                  'buyer_type',
-                  'care_fund',
-                  'contract_type',
-                  'client',
-                  'lot')
-
-
-class ContractAdmin(ImportExportModelAdmin):
-    list_display = ('id',
-                    'date',
-                    'client',
-                    'lot',
-                    'contract_type',
-                    'buyer_type')
-    list_display_links = ('id',)
-    list_filter = ('buyer_type',
-                   'contract_type',
-                   'lot__branch')
-    search_fields = ('id',
-                     'client__last_name',
-                     'client__first_name',
-                     'lot__block',
-                     'lot__lot',
-                     'lot__unit')
-    resource_class = ContractResource
-    list_per_page = 50
-
-    def client(self, obj):
-        return str(obj.client)
-    client.short_description = 'Client'
-    client.admin_order_field = ['client__last_name',
-                                'client__first_name']
-
-    def lot(self, obj):
-        return str(obj.lot)
-    lot.short_description = 'Lot'
-    lot.admin_order_field = ['lot__block',
-                             'lot__lot',
-                             'lot__unit']
-
-admin.site.register(models.Contract, ContractAdmin)
-

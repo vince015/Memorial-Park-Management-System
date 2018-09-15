@@ -143,60 +143,19 @@ class AgentForm(forms.ModelForm):
                                          'landline': ['Enter at least one contact number (mobile or landline)']})
 
 
-class SpotCashForm(forms.ModelForm):
-
-    class Meta:
-        model = models.SpotCash
-        fields = ['payment',
-                  'discount']
-
-        widgets = {
-            'payment': forms.NumberInput(attrs={'step': 1,
-                                                'min': 1,
-                                                'class': 'form-control'}),
-            'discount': forms.NumberInput(attrs={'step': 0.01,
-                                                 'min': 0.00,
-                                                 'class': 'form-control'}),
-        }
-
-
-class InstallmentPlanForm(forms.ModelForm):
-
-    class Meta:
-        model = models.InstallmentPlan
-        fields = ['split',
-                  'discount',
-                  'years',
-                  'interest']
-
-        widgets = {
-            'split': forms.NumberInput(attrs={'step': 1,
-                                              'min': 1,
-                                              'class': 'form-control'}),
-            'discount': forms.NumberInput(attrs={'step': 0.01,
-                                                 'min': 0.00,
-                                                 'class': 'form-control'}),
-            'years': forms.NumberInput(attrs={'step': 1,
-                                              'min': 1,
-                                              'class': 'form-control'}),
-            'interest': forms.NumberInput(attrs={'step': 0.01,
-                                                 'min': 0.00,
-                                                 'class': 'form-control'}),
-        }
-
-
 class ContractForm(forms.ModelForm):
 
     class Meta:
         model = models.Contract
-        fields = [
+        fields = [  'number',
                     'date',
                     'buyer_type',
-                    'contract_type',
+                    'payment_terms',
                     'lot',
                     'client',
-                    'care_fund',
                     'reservation',
+                    'downpayment_option',
+                    'installment_option',
                     'sales_agent',
                     'unit_manager',
                     'sales_leader',
@@ -206,21 +165,24 @@ class ContractForm(forms.ModelForm):
                 ]
 
         widgets = {
+            'number': forms.TextInput(attrs={'class': 'form-control',
+                                             'placeholder': 'Contract No.'}),
             'date': forms.DateInput(format='%m/%d/%Y',
                                     attrs={'class': 'form-control datepicker',
                                            'placeholder': 'Date'}),
             'lot': forms.HiddenInput(),
             'client': forms.HiddenInput(),
-            'buyer_type': forms.Select(attrs={'class': 'form-control',
-                                              'placeholder': 'Buyer Type'}),
+            'payment_terms': forms.Select(attrs={'class': 'form-control',
+                                                 'placeholder': 'Buyer Type'}),
             'contract_type': forms.Select(attrs={'class': 'form-control',
                                                  'placeholder': 'Contract Type'}),
-            'care_fund': forms.NumberInput(attrs={'step': 0.01,
-                                                  'min': 0.00,
-                                                  'class': 'form-control'}),
             'reservation': forms.NumberInput(attrs={'step': 0.01,
                                                     'min': 0.00,
                                                     'class': 'form-control'}),
+            'downpayment_option': forms.Select(attrs={'class': 'form-control',
+                                                      'placeholder': 'Select Downpayment Option'}),
+            'installment_option': forms.Select(attrs={'class': 'form-control',
+                                                      'placeholder': 'Select Installment Option'}),
             'sales_agent': forms.HiddenInput(),
             'unit_manager': forms.HiddenInput(),
             'sales_leader': forms.HiddenInput(),
@@ -305,7 +267,7 @@ class PaymentForm(forms.ModelForm):
                                              'placeholder': 'Input name'}),
             'date': forms.DateInput(format='%m/%d/%Y',
                                      attrs={'class': 'form-control datepicker',
-                                            'placeholder': 'Date'}),
+                                            'placeholder': 'mm/dd/yyyy'}),
             'amount': forms.NumberInput(attrs={'step': 0.01,
                                                'min': 0.00,
                                                'class': 'form-control'}),

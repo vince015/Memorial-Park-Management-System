@@ -10,8 +10,8 @@ from django.db.models import Sum
 from django.contrib.auth.models import Group
 
 # Constants
-LOT_TYPES = (('SPL', 'Special'),
-             ('REG', 'Regular'))
+# LOT_TYPES = (('SPL', 'Special'),
+#              ('REG', 'Regular'))
 
 BUYER_TYPES = (('PRE-NEED', 'Pre-Need'),
                ('IN-NEED', 'In-Need'))
@@ -20,8 +20,8 @@ CONTRACT_STATUSES = (('NEW', 'New'),
                      ('REVIEWED', 'Reviewed'),
                      ('FORFEITED', 'Forfeited'))
 
-CONTRACT_TYPES = (('SPOT', 'Spot'),
-                  ('INSTALLMENT', 'Installment'))
+PAYMENT_TERMS = (('SPOT', 'Spot'),
+                 ('INSTALLMENT', 'Installment'))
 
 AGENT_TYPES = (('SALES_AGENT', 'Sales Agent'),
                ('UNIT_MNGR', 'Unit Manager'),
@@ -33,8 +33,10 @@ SERVICE_TYPES = (('CERTIFICATE_OF_OWNERSHIP', 'Certificate of Ownership'),
                  ('CHANGE_OF_LOT', 'Change of Lot'),
                  ('INTERMENT', 'Interment'))
 
-PAYMENT_TYPES = (('DOWNPAYMENT', 'Downpayment'),
-                 ('INSTALLMENT', 'Installment'))
+PAYMENT_TYPES = (('SPOT_CASH', 'Spot Cash'),
+                 ('DOWNPAYMENT', 'Downpayment'),
+                 ('INSTALLMENT', 'Installment'),
+                 ('OTHERS', 'Others'))
 
 def valid_id_directory_path(instance, filename):
     ext  = os.path.splitext(filename)[1]
@@ -56,14 +58,23 @@ class Branch(models.Model):
         verbose_name_plural = 'Branches'
 
 
+class LotType(models.Model):
+    lot_type = models.CharField(max_length=32, blank=False, null=False, default='REG')
+    price = models.FloatField(default=0.00)
+    vat = models.FloatField(default=0.00)
+    care_fund = models.FloatField(default=0.00)
+
+    def __str__(self):
+        return self.lot_type
+
+
 class Lot(models.Model):
     block = models.CharField(max_length=32, blank=False, null=False)
     lot = models.CharField(max_length=32, blank=False, null=False)
     unit = models.CharField(max_length=32, blank=False, null=False)
 
     price = models.FloatField(default=0.00)
-    lot_type = models.CharField(max_length=32, blank=False, null=False, choices=LOT_TYPES, default='REG')
-
+    lot_type = models.ForeignKey(LotType, null=False, blank=False, on_delete=models.CASCADE)
     branch = models.ForeignKey(Branch, null=True, blank=True, related_name='lots', on_delete=models.SET_NULL)
 
     def __str__(self):
@@ -174,42 +185,60 @@ class Client(models.Model):
             return ''
 
 
-class InstallmentPlan(models.Model):
-
-    # Downpayment
+class DownpaymentOption(models.Model):
+    name = models.CharField(max_length=256, blank=False, null=False)
     split = models.PositiveSmallIntegerField(default=1)
-    discount = models.FloatField(default=0.00)
-
-    # Installment
-    years = models.PositiveSmallIntegerField(default=2)
-    interest = models.FloatField(default=0.00)
+    discount = models.FloatField(blank=False, null=False, default=0.00)
 
     def __str__(self):
-        return '{0}-SPLIT ({1}% OFF) | {2} YRS ({3}% INTEREST )'.format(self.split,
-                                                                        self.discount,
-                                                                        self.years,
-                                                                        self.interest)
+        return '{0}: {1}% OFF'.format(self.name, (self.discount * 100))
 
 
-class SpotCash(models.Model):
-    payment = models.FloatField(default=0.00)
-    discount = models.FloatField(default=0.00)
+class InstallmentOption(models.Model):
+    name = models.CharField(max_length=256, blank=False, null=False)
+    months = models.PositiveSmallIntegerField(default=12)
+    interest = models.FloatField(blank=False, null=False, default=0.00)
+
+    def __str__(self):
+        return '{0}: {1}% INTEREST'.format(self.name, (self.interest * 100))
+
+
+class SpotOption(models.Model):
+    discount = models.FloatField(blank=False, null=False, default=0.15)
+
+    def __str__(self):
+        return 'Spot | {0}% OFF'.format(self.discount * 100)
+
+
+class Promo(models.Model):
+    code = models.CharField(max_length=256, blank=False, null=False)
+    lot_price = models.FloatField(blank=False, null=False, default=0.00)
+    care_fund = models.FloatField(blank=False, null=False, default=0.00)
+
+    start_date = models.DateField(blank=False, null=False, default=date.today)
+    end_date = models.DateField(blank=False, null=False, default=date.today)
+
+    def __str__(self):
+        return self.code
 
 
 class Contract(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
 
+    number = models.CharField(max_length=256, blank=False, null=False)
     date = models.DateField(null=False, blank=False, default=date.today)
     buyer_type = models.CharField(max_length=32, blank=False, null=False, choices=BUYER_TYPES, default='PRE-NEED')
-    care_fund = models.FloatField(default=0.00)
 
-    contract_type = models.CharField(max_length=256, blank=False, null=False, choices=CONTRACT_TYPES, default='SPOT')
     status = models.CharField(max_length=64, blank=False, null=False, choices=CONTRACT_STATUSES, default='NEW')
-    reservation = models.FloatField(default=0.00)
     remarks = models.CharField(max_length=256, blank=True, null=True)
 
-    spot_cash = models.OneToOneField(SpotCash, null=True, blank=True, on_delete=models.SET_NULL)
-    installment_plan = models.OneToOneField(InstallmentPlan, null=True, blank=True, on_delete=models.SET_NULL)
+    reservation = models.FloatField(default=0.00)
+    promo = models.ForeignKey(Promo, blank=True, null=True, on_delete=models.SET_NULL)
+
+    payment_terms = models.CharField(max_length=256, blank=False, null=False, choices=PAYMENT_TERMS, default='SPOT')
+    spot_option = models.ForeignKey(SpotOption, blank=True, null=True, on_delete=models.SET_NULL)
+    downpayment_option = models.ForeignKey(DownpaymentOption, blank=True, null=True, on_delete=models.SET_NULL)
+    installment_option = models.ForeignKey(InstallmentOption, blank=True, null=True, on_delete=models.SET_NULL)
 
     lot = models.OneToOneField(Lot, null=False, blank=False, related_name='lot_contract', on_delete=models.CASCADE)
     client = models.ForeignKey(Client, null=False, blank=False, related_name='client_contracts', on_delete=models.CASCADE)
@@ -233,16 +262,16 @@ class Contract(models.Model):
     def installment_amount(self):
         # base = self.lot.price + self.care_fund
         installment = self.lot.price * 0.8
-        if self.installment_plan:
-            installment = installment + (installment * self.installment_plan.interest)
+        if self.installment_option:
+            installment = installment + (installment * self.installment_option.interest)
 
         return installment
 
     @property
     def installment_monthly(self):
         monthly = self.installment_amount
-        if self.installment_plan:
-            monthly = self.installment_amount / (self.installment_plan.years * 12)
+        if self.installment_option:
+            monthly = self.installment_amount / (self.installment_option.months)
 
         return monthly
 
@@ -269,16 +298,16 @@ class Contract(models.Model):
     def downpayment_amount(self):
         # base = self.lot.price + self.care_fund
         downpayment = self.lot.price * 0.2
-        if self.installment_plan:
-            downpayment = downpayment - (downpayment * self.installment_plan.discount)
+        if self.downpayment_option:
+            downpayment = downpayment - (downpayment * self.downpayment_option.discount)
 
         return downpayment
 
     @property
     def downpayment_monthly(self):
         monthly = self.downpayment_amount
-        if self.installment_plan:
-            monthly = self.downpayment_amount / (self.installment_plan.split)
+        if self.downpayment_option:
+            monthly = self.downpayment_amount / (self.downpayment_option.split)
 
         return monthly
 
@@ -303,15 +332,23 @@ class Contract(models.Model):
 
     @property
     def contract_price(self):
-        # return self.lot_price + self.care_fund - self.discount_spot_cash - self.discount_spot_dp + self.interest_on_installment
+        lot_price = self.lot.price
+        care_fund = self.lot.care_fund
+
+        if self.promo:
+            lot_price = self.promo.lot_price
+            care_fund = self.promo.care_fund
 
         if self.buyer_type == 'IN-NEED':
-            # return self.lot.price + (self.lot.price * 0.5)
-            return self.lot.price + (self.lot.price * 0.5) + self.care_fund
-        else: # PRE-NEED
+            ### IN-NEED ###
+            return lot_price + (self.lot.price * 0.5) + care_fund
+        else:
+            ### PRE-NEED ###
             if self.contract_type == 'SPOT':
-                # return self.lot.price - (self.lot.price * self.spot_discount)
-                return self.lot.price - (self.lot.price * self.spot_cash.discount) + self.care_fund
+                discount = 0
+                if self.spot_option:
+                    discount = self.lot.price * self.spot_option.discount
+                return lot_price + care_fund - discount
             else:
                 return self.downpayment_amount + self.installment_amount + self.care_fund
 
@@ -330,8 +367,8 @@ class Contract(models.Model):
             return net_commission
         else:
             discount = 0
-            if self.installment_plan:
-                discount = self.lot.price * self.installment_plan.discount
+            if self.downpayment_option:
+                discount = self.lot.price * self.downpayment_option.discount
 
             gross = self.lot.price - discount - self.care_fund
             vat = gross - (gross / 1.12)
@@ -417,7 +454,7 @@ class Service(models.Model):
     updated = models.DateTimeField(auto_now=True)
 
     date = models.DateField(null=False, blank=False, default=date.today)
-    amount = models.FloatField(default=0.01)
+    amount = models.FloatField(default=0.00)
     service_type = models.CharField(max_length=256, blank=True, null=True, choices=SERVICE_TYPES, default='INTERMENT')
     remarks = models.CharField(max_length=256, blank=True, null=True)
 
@@ -492,9 +529,9 @@ class Payment(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
-    number = models.CharField(max_length=256, blank=False, null=False, unique=True)
+    number = models.CharField(max_length=256, blank=False, null=False)
     date = models.DateField(null=False, blank=False, default=date.today)
-    amount = models.FloatField(default=0.01)
+    amount = models.FloatField(null=False, blank=False, default=0.00)
     payment_type = models.CharField(max_length=256, blank=True, null=True, choices=PAYMENT_TYPES, default='DOWNPAYMENT')
     remarks = models.CharField(max_length=256, blank=True, null=True)
 
