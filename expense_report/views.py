@@ -19,12 +19,12 @@ from expense_report import forms
 
 @method_decorator(login_required, name='dispatch')
 class ExpenseListView(TemplateView):
-    template_name = 'expense_list.html'
+    template_name = 'expense/list.html'
 
     def __compute_petty_cash_monthly(self):
         pst = datetime.utcnow() + timedelta(hours=8)
-        month_expenses = models.Expense.filter(from_petty_cash=True,
-                                               date__month=pst.month)
+        month_expenses = models.Expense.objects.filter(from_petty_cash=True,
+                                                       date__month=pst.month)
 
         total = 0
         for expense in month_expenses:
@@ -35,8 +35,9 @@ class ExpenseListView(TemplateView):
     def get(self, request):
         month_expense = self.__compute_petty_cash_monthly()
         context_dict = {
-            'month_expense': month_expense,
-            'remaining_petty_cash': 50000 - month_expense
+            'expense': month_expense,
+            'percent': ((50000 - month_expense) / 50000) * 100,
+            'remaining': 50000 - month_expense
         }
         return render(request, self.template_name, context_dict)
 
@@ -78,14 +79,11 @@ class ExpenseJson(BaseDatatableView):
 
 @method_decorator(login_required, name='dispatch')
 class ExpenseCreateView(TemplateView):
-    template_name = 'expense_create.html'
+    template_name = 'expense/create.html'
 
     def get(self, request):
         form = forms.ExpenseForm()
-
-        context_dict = {
-            'form': form
-        }
+        context_dict = {'form': form}
 
         return render(request, self.template_name, context_dict)
 
@@ -102,24 +100,18 @@ class ExpenseCreateView(TemplateView):
             return redirect(reverse('expense_list'))
 
         else:
-            context_dict = {
-                'form': form
-            }
-
+            context_dict = {'form': form}
             return render(request, self.template_name, context_dict)
 
 
 @method_decorator(login_required, name='dispatch')
 class ExpenseUpdateView(TemplateView):
-    template_name = 'expense_update.html'
+    template_name = 'expense/update.html'
 
     def get(self, request, expense_id):
         instance = models.Expense.objects.get(pk=expense_id)
         form = forms.ExpenseForm(instance=instance)
-
-        context_dict = {
-            'form': form
-        }
+        context_dict = {'form': form}
 
         return render(request, self.template_name, context_dict)
 
@@ -137,9 +129,7 @@ class ExpenseUpdateView(TemplateView):
             return redirect(reverse('expense_list'))
 
         else:
-            context_dict = {
-                'form': form
-            }
+            context_dict = {'form': form}
 
             return render(request, self.template_name, context_dict)
 
