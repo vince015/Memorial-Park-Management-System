@@ -1,0 +1,250 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+{% load humanize %}
+{% block pagetitle %}Home{% endblock %}
+
+{% block pagestylesheets %}{% endblock %}
+
+{% block breadcrumb %}
+<h1>
+    Bill {{ bill.id }}
+</h1>
+
+<ol class="breadcrumb">
+    <li>
+        <a href="{% url 'home' %}">
+            <i class="fa fa-home"></i> Home
+        </a>
+    </li>
+    <li>
+        <a href="{% url 'contract_list' %}">
+            Contracts
+        </a>
+    </li>
+    <li>
+        <a href="{% url 'contract_read' contract_id=bill.contract.id %}">
+            Contract No. {{ bill.contract.number }}
+        </a>
+    </li>
+    <li class="active">
+        Bill {{ bill.id }}
+    </li>
+</ol>
+{% endblock %}
+
+{% block main %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="box box-primary">
+            <div class="box-body box-profile">
+                <a href="{% url 'client_update' client_id=bill.contract.client.id %}">
+                    <h3 class="profile-username text-center">
+                        <b>{{ bill.contract.client.last_name | upper }}, </b>
+                        {{ bill.contract.client.first_name }}
+                    </h3>
+                </a>
+
+                <p class="text-muted text-center">
+                    Client
+                </p>
+
+                <ul class="list-group list-group-unbordered">
+                    <li class="list-group-item">
+                        <b>Contract<br> Price</b>
+                        <a class="pull-right">
+                            PhP {{ bill.contract.contract_price | floatformat:2 | intcomma}}
+                        </a>
+                    </li>
+                    {% if bill.contract.payment_terms == 'INSTALLMENT' %}
+                    <li class="list-group-item">
+                        <b>Downpayment<br> Amount</b>
+                        <a class="pull-right">
+                            PhP {{ bill.contract.downpayment_amount | floatformat:2 | intcomma}}
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <b>Installment<br> Amount</b>
+                        <a class="pull-right">
+                            PhP {{ bill.contract.installment_amount | floatformat:2 | intcomma}}
+                        </a>
+                    </li>
+                    {% endif %}
+                    <li class="list-group-item">
+                        <b>Total<br> Payment</b>
+                        <a class="pull-right">
+                            PhP {{ bill.contract.total_payment | floatformat:2 | intcomma}}
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="box box-primary">
+            <form class="form-horizontal" action="{% url 'bill_status' bill_id=bill.id %}" method="post">
+            {% csrf_token %}
+            <div class="box-header">
+                <h3 class="box-title">Bill Status</h3>
+            </div>
+
+            <div class="box-body">
+                <div class="form-group {% if form.status.errors %} has-error {% endif %}">
+                    <div class="col-sm-12">
+                        {{ form.status }}
+                        {% for error in form.status.errors %}
+                            <span class="help-block">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="box-footer">
+                <button type="submit" class="btn btn-primary btn-block">
+                    Save
+                </button>
+            </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <div class="box box-primary">
+            <div class="box-header">
+                <h3 class="box-title {% if bill.status == 'OVERDUE' %} text-red {% elif bill.status == 'PAID' %} text-green {% endif %}">
+                    {{ bill.start | date:"M Y" }} -- {{ bill.end | date:"M Y" }}
+                </h3>
+
+                <div class="box-tools pull-right">
+                    <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                        <i class="fa fa-minus"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="box-body">
+                <ul class="list-group list-group-unbordered">
+                    <li class="list-group-item">
+                        <b>Due Date</b>
+                        <a class="pull-right">
+                            {{ bill.due_date }}
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <b>Issue Date</b>
+                        <a class="pull-right">
+                            {{ bill.issue_date }}
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <b>Due Amount</b>
+                        <a class="pull-right">
+                            PhP {{ bill.amount_due | floatformat:2 | intcomma}}
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <b>Interest</b>
+                        <a class="pull-right">
+                            PhP {{ bill.interest | floatformat:2 | intcomma}}
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <b class="{% if bill.status == 'NEW' %} text-light-blue {% elif bill.status == 'OVERDUE' %} text-red {% elif bill.status == 'PAID' %} text-green {% endif %}">Total Amount Due</b>
+                        <a class="pull-right {% if bill.status == 'OVERDUE' %} text-red {% elif bill.status == 'PAID' %} text-green {% endif %}">
+                           <b> PhP {{ bill.total_amount_due | floatformat:2 | intcomma}} </b>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        {% if bill.remarks %}
+        <div class="box box-primary">
+            <div class="box-header">
+                <i class="fa fa-info-circle"></i>
+                <b>Remarks</b>
+
+                <div class="box-tools pull-right">
+                    <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                        <i class="fa fa-minus"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="box-body">
+                {{ bill.remarks }}
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="box box-primary">
+            <div class="box-header with-border">
+                <h3 class="box-title">Payments</h3>
+
+                <div class="box-tools pull-right">
+                    <p class="pull-right">
+                        Total: PhP {{ bill.total_amount_paid | floatformat:2 | intcomma }}
+                    </p>
+                </div>
+            </div>
+
+            <div class="box-body">
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Number</th>
+                            <th>Date</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if bill.payments.all %}
+                            {% for payment in bill.payments.all %}
+                            <tr>
+                                <td>{{ payment.number }}</td>
+                                <td>{{ payment.date }}</td>
+                                <td>{{ payment.amount | floatformat:2 }}</th>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td valign="top" colspan="3" class="text-center">
+                                    No data available in table
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="box-footer">
+                <a href="{% url 'payment_create' bill_id=bill.id %}" class="btn btn-primary pull-right">
+                    Add Payment
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block pagescripts %}
+<script src="{% static "bower_components/datatables.net/js/jquery.dataTables.min.js" %}"></script>
+<script src="{% static "bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js" %}"></script>
+<script>
+    /*
+    $(function () {
+        $('#bill_table').DataTable({
+            "order": [[0, "desc"]],
+            "processing": true,
+            "serverSide": true,
+            "searching": false,
+            "ajax": {
+                "url": "{% url 'bill_json' %}",
+                "data": function (d) {
+                    d.contract_id = "{{ contract.id }}";
+                }
+            }
+        });
+    });
+    */
+</script>
+{% endblock %}

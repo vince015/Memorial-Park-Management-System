@@ -63,7 +63,6 @@ class LotResource(resources.ModelResource):
                   'block',
                   'lot',
                   'unit',
-                  'price',
                   'lot_type',
                   'branch')
 
@@ -226,35 +225,6 @@ class SpotOptionAdmin(ImportExportModelAdmin):
     list_per_page = 50
 
 admin.site.register(models.SpotOption, SpotOptionAdmin)
-
-
-class PromoResource(resources.ModelResource):
-
-    class Meta:
-        model = models.Promo
-        fields = ('id',
-                  'code',
-                  'lot_price',
-                  'care_fund',
-                  'start_date',
-                  'end_date')
-
-
-class PromoAdmin(ImportExportModelAdmin):
-    list_display = ('id',
-                    'code',
-                    'lot_price',
-                    'care_fund',
-                    'start_date',
-                    'end_date')
-    list_display_links = ('id',
-                          'code')
-    search_fields = ('id',
-                     'code')
-    resource_class = PromoResource
-    list_per_page = 50
-
-admin.site.register(models.Promo, PromoAdmin)
 
 
 class ContractResource(resources.ModelResource):

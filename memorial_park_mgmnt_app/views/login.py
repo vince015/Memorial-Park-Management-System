@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 
+from memorial_park_mgmnt_app import models
 from utils import utils
 
 
@@ -39,16 +40,18 @@ class LoginView(TemplateView):
                 if len(branches) > 1:
                     login(request, user)
                     request.session['branch_id'] = branches[0].id
-                    redirect = request.GET.get('next', reverse('home'))
+                    request.session['branch_name'] = str(branches[0])
+                    redirect = request.GET.get('next', reverse('home')) or reverse('home')
                     return django_redirect(reverse('branch') + '?next=' + redirect)
                 elif len(branches) < 1:
-                    msg = 'This account does not belong to any branch. Kindly contact the site administrator.'
+                    msg = 'You are authenticated as {0} but this account does not belong to any branch. Kindly contact the site administrator.'.format(user.username)
                     messages.error(request, msg)
                     return render(request, template)
                 else:
                     login(request, user)
                     request.session['branch_id'] = branches[0].id
-                    redirect = request.GET.get('next', reverse('home'))
+                    request.session['branch_name'] = str(branches[0])
+                    redirect = request.GET.get('next', reverse('home')) or reverse('home')
                     return django_redirect(redirect)
 
             else:
@@ -78,7 +81,12 @@ class BranchView(TemplateView):
 
         if len(branches) == 1:
             request.session['branch_id'] = branches[0].id
+            request.session['branch_name'] = str(branches[0])
             return django_redirect(redirect)
+        elif len(branches) < 1:
+            msg = 'This account does not belong to any branch. Kindly contact the site administrator.'
+            messages.error(request, msg)
+            return django_redirect(reverse('logout'))
 
         context_dict = {'redirect_to': redirect,
                         'branches': branches}
@@ -86,7 +94,11 @@ class BranchView(TemplateView):
         return render(request, self.template_name, context_dict)
 
     def post(self, request):
-        request.session['branch_id'] = request.POST.get('branch_id')
+        branch_id = request.POST.get('branch_id')
+        instance = models.Branch.objects.get(pk=branch_id)
+
+        request.session['branch_id'] = instance.id
+        request.session['branch_name'] = str(instance)
 
         redirect = request.GET.get('next', reverse('home'))
         return django_redirect(redirect)

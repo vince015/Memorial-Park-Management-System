@@ -102,14 +102,6 @@
                                                 Add new Expense
                                             </a>
                                         </li>
-                                        {% if request.user.is_superuser %}
-                                        <li class="divider"></li>
-                                        <li>
-                                            <a href="{% url 'admin:index' %}">
-                                                Go to Admin Site
-                                            </a>
-                                        </li>
-                                        {% endif %}
                                     </ul>
                                 </li>
                             </ul>
@@ -118,15 +110,41 @@
                         <!-- Navbar Right Menu -->
                         <div class="navbar-custom-menu">
                             <ul class="nav navbar-nav">
-                                <li>
-                                    <a href="{% url 'login' %}">
-                                        {{ request.user.username }}
+                                <li class="dropdown user user-menu">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                        <i class="glyphicon glyphicon-user"></i>
                                     </a>
-                                </li>
-                                <li>
-                                    <a href="{% url 'logout' %}">
-                                        <i class="fa fa-sign-out"></i>
-                                    </a>
+                                    <ul class="dropdown-menu">
+                                        <li class="user-header">
+                                            <img src="{% static 'images/pic_placeholder.png' %}" alt="{{ user.username }}" class="img-circle">
+                                            <p>
+                                                {{ user.username }}
+                                                <small>
+                                                    <a href="{% url 'branch' %}" class="btn-primary text-center">
+                                                        {{ request.session.branch_name }}
+                                                    </a>
+                                                </small>
+                                            </p>
+                                        </li>
+                                        {% if user.is_superuser %}
+                                        <li class="user-body">
+                                            <div class="row">
+                                                <div class="col-xs-12 text-center">
+                                                    <a href="{% url 'admin:index' %}" class="btn btn-default btn-flat btn-sm">
+                                                        Admin Site
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        {% endif %}
+                                        <li class="user-footer">
+                                            <div class="text-center">
+                                                <a href="{% url 'logout' %}" class="btn btn-primary btn-flat">
+                                                    <i class="fa fa-sign-out"></i> Logout
+                                                </a>
+                                            </div>
+                                        </li>
+                                    </ul>
                                 </li>
                             </ul>
                         </div>

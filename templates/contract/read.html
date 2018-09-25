@@ -1,0 +1,258 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+{% load humanize %}
+{% block pagetitle %}Home{% endblock %}
+
+{% block pagestylesheets %}{% endblock %}
+
+{% block breadcrumb %}
+<h1>
+    Contract No. {{ contract.number }}
+</h1>
+
+<ol class="breadcrumb">
+    <li>
+        <a href="{% url 'home' %}">
+            <i class="fa fa-home"></i> Home
+        </a>
+    </li>
+    <li>
+        <a href="{% url 'contract_list' %}">
+            Contracts
+        </a>
+    </li>
+    <li class="active">
+        Contract No. {{ contract.number }}
+    </li>
+</ol>
+{% endblock %}
+
+{% block main %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="box box-primary">
+            <div class="box-body box-profile">
+                <a href="{% url 'client_update' client_id=contract.client.id %}">
+                    <h3 class="profile-username text-center">
+                        <b>{{ contract.client.last_name | upper }}, </b>
+                        {{ contract.client.first_name }}
+                    </h3>
+                </a>
+
+                <p class="text-muted text-center">
+                    Client
+                </p>
+
+                <ul class="list-group list-group-unbordered">
+                    <li class="list-group-item">
+                        <b>Contract<br> Price</b>
+                        <a class="pull-right">
+                            PhP {{ contract.contract_price | floatformat:2 | intcomma}}
+                        </a>
+                    </li>
+                    {% if bill.contract.payment_terms == 'INSTALLMENT' %}
+                    <li class="list-group-item">
+                        <b>Downpayment<br> Amount</b>
+                        <a class="pull-right">
+                            PhP {{ contract.downpayment_amount | floatformat:2 | intcomma}}
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <b>Installment<br> Amount</b>
+                        <a class="pull-right">
+                            PhP {{ contract.installment_amount | floatformat:2 | intcomma}}
+                        </a>
+                    </li>
+                    {% endif %}
+                    <li class="list-group-item">
+                        <b>Total<br> Payment</b>
+                        <a class="pull-right">
+                            PhP {{ contract.total_payment | floatformat:2 | intcomma}}
+                        </a>
+                    </li>
+                </ul>
+
+                <a href="{% url 'contract_update' contract_id=contract.id %}" class="btn btn-primary btn-block">
+                    <b>Update Contract</b>
+                </a>
+            </div>
+        </div>
+
+        {% if contract.remarks %}
+        <div class="box box-primary">
+            <div class="box-header">
+                <i class="fa fa-info-circle"></i>
+                <b>Remarks</b>
+
+                <div class="box-tools pull-right">
+                    <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                        <i class="fa fa-minus"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="box-body">
+                {{ contract.remarks }}
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="box box-primary">
+            <div class="box-header with-border">
+                <h3 class="box-title">Info</h3>
+            </div>
+
+            <div class="box-body">
+                <strong>
+                    <i class="fa fa-map-marker margin-r-5"></i> Main Address
+                </strong>
+                <p class="text-muted">
+                    {{ contract.client.main_address }}
+                </p>
+
+                {% if contract.client.contact_number %}
+                <hr>
+                <strong>
+                    <i class="fa fa-phone margin-r-5"></i> Contact No.
+                </strong>
+                <p class="text-muted">
+                    {{ contract.client.contact_number }}
+                </p>
+                {% endif %}
+
+                {% if contract.client.email %}
+                <hr>
+                <strong>
+                    <i class="fa fa-at margin-r-5"></i> Email Address
+                </strong>
+                <p class="text-muted">
+                    {{ contract.client.email }}
+                </p>
+                {% endif %}
+            </div> 
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        {% if contract.status == 'FORFEITED' %}
+        <div class="info-box bg-red">
+            <span class="info-box-icon">
+                <i class="fa fa-ban"></i>
+            </span>
+
+            <div class="info-box-content">
+                <h3 class="info-box-text">
+                    Warning
+                </h3>
+                <span class="info-box-number">
+                    THIS CONTRACT IS FORFEITED.
+                </span>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="box box-primary">
+            <div class="box-header with-border">
+                <h3 class="box-title">Bills and Payments</h3>
+
+                <div class="box-tools pull-right">
+                    <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                        <i class="fa fa-minus"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="box-body">
+                <table id="bill_table" class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Period</th>
+                            <th>Due Date</th>
+                            <th>Amount Due</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+
+            {% if not contract.bills.all %}
+            <div class="box-footer">
+                <a href="{% url 'contract_read' contract_id=contract.id %}?generate=true" class="btn btn-primary pull-right">
+                    Generate Bills
+                </a>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="box box-primary">
+            <div class="box-header with-border">
+                <h3 class="box-title">Services</h3>
+
+                <div class="box-tools pull-right">
+                    <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                        <i class="fa fa-minus"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="box-body">
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Service</th>
+                            <th>Date</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if contract.services.all %}
+                            {% for service in contract.services.all %}
+                            <tr>
+                                <td>{{ service.get_service_type_display }}</td>
+                                <td>{{ service.date | date:"M d, Y" }}</td>
+                                <td>{{ service.amount | floatformat:2 }}</th>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td valign="top" colspan="3" class="text-center">
+                                    No data available in table
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="box-footer">
+                <a href="{% url 'service_create' contract_id=contract.id %}" class="btn btn-primary pull-right">
+                    Add Service
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block pagescripts %}
+<script src="{% static "bower_components/datatables.net/js/jquery.dataTables.min.js" %}"></script>
+<script src="{% static "bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js" %}"></script>
+<script>
+    $(function () {
+        $('#bill_table').DataTable({
+            "order": [[0, "desc"]],
+            "processing": true,
+            "serverSide": true,
+            "searching": false,
+            "ajax": {
+                "url": "{% url 'bill_json' %}",
+                "data": function (d) {
+                    d.contract_id = "{{ contract.id }}";
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

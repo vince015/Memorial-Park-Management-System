@@ -17,6 +17,16 @@
             <i class="fa fa-home"></i> Home
         </a>
     </li>
+    <li>
+        <a href="{% url 'contract_list' %}">
+            Contracts
+        </a>
+    </li>
+    <li class="active">
+        <a href="{% url 'contract_read' contract_id=form.instance.id %}">
+            Contract No. {{ form.instance.number }}
+        </a>
+    </li>
     <li class="active">
         Update Contract
     </li>
@@ -27,7 +37,7 @@
 <div class="row">
     <div class="col-md-12">
         <div class="box box-primary">
-            <form class="form-horizontal" action="{% url 'contract_create' %}" method="post">
+            <form class="form-horizontal" action="{% url 'contract_update' contract_id=form.instance.id %}" method="post">
             {% csrf_token %}
             <div class="box-body">
                 {% if form.non_field_errors %}
@@ -54,15 +64,28 @@
                 </div>
                 <hr>
 
-                <div class="form-group {% if form.date.errors %} has-error {% endif %}">
-                    <label for="{{ form.date.id_for_label }}" class="col-sm-3 control-label">
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">
+                        Number *
+                    </label>
+                    <div class="col-sm-8">
+                        <input
+                            type="text"
+                            class="form-control" 
+                            value="{{ form.instance.number }}"
+                            disabled>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">
                         Date *
                     </label>
                     <div class="col-sm-8">
-                        {{ form.date }}
-                        {% for error in form.date.errors %}
-                            <span class="help-block">{{ error }}</span>
-                        {% endfor %}
+                        <input
+                            class="form-control"
+                            value="{{ form.instance.date | date:'m/d/Y' }}"
+                            disabled>
                     </div>
                 </div>
 
@@ -92,51 +115,29 @@
                     </div>
                 </div>
 
-                <div class="form-group {% if form.buyer_type.errors %} has-error {% endif %}">
-                    <label for="{{ form.buyer_type.id_for_label }}" class="col-sm-3 control-label">
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">
                         Buyer Type *
                     </label>
                     <div class="col-sm-8">
-                        {{ form.buyer_type }}
-                        {% for error in form.buyer_type.errors %}
-                            <span class="help-block">{{ error }}</span>
-                        {% endfor %}
+                        <input
+                            type="text"
+                            class="form-control"
+                            value="{{ form.instance.get_buyer_type_display }}"
+                            disabled>
                     </div>
                 </div>
 
-                <div class="form-group {% if form.contract_type.errors %} has-error {% endif %}">
-                    <label for="{{ form.contract_type.id_for_label }}" class="col-sm-3 control-label">
-                        Contract Type *
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">
+                        Payment Terms *
                     </label>
                     <div class="col-sm-8">
-                        {{ form.contract_type }}
-                        {% for error in form.contract_type.errors %}
-                            <span class="help-block">{{ error }}</span>
-                        {% endfor %}
-                    </div>
-                </div>
-                <hr>
-
-                <div class="form-group {% if form.care_fund.errors %} has-error {% endif %}">
-                    <label for="{{ form.care_fund.id_for_label }}" class="col-sm-3 control-label">
-                        Care Fund *
-                    </label>
-                    <div class="col-sm-8">
-                        {{ form.care_fund }}
-                        {% for error in form.care_fund.errors %}
-                            <span class="help-block">{{ error }}</span>
-                        {% endfor %}
-                    </div>
-                </div>
-                <div class="form-group {% if form.reservation.errors %} has-error {% endif %}">
-                    <label for="{{ form.reservation.id_for_label }}" class="col-sm-3 control-label">
-                        Reservation *
-                    </label>
-                    <div class="col-sm-8">
-                        {{ form.reservation }}
-                        {% for error in form.reservation.errors %}
-                            <span class="help-block">{{ error }}</span>
-                        {% endfor %}
+                        <input
+                            type="text"
+                            class="form-control"
+                            value="{{ form.instance.get_payment_terms_display }}"
+                            disabled>
                     </div>
                 </div>
                 <hr>
@@ -180,14 +181,14 @@
                     </div>
                 </div>
 
-                <div class="form-group {% if form.referral.errors %} has-error {% endif %}">
-                    <label for="{{ form.referral.id_for_label }}" class="col-sm-3 control-label">
-                        Name of Referral
+                <div class="form-group {% if form.referent.errors %} has-error {% endif %}">
+                    <label for="{{ form.referent.id_for_label }}" class="col-sm-3 control-label">
+                        Name of Referent
                     </label>
                     <div class="col-sm-8">
-                        <input type="text" id="referral-autocomplete" class="form-control">
-                        {{ form.referral }}
-                        {% for error in form.referral.errors %}
+                        <input type="text" id="referent-autocomplete" class="form-control">
+                        {{ form.referent }}
+                        {% for error in form.referent.errors %}
                             <span class="help-block">{{ error }}</span>
                         {% endfor %}
                     </div>
@@ -219,12 +220,44 @@
                 </div>
 
                 <div class="box-footer">
+                    <button type="button" class="btn btn-danger btn-flat btn-sm" data-toggle="modal" data-target="#modal-forfeit">
+                        Forfeit
+                    </button>
                     <button type="submit" class="btn btn-primary pull-right">Submit</button>
                 </div>
             </div>
             </form>
         </div>
     </div>
+</div>
+
+<div class="modal fade in" id="modal-forfeit">
+    <form action="{% url 'contract_forfeit' contract_id=form.instance.id %}" method="post">
+    {% csrf_token %}
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-red-active">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">×</span></button>
+                <h4 class="modal-title">Fortfeit Contract</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    <i class="glyphicon glyphicon-exclamation-sign text-red box-title"></i>
+                    Are you sure you want to forfeit 
+                    <b class="text-red">
+                        Contract No. {{ form.instance.number }}
+                    </b>
+                    ?
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default btn-flat btn-sm pull-left" data-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-danger">Yes, forfeit this contract</button>
+            </div>
+        </div>
+    </div>
+    </form>
 </div>
 {% endblock %}
 
@@ -264,10 +297,10 @@
             valueField: "#id_sales_leader",
             dataSource: "/lookup/agent"
         });
-        $("#referral-autocomplete").autocomplete({
+        $("#referent-autocomplete").autocomplete({
             nameProperty: "name",
             valueProperty: "id",
-            valueField: "#id_referral",
+            valueField: "#id_referent",
             dataSource: "/lookup/agent"
         });
     });

@@ -14,7 +14,14 @@
     </a>
 </h1>
 <ol class="breadcrumb">
-    <li class="active"><i class="fa fa-home"></i> Home</a></li>
+    <li>
+        <a href="{% url 'home' %}">
+            <i class="fa fa-home"></i> Home
+        </a>
+    </li>
+    <li class="active">
+        Contracts
+    </li>
 </ol>
 {% endblock %}
 
@@ -26,6 +33,7 @@
                     <table id="contract_table" class="table table-bordered table-striped">
                         <thead>
                             <tr>
+                                <th>Number</th>
                                 <th>Date</th>
                                 <th>Name</th>
                                 <th>Lot</th>
@@ -49,7 +57,12 @@
             "order": [[0, "desc"]],
             "processing": true,
             "serverSide": true,
-            "ajax": "{% url 'contract_json' %}"
+            "ajax": {
+                "url": "{% url 'contract_json' %}",
+                "data": function (d) {
+                    d.overdue = false
+                }
+            }
         });
     });
 </script>

@@ -154,12 +154,10 @@ class ContractForm(forms.ModelForm):
                     'lot',
                     'client',
                     'reservation',
-                    'downpayment_option',
-                    'installment_option',
                     'sales_agent',
                     'unit_manager',
                     'sales_leader',
-                    'referral',
+                    'referent',
                     'sold_by',
                     'remarks'
                 ]
@@ -172,6 +170,8 @@ class ContractForm(forms.ModelForm):
                                            'placeholder': 'Date'}),
             'lot': forms.HiddenInput(),
             'client': forms.HiddenInput(),
+            'buyer_type': forms.Select(attrs={'class': 'form-control',
+                                              'placeholder': 'Buyer Type'}),
             'payment_terms': forms.Select(attrs={'class': 'form-control',
                                                  'placeholder': 'Buyer Type'}),
             'contract_type': forms.Select(attrs={'class': 'form-control',
@@ -179,14 +179,10 @@ class ContractForm(forms.ModelForm):
             'reservation': forms.NumberInput(attrs={'step': 0.01,
                                                     'min': 0.00,
                                                     'class': 'form-control'}),
-            'downpayment_option': forms.Select(attrs={'class': 'form-control',
-                                                      'placeholder': 'Select Downpayment Option'}),
-            'installment_option': forms.Select(attrs={'class': 'form-control',
-                                                      'placeholder': 'Select Installment Option'}),
             'sales_agent': forms.HiddenInput(),
             'unit_manager': forms.HiddenInput(),
             'sales_leader': forms.HiddenInput(),
-            'referral': forms.HiddenInput(),
+            'referent': forms.HiddenInput(),
             'sold_by': forms.Select(attrs={'class': 'form-control',
                                            'placeholder': 'Buyer Type'}),
             'remarks': forms.Textarea(attrs={'class': 'form-control',
@@ -194,6 +190,50 @@ class ContractForm(forms.ModelForm):
                                              'placeholder': 'Remarks'}),
         }
 
+
+class ContractUpdateForm(forms.ModelForm):
+
+    class Meta:
+        model = models.Contract
+        fields = [  'lot',
+                    'client',
+                    'sales_agent',
+                    'unit_manager',
+                    'sales_leader',
+                    'referent',
+                    'sold_by',
+                    'remarks'
+                ]
+
+        widgets = {
+            'lot': forms.HiddenInput(),
+            'client': forms.HiddenInput(),
+            'sales_agent': forms.HiddenInput(),
+            'unit_manager': forms.HiddenInput(),
+            'sales_leader': forms.HiddenInput(),
+            'referent': forms.HiddenInput(),
+            'sold_by': forms.Select(attrs={'class': 'form-control',
+                                           'placeholder': 'Buyer Type'}),
+            'remarks': forms.Textarea(attrs={'class': 'form-control',
+                                             'rows': 3,
+                                             'placeholder': 'Remarks'}),
+        }
+
+
+class ContractInstallmentForm(forms.ModelForm):
+
+    class Meta:
+        model = models.Contract
+        fields = [  'downpayment_option',
+                    'installment_option'
+                ]
+
+        widgets = {
+            'downpayment_option': forms.Select(attrs={'class': 'form-control',
+                                                      'placeholder': 'Select Downpayment Option'}),
+            'installment_option': forms.Select(attrs={'class': 'form-control',
+                                                      'placeholder': 'Select Installment Option'})
+        }
 
 class ServiceForm(forms.ModelForm):
 
@@ -252,6 +292,17 @@ class BillForm(forms.ModelForm):
         }
 
 
+class BillStatusForm(forms.ModelForm):
+
+    class Meta:
+        model = models.Bill
+        fields = ['status']
+
+        widgets = {
+            'status': forms.Select(attrs={'class': 'form-control',
+                                          'placeholder': 'Service Type'}),
+        }
+
 class PaymentForm(forms.ModelForm):
 
     class Meta:
@@ -264,7 +315,7 @@ class PaymentForm(forms.ModelForm):
 
         widgets = {
             'number': forms.TextInput(attrs={'class': 'form-control',
-                                             'placeholder': 'Input name'}),
+                                             'placeholder': 'Input number'}),
             'date': forms.DateInput(format='%m/%d/%Y',
                                      attrs={'class': 'form-control datepicker',
                                             'placeholder': 'mm/dd/yyyy'}),

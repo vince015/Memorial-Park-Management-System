@@ -54,7 +54,7 @@
                     {% csrf_token %}
                     <div class="form-group has-feedback">
                         <label>Select desired branch</label>
-                        <select class="form-control">
+                        <select class="form-control" name="branch_id">
                             {% for branch in branches %}
                                 <option value="{{ branch.group.id }}">{{ branch.name }}</option>
                             {% endfor %}

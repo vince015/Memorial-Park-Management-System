@@ -5,11 +5,11 @@ from django.http import JsonResponse
 from memorial_park_mgmnt_app import models
 from utils import utils
 
-@login_required
+@utils.branch_required(utils.is_auth_and_has_branch)
 def lot_lookup(request):
     if request.method == 'GET':
-        branches = utils.get_branches(request.user)
-        queryset = models.Lot.objects.filter(branch__id__in=branches)
+        branch = request.session.get('branch_id')
+        queryset = models.Lot.objects.filter(branch__id=branch)
 
         if request.GET.get('q'):
             queryset = queryset.filter(Q(block__icontains=q) |
@@ -28,11 +28,11 @@ def lot_lookup(request):
 
         return JsonResponse(res, safe=False)
 
-@login_required
+@utils.branch_required(utils.is_auth_and_has_branch)
 def client_lookup(request):
     if request.method == 'GET':
-        branches = utils.get_branches(request.user)
-        queryset = models.Client.objects.filter(branch__id__in=branches)
+        branch = request.session.get('branch_id')
+        queryset = models.Client.objects.filter(branch__id=branch)
         
         if request.GET.get('q'):
             queryset = queryset.filter(Q(first_name__icontains=q) |
@@ -51,11 +51,11 @@ def client_lookup(request):
 
         return JsonResponse(res, safe=False)
 
-@login_required
+@utils.branch_required(utils.is_auth_and_has_branch)
 def agent_lookup(request):
     if request.method == 'GET':
-        branches = utils.get_branches(request.user)
-        queryset = models.Agent.objects.filter(branch__id__in=branches)
+        branch = request.session.get('branch_id')
+        queryset = models.Agent.objects.filter(branch__id=branch)
 
         if request.GET.get('q'):
             queryset = queryset.filter(Q(first_name__icontains=q) |

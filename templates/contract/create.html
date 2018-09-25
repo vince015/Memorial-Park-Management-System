@@ -36,7 +36,7 @@
                         {% for error in form.non_field_errors %}
                         <li class="help-block">
                             <i class="fa fa-times-circle-o"></i>
-                            <b>Error</b>
+                            <b>{{ error }}</b>
                         </li>
                         {% endfor %}
                     </ul>
@@ -53,6 +53,18 @@
                     </ul>
                 </div>
                 <hr>
+
+                <div class="form-group {% if form.number.errors %} has-error {% endif %}">
+                    <label for="{{ form.number.id_for_label }}" class="col-sm-3 control-label">
+                        Contract No. *
+                    </label>
+                    <div class="col-sm-8">
+                        {{ form.number }}
+                        {% for error in form.number.errors %}
+                            <span class="help-block">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
 
                 <div class="form-group {% if form.date.errors %} has-error {% endif %}">
                     <label for="{{ form.date.id_for_label }}" class="col-sm-3 control-label">
@@ -104,30 +116,19 @@
                     </div>
                 </div>
 
-                <div class="form-group {% if form.contract_type.errors %} has-error {% endif %}">
-                    <label for="{{ form.contract_type.id_for_label }}" class="col-sm-3 control-label">
-                        Contract Type *
+                <div class="form-group {% if form.payment_terms.errors %} has-error {% endif %}">
+                    <label for="{{ form.payment_terms.id_for_label }}" class="col-sm-3 control-label">
+                        Payment Terms *
                     </label>
                     <div class="col-sm-8">
-                        {{ form.contract_type }}
-                        {% for error in form.contract_type.errors %}
+                        {{ form.payment_terms }}
+                        {% for error in form.payment_terms.errors %}
                             <span class="help-block">{{ error }}</span>
                         {% endfor %}
                     </div>
                 </div>
                 <hr>
 
-                <div class="form-group {% if form.care_fund.errors %} has-error {% endif %}">
-                    <label for="{{ form.care_fund.id_for_label }}" class="col-sm-3 control-label">
-                        Care Fund *
-                    </label>
-                    <div class="col-sm-8">
-                        {{ form.care_fund }}
-                        {% for error in form.care_fund.errors %}
-                            <span class="help-block">{{ error }}</span>
-                        {% endfor %}
-                    </div>
-                </div>
                 <div class="form-group {% if form.reservation.errors %} has-error {% endif %}">
                     <label for="{{ form.reservation.id_for_label }}" class="col-sm-3 control-label">
                         Reservation *
@@ -180,14 +181,14 @@
                     </div>
                 </div>
 
-                <div class="form-group {% if form.referral.errors %} has-error {% endif %}">
-                    <label for="{{ form.referral.id_for_label }}" class="col-sm-3 control-label">
-                        Name of Referral
+                <div class="form-group {% if form.referent.errors %} has-error {% endif %}">
+                    <label for="{{ form.referent.id_for_label }}" class="col-sm-3 control-label">
+                        Name of Referent
                     </label>
                     <div class="col-sm-8">
-                        <input type="text" id="referral-autocomplete" class="form-control">
-                        {{ form.referral }}
-                        {% for error in form.referral.errors %}
+                        <input type="text" id="referent-autocomplete" class="form-control">
+                        {{ form.referent }}
+                        {% for error in form.referent.errors %}
                             <span class="help-block">{{ error }}</span>
                         {% endfor %}
                     </div>
@@ -217,10 +218,10 @@
                         {% endfor %}
                     </div>
                 </div>
+            </div>
 
-                <div class="box-footer">
-                    <button type="submit" class="btn btn-primary pull-right">Submit</button>
-                </div>
+            <div class="box-footer">
+                <button type="submit" class="btn btn-primary pull-right">Continue</button>
             </div>
             </form>
         </div>
@@ -264,10 +265,10 @@
             valueField: "#id_sales_leader",
             dataSource: "/lookup/agent"
         });
-        $("#referral-autocomplete").autocomplete({
+        $("#referent-autocomplete").autocomplete({
             nameProperty: "name",
             valueProperty: "id",
-            valueField: "#id_referral",
+            valueField: "#id_referent",
             dataSource: "/lookup/agent"
         });
     });

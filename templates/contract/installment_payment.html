@@ -1,0 +1,219 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+{% load humanize %}
+{% block pagetitle %}Home{% endblock %}
+
+{% block pagestylesheets %}{% endblock %}
+
+{% block breadcrumb %}
+<h1>
+    Contracts
+</h1>
+
+<ol class="breadcrumb">
+    <li>
+        <a href="{% url 'home' %}">
+            <i class="fa fa-home"></i> Home
+        </a>
+    </li>
+    <li class="active">
+        Contract No. {{ contract.number }}
+    </li>
+</ol>
+{% endblock %}
+
+{% block main %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="box box-primary">
+            <div class="box-header with-border">
+                <h3 class="box-title">Contract No. {{ form.instance.number }}</h3>
+            </div>
+
+            <div class="box-body">
+                <strong>
+                    Client Name
+                </strong>
+                <p class="text-muted pull-right">
+                    {{ form.instance.client }}
+                </p>
+                <hr>
+                <strong>
+                    Lot
+                </strong>
+                <p class="text-muted pull-right">
+                    {{ form.instance.lot }}
+                </p>
+                <hr>
+                <strong>
+                    Payment Terms
+                </strong>
+                <p class="text-muted pull-right">
+                    {{ form.instance.payment_terms }}
+                </p>
+                <hr>
+                <strong>
+                    Lot Price
+                </strong>
+                <p class="text-muted pull-right">
+                    PhP {{ form.instance.lot.price | floatformat:2 | intcomma }}
+                </p>
+                <hr>
+                <strong>
+                    Care Fund
+                </strong>
+                <p class="text-muted pull-right">
+                    PhP {{ form.instance.lot.lot_type.care_fund | floatformat:2 | intcomma }}
+                </p>
+            </div>
+        </div>
+
+        <div id="contract_info" class="box box-primary">
+            <div class="box-header with-border">
+                <h3 class="box-title">Payment Terms</h3>
+            </div>
+
+            <div class="box-body">
+                <strong>
+                    Downpayment (20%)
+                </strong>
+                <hr>
+                <strong>
+                    Installment (80%)
+                </strong>
+                <hr>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <div class="box box-primary">
+            <form class="form-horizontal" action="{% url 'contract_installment' contract_id=form.instance.id %}" method="post">
+            {% csrf_token %}
+            <div class="box-header with-border">
+                <h3 class="box-title">Installation Options</h3>
+            </div>
+
+            <div class="box-body">
+                {% if form.non_field_errors %}
+                <div class="form-group has-error">
+                    <ul>
+                        {% for error in form.non_field_errors %}
+                        <li class="help-block">
+                            <i class="fa fa-times-circle-o"></i>
+                            <b>{{ error }}</b>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <hr>
+                {% endif %}
+
+                {% if form.errors %}
+                <div class="form-group has-error">
+                    <p>The operation could not be performed because one or more error(s) occurred.<br />Please resubmit the form after making the following changes:</p>
+                    <ul>
+                        {% for field in form %}
+                            <li>{{ field.errors|striptags }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+
+                <div class="form-group">
+                    <ul>
+                        <li class="help-block">
+                            <i class="fa fa-info-circle"></i>
+                            <b>Fields with * are required.</b>
+                        </li>
+                    </ul>
+                </div>
+                <hr>
+
+                <div class="form-group {% if form.downpayment_option.errors %} has-error {% endif %}">
+                    <label for="{{ form.downpayment_option.id_for_label }}" class="col-sm-3 control-label">
+                        Downpayment Option *
+                    </label>
+                    <div class="col-sm-8">
+                        {{ form.downpayment_option }}
+                        {% for error in form.downpayment_option.errors %}
+                            <span class="help-block">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="form-group {% if form.installment_option.errors %} has-error {% endif %}">
+                    <label for="{{ form.installment_option.id_for_label }}" class="col-sm-3 control-label">
+                        Installment Option *
+                    </label>
+                    <div class="col-sm-8">
+                        {{ form.installment_option }}
+                        {% for error in form.installment_option.errors %}
+                            <span class="help-block">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="box-footer">
+                <!-- <button id="id_compute" class="btn btn-default" onclick="compute" disabled>Compute</button> -->
+                <button type="submit" class="btn btn-primary pull-right">Save</button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block pagescripts %}
+<script type="text/javascript">
+    function enable_disable_compute() {
+        var down = $("#id_downpayment_option").val()
+        var ins = $("#id_installment_option").val()
+
+        if (down !== "" && ins !== "") {
+            $("#id_compute").prop("disabled", false);
+        }
+        else {
+            $("#id_compute").prop("disabled", true);
+        }
+    }
+    function compute() {
+        var target_url = "{% url 'contract_installment_compute' contract_id=form.instance.id %}"
+        var down = $("#id_downpayment_option").val()
+        var ins = $("#id_installment_option").val()
+
+        var reqData = {
+            "downpayment_option": down,
+            "installment_option": ins,
+            "csrfmiddlewaretoken": "{{ csrf_token }}"
+        };
+
+        $.ajax({
+            type: "POST",
+            url: target_url,
+            data: reqData,
+            success: function(data) {
+                // $("#contract_info").html(data);
+                console.log('success');
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                alert(textStatus);
+            },
+            dataType: "html"
+        });
+    }
+
+    $(document).ready( function() {
+        enable_disable_compute();
+
+        $("#id_downpayment_option").change(function () {
+            enable_disable_compute()
+        });
+        $("#id_installment_option").change(function () {
+            enable_disable_compute()
+        });
+    });
+</script>
+{% endblock %}

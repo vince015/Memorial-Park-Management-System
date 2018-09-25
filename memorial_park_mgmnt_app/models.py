@@ -26,17 +26,26 @@ PAYMENT_TERMS = (('SPOT', 'Spot'),
 AGENT_TYPES = (('SALES_AGENT', 'Sales Agent'),
                ('UNIT_MNGR', 'Unit Manager'),
                ('SALES_LEADER', 'Sales Leader'),
-               ('REFERRAL', 'Referral'))
+               ('REFERENT', 'Referent'))
 
 SERVICE_TYPES = (('CERTIFICATE_OF_OWNERSHIP', 'Certificate of Ownership'),
                  ('CHANGE_OF_TITLE', 'Change of Title'),
                  ('CHANGE_OF_LOT', 'Change of Lot'),
-                 ('INTERMENT', 'Interment'))
+                 ('INTERMENT', 'Interment'),
+                 ('OTHERS', 'Others'))
 
 PAYMENT_TYPES = (('SPOT_CASH', 'Spot Cash'),
                  ('DOWNPAYMENT', 'Downpayment'),
                  ('INSTALLMENT', 'Installment'),
                  ('OTHERS', 'Others'))
+
+CONTRACT_STATUSES = (('NEW', 'New'),
+                     ('REVIEWED', 'Reviewed'),
+                     ('FORFEITED', 'Forfeited'))
+
+BILL_STATUSES = (('NEW', 'New'),
+                 ('PAID', 'Paid'),
+                 ('OVERDUE', 'Overdue'))
 
 def valid_id_directory_path(instance, filename):
     ext  = os.path.splitext(filename)[1]
@@ -190,8 +199,11 @@ class DownpaymentOption(models.Model):
     split = models.PositiveSmallIntegerField(default=1)
     discount = models.FloatField(blank=False, null=False, default=0.00)
 
+    start_date = models.DateField(null=False, blank=False, default=date.today)
+    end_date = models.DateField(null=False, blank=False, default=date.today)
+
     def __str__(self):
-        return '{0}: {1}% OFF'.format(self.name, (self.discount * 100))
+        return '{0}: {1}% OFF'.format(self.name, int(self.discount * 100))
 
 
 class InstallmentOption(models.Model):
@@ -199,27 +211,20 @@ class InstallmentOption(models.Model):
     months = models.PositiveSmallIntegerField(default=12)
     interest = models.FloatField(blank=False, null=False, default=0.00)
 
+    start_date = models.DateField(null=False, blank=False, default=date.today)
+    end_date = models.DateField(null=False, blank=False, default=date.today)
+
     def __str__(self):
-        return '{0}: {1}% INTEREST'.format(self.name, (self.interest * 100))
+        return '{0}: {1}% INTEREST'.format(self.name, int(self.interest * 100))
 
 
 class SpotOption(models.Model):
     discount = models.FloatField(blank=False, null=False, default=0.15)
+    start_date = models.DateField(null=False, blank=False, default=date.today)
+    end_date = models.DateField(null=False, blank=False, default=date.today)
 
     def __str__(self):
-        return 'Spot | {0}% OFF'.format(self.discount * 100)
-
-
-class Promo(models.Model):
-    code = models.CharField(max_length=256, blank=False, null=False)
-    lot_price = models.FloatField(blank=False, null=False, default=0.00)
-    care_fund = models.FloatField(blank=False, null=False, default=0.00)
-
-    start_date = models.DateField(blank=False, null=False, default=date.today)
-    end_date = models.DateField(blank=False, null=False, default=date.today)
-
-    def __str__(self):
-        return self.code
+        return 'Spot | {0}% OFF'.format(int(self.discount * 100))
 
 
 class Contract(models.Model):
@@ -233,7 +238,6 @@ class Contract(models.Model):
     remarks = models.CharField(max_length=256, blank=True, null=True)
 
     reservation = models.FloatField(default=0.00)
-    promo = models.ForeignKey(Promo, blank=True, null=True, on_delete=models.SET_NULL)
 
     payment_terms = models.CharField(max_length=256, blank=False, null=False, choices=PAYMENT_TERMS, default='SPOT')
     spot_option = models.ForeignKey(SpotOption, blank=True, null=True, on_delete=models.SET_NULL)
@@ -250,7 +254,7 @@ class Contract(models.Model):
     # Commission = 1%
     sales_leader = models.ForeignKey(Agent, null=True, blank=True, related_name='sales_leader_contracts', on_delete=models.SET_NULL)
     # Referral
-    referral = models.ForeignKey(Agent, null=True, blank=True, related_name='referral_contracts', on_delete=models.SET_NULL)
+    referent = models.ForeignKey(Agent, null=True, blank=True, related_name='referral_contracts', on_delete=models.SET_NULL)
 
     # Scenario helpers
     sold_by = models.CharField(max_length=32, blank=False, null=False, choices=AGENT_TYPES, default='SALES_AGENT')
@@ -260,8 +264,7 @@ class Contract(models.Model):
 
     @property
     def installment_amount(self):
-        # base = self.lot.price + self.care_fund
-        installment = self.lot.price * 0.8
+        installment = (self.lot.price + self.lot.lot_type.care_fund) * 0.8
         if self.installment_option:
             installment = installment + (installment * self.installment_option.interest)
 
@@ -296,8 +299,7 @@ class Contract(models.Model):
 
     @property
     def downpayment_amount(self):
-        # base = self.lot.price + self.care_fund
-        downpayment = self.lot.price * 0.2
+        downpayment = (self.lot.price + self.lot.lot_type.care_fund) * 0.2
         if self.downpayment_option:
             downpayment = downpayment - (downpayment * self.downpayment_option.discount)
 
@@ -332,25 +334,27 @@ class Contract(models.Model):
 
     @property
     def contract_price(self):
-        lot_price = self.lot.price
-        care_fund = self.lot.care_fund
-
-        if self.promo:
-            lot_price = self.promo.lot_price
-            care_fund = self.promo.care_fund
-
         if self.buyer_type == 'IN-NEED':
             ### IN-NEED ###
-            return lot_price + (self.lot.price * 0.5) + care_fund
+            return self.lot.price + (self.lot.price * 0.5) + self.lot.lot_type.care_fund
         else:
             ### PRE-NEED ###
-            if self.contract_type == 'SPOT':
+            if self.payment_terms == 'SPOT':
                 discount = 0
                 if self.spot_option:
-                    discount = self.lot.price * self.spot_option.discount
-                return lot_price + care_fund - discount
+                    discount = (self.lot.price + self.lot.lot_type.care_fund) * self.spot_option.discount
+                return self.lot.price + self.lot.lot_type.care_fund - discount
             else:
-                return self.downpayment_amount + self.installment_amount + self.care_fund
+                return self.downpayment_amount + self.installment_amount
+
+    @property
+    def total_payment(self):
+        total = 0
+        for bill in self.bills.all():
+            for payment in bill.payments.all():
+                total = total + payment.amount
+
+        return total
 
     @property
     def commissionable_amount(self):
@@ -382,8 +386,8 @@ class Contract(models.Model):
     @property
     def commission_monthly(self):
         monthly = self.commissionable_amount
-        if self.installment_plan:
-            monthly = self.downpayment_amount / (self.installment_plan.split)
+        if self.downpayment_option:
+            monthly = self.downpayment_amount / (self.downpayment_option.split)
 
         return monthly
 
@@ -393,7 +397,7 @@ class Contract(models.Model):
                 'sales_agent': 0,
                 'unit_manager': 0,
                 'sales_leader': 0,
-                'referral': 0
+                'referent': 0
             }
 
         if self.sold_by == 'SALES_AGENT':
@@ -403,7 +407,7 @@ class Contract(models.Model):
                     'sales_agent': base * 0.07,
                     'unit_manager': base * 0.01,
                     'sales_leader': base * 0.01,
-                    'referral': 0
+                    'referent': 0
                 }
             # Scenario 4
             else:
@@ -411,7 +415,7 @@ class Contract(models.Model):
                     'sales_agent': base * 0.07,
                     'unit_manager': 0,
                     'sales_leader': base * 0.01 + base * 0.01,
-                    'referral': 0
+                    'referent': 0
                 }
         # Scenario 2
         elif self.sold_by == 'UNIT_MNGR':
@@ -419,7 +423,7 @@ class Contract(models.Model):
                 'sales_agent': 0,
                 'unit_manager': base * 0.07 + base * 0.01,
                 'sales_leader': base * 0.01,
-                'referral': 0
+                'referent': 0
             }
         # Scenario 3
         elif self.sold_by == 'SALES_LEADER':
@@ -427,24 +431,24 @@ class Contract(models.Model):
                 'sales_agent': 0,
                 'unit_manager': 0,
                 'sales_leader': base * 0.07 + base * 0.01 + base * 0.01,
-                'referral': 0
+                'referent': 0
             }
         # Scenario 5
-        elif self.sold_by == 'REFERRAL':
+        elif self.sold_by == 'REFERENT':
             commissions = {
                 'sales_agent': base * 0.01,
                 'unit_manager': 0,
                 'sales_leader': 0,
-                'referral': base * 0.07
+                'referent': base * 0.07
             }
 
         return commissions
 
     def get_monthly_commissions(self):
         commissions = self.get_commissions()
-        if self.installment_plan:
+        if self.downpayment_option:
             for key in list(commissions.keys()):
-                commissions[key] = commissions[key] / self.installment_plan.downpayment.split
+                commissions[key] = commissions[key] / self.downpayment_option.downpayment.split
 
         return commissions
 
@@ -458,7 +462,7 @@ class Service(models.Model):
     service_type = models.CharField(max_length=256, blank=True, null=True, choices=SERVICE_TYPES, default='INTERMENT')
     remarks = models.CharField(max_length=256, blank=True, null=True)
 
-    contract = models.ForeignKey(Contract, null=False, blank=False, related_name='downpayments', on_delete=models.CASCADE)
+    contract = models.ForeignKey(Contract, null=False, blank=False, related_name='services', on_delete=models.CASCADE)
 
     def __str__(self):
         return '{0} {1}'.format(self.service_type, self.amount)
@@ -476,7 +480,9 @@ class Bill(models.Model):
     # Same day as contract date
     due_date = models.DateField(null=False, blank=False, default=date.today)
 
-    amount_due = models.FloatField(default=0.00)
+    amount_due = models.FloatField(null=False, blank=False, default=0.00)
+    status = models.CharField(max_length=64, blank=False, null=False, choices=BILL_STATUSES, default='NEW')
+
     remarks = models.CharField(max_length=256, blank=True, null=True)
 
     contract = models.ForeignKey(Contract, null=False, blank=False, related_name='bills', on_delete=models.CASCADE)
@@ -515,7 +521,7 @@ class Bill(models.Model):
         bills = self.contract.bills.filter(issue_date__lt=self.issue_date)
         last_bill = bills.order_by('-issue_date').first()
 
-        if last_bill.is_overdue:
+        if last_bill and last_bill.is_overdue:
             interest = last_bill.total_amount_due * 0.02
 
         return interest
@@ -523,6 +529,14 @@ class Bill(models.Model):
     @property
     def total_amount_due(self):
         return self.amount_due + self.interest
+
+    @property
+    def total_amount_paid(self):
+        paid = 0
+        for payment in self.payments.all():
+            paid = paid + payment.amount
+
+        return paid
 
 
 class Payment(models.Model):
