@@ -1,5 +1,5 @@
 from datedelta import datedelta
-from datetime import date, timedelta
+from datetime import datetime, date, timedelta
 
 from django.views.generic import TemplateView
 from django.contrib import messages
@@ -199,8 +199,13 @@ class ContractReadView(TemplateView):
         if request.GET.get('generate', False) and len(contract.bills.all()) < 1:
             self.__generate_bills(contract)
 
+        pst = datetime.utcnow() + timedelta(hours=8)
+        bill = contract.bills.filter(start__lte=pst,
+                                     end__gte=pst).first()
+
         context_dict = {
             'contract': contract,
+            'bill': bill
         }
 
         return render(request, self.template_name, context_dict)

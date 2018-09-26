@@ -71,6 +71,7 @@ class LogoutView(TemplateView):
         logout(request)
         return django_redirect(reverse('login'))
 
+
 @method_decorator(login_required, name='dispatch')
 class BranchView(TemplateView):
     template_name = 'branch.html'

@@ -1,13 +1,14 @@
 {% extends "base.html" %}
 
 {% load staticfiles %}
+{% load humanize %}
 {% block pagetitle %}Home{% endblock %}
 
 {% block pagestylesheets %}
 {% endblock %}
 
 {% block breadcrumb %}
-<div class="input-group input-group-sm col-md-6">
+<!-- <div class="input-group input-group-sm col-md-6">
     <input type="text" id="search-input" class="form-control" placeholder="Search...">
     <span class="input-group-btn">
         <button type="button" class="btn btn-primary">
@@ -15,6 +16,10 @@
         </button>
     </span>
 </div>
+ -->
+<h1>
+    Welcome!
+</h1>
 
 <ol class="breadcrumb">
     <li class="active">
@@ -26,12 +31,47 @@
 {% block main %}
 <div class="row">
     <div class="col-md-12">
-        <div class="box box-primary" id="search-results">
-            <div class="box-body">
-                <h3>&nbsp;</h3>
+        <div class="box box-primary">
+            <div class="box-header with-border">
+                <h3 class="box-title">Due within 5 Days</h3>
             </div>
-            <div class="overlay">
-                <i class="fa fa-refresh fa-spin"></i>
+
+            <div class="box-body">
+                {% if bills %}
+                <ul class="products-list product-list-in-box">
+                    {% for bill in bills %}
+                    <li class="item">
+                        <div class="product-item">
+                            <a href="{% url 'bill_read' bill_id=bill.id %}" class="product-title">
+                                {{ bill.due_date }}
+                                <span class="label label-warning pull-right">Php {{ bill.total_amount_due | floatformat:2 | intcomma}}</span>
+                            </a>
+                            <span class="product-description">
+                                {{ bill.contract.client.last_name | upper }}, {{ bill.contract.client.first_name }}
+                                &bull;
+                                {{ bill.contract.client.contact_number }}
+                                {% if bill.status == 'PAID' %}
+                                &bull;
+                                <b class="text-green">
+                                    Paid
+                                </b>
+                                {% endif %}
+                            </span>
+                        </div>
+                        <!-- General tools such as edit or delete-->
+                        <!-- <div class="tools">
+                            <a href="{% url 'bill_read' bill_id=bill.id %}">
+                                <i class="fa fa-eye"></i>
+                            </a>
+                        </div> -->
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <h3 class="text-muted text-center">
+                    <i class="ion ion-android-sad"></i> No results found
+                </h3>
+                {% endif %}
             </div>
         </div>
     </div>

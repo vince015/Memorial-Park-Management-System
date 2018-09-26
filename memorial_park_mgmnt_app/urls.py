@@ -1,5 +1,6 @@
 from django.conf.urls import url
 from memorial_park_mgmnt_app.views import (login,
+                                           home,
                                            contract,
                                            client,
                                            agent,
@@ -9,11 +10,12 @@ from memorial_park_mgmnt_app.views import (login,
                                            lookup)
 
 urlpatterns = [
+    url(r'^$', home.HomeView.as_view(), name='home'),
     url(r'^login/$', login.LoginView.as_view(), name='login'),
     url(r'^branch$', login.BranchView.as_view(), name='branch'),
     url(r'^logout$', login.LogoutView.as_view(), name='logout'),
     #####
-    url(r'^$', contract.ContractListView.as_view(), name='home'),
+    url(r'^$', home.HomeView.as_view(), name='home'),
     url(r'^contract/list$', contract.ContractListView.as_view(), name='contract_list'),
     url(r'^contract/json$', contract.ContractJson.as_view(), name='contract_json'),
     url(r'^contract/create$', contract.ContractCreateView.as_view(), name='contract_create'),
