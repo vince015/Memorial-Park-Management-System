@@ -1,0 +1,71 @@
+{% load humanize %}
+
+<div class="box-header with-border">
+    <h3 class="box-title">Overdue Bills</h3>
+
+    <div class="box-tools pull-right">
+        {% if bills.has_other_pages %}
+        <ul class="pagination pagination-sm inline">
+            <li>
+                <a href="javascript:void(0)" onclick="overduePageChange(1)">
+                    &laquo;
+                </a>
+            </li>
+
+            {% if bills.has_previous %}
+            <li>
+                <a href="javascript:void(0)" onclick="overduePageChange({{ bills.previous_page_number }})">
+                    {{ bills.previous_page_number }}
+                </a>
+            </li>
+            {% endif %}
+
+            <li class="current">
+                <a href="javascript:void(0)" onclick="overduePageChange({{ bills.number }})">
+                    {{ bills.number }}
+                </a>
+            </li>
+
+            {% if bills.has_next %}
+            <li>
+                <a href="javascript:void(0)" onclick="overduePageChange({{ bills.next_page_number }})">
+                    {{ bills.next_page_number }}
+                </a>
+            </li>
+            {% endif %}
+
+            <li>
+                <a href="javascript:void(0)" onclick="overduePageChange({{ bills.paginator.num_pages }})">
+                    &raquo;
+                </a>
+            </li>
+        </ul>
+        {% endif %}
+    </div>
+</div>
+
+<div class="box-body">
+    {% if bills %}
+    <ul class="products-list product-list-in-box">
+        {% for bill in bills %}
+        <li class="item">
+            <div class="product-item">
+                <a href="{% url 'bill_read' bill_id=bill.id %}" class="product-title">
+                    {{ bill.due_date }}
+                    <span class="label label-danger pull-right">Php {{ bill.total_amount_due | floatformat:2 | intcomma}}</span>
+                </a>
+                <span class="product-description">
+                    {{ bill.contract.client.last_name | upper }}, {{ bill.contract.client.first_name }}
+                    &bull;
+                    {{ bill.contract.client.contact_number }}
+                </span>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <h3 class="text-muted text-center">
+        <i class="ion ion-android-sad"></i> No results found
+    </h3>
+    {% endif %}
+</div>

@@ -35,17 +35,12 @@ class BillJson(BaseDatatableView):
             if contract.lot.branch.id == branch:
                 queryset = contract.bills.all()
 
-        # filter_overdue = self.request.GET.get('overdue', False)
-        # print(filter_overdue)
-        # if filter_overdue == True:
-        #     queryset = queryset.filter(bills__is_overdue=True)
-
         return queryset
 
     def render_column(self, row, column):
         if column == 'period':
             url = reverse('bill_read', kwargs={'bill_id': row.id})
-            text = '{0} -- {1}'.format(row.start.strftime('%b %Y'), row.end.strftime('%b %Y'))
+            text = '{0} TO {1}'.format(row.start.strftime('%b %d, %Y'), row.end.strftime('%b %d, %Y'))
             html = '<a href="{0}">{1}</a>'.format(url, text)
             return html
         if column == 'amount_due':

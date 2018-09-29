@@ -2,7 +2,7 @@
 
 {% load staticfiles %}
 {% load humanize %}
-{% block pagetitle %}Agents{% endblock %}
+{% block pagetitle %}Expenses{% endblock %}
 
 {% block pagestylesheets %}
 {% endblock %}
@@ -29,7 +29,7 @@
 {% block main %}
     <div class="row">
         <div class="col-md-12">
-            <div class="info-box bg-aqua">
+            <div class="info-box bg-blue">
                 <span class="info-box-icon">
                     <i class="fa fa-money"></i>
                 </span>
@@ -86,6 +86,9 @@
 <script>
     $(document).ready(function () {
         $("#expense_table").dataTable({
+            "language": {
+                "searchPlaceholder": "Search Payee, Category"
+            },
             "order": [[0, "desc"]],
             "processing": true,
             "serverSide": true,

@@ -2,13 +2,13 @@
 
 {% load staticfiles %}
 {% load humanize %}
-{% block pagetitle %}Home{% endblock %}
+{% block pagetitle %}Contracts{% endblock %}
 
 {% block pagestylesheets %}{% endblock %}
 
 {% block breadcrumb %}
 <h1>
-    Contracts
+    Payment Terms
 </h1>
 
 <ol class="breadcrumb">
@@ -17,8 +17,13 @@
             <i class="fa fa-home"></i> Home
         </a>
     </li>
+    <li>
+        <a href="{% url 'contract_list' %}">
+            Contracts
+        </a>
+    </li>
     <li class="active">
-        Contract No. {{ contract.number }}
+        Contract No. {{ form.instance.number }}
     </li>
 </ol>
 {% endblock %}

@@ -358,10 +358,10 @@ class Contract(models.Model):
 
     @property
     def commissionable_amount(self):
-        if self.contract_type == 'SPOT':
+        if self.payment_terms == 'SPOT':
             discount = self.lot.price * self.spot_cash.discount
 
-            gross = self.lot.price - discount - self.care_fund
+            gross = self.lot.price - discount - self.lot.lot_type.care_fund
             vat = gross - (gross / 1.12)
             net = gross - vat
 
@@ -374,7 +374,7 @@ class Contract(models.Model):
             if self.downpayment_option:
                 discount = self.lot.price * self.downpayment_option.discount
 
-            gross = self.lot.price - discount - self.care_fund
+            gross = self.lot.price - discount - self.lot.lot_type.care_fund
             vat = gross - (gross / 1.12)
             net = gross - vat
 

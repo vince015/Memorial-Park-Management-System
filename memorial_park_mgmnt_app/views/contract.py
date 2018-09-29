@@ -48,7 +48,7 @@ class ContractJson(BaseDatatableView):
         if column == 'number':
             url = reverse('contract_read', kwargs={'contract_id': row.id})
             text = row.number
-            html = '<a href="{0}">{1}</a>'.format(url, text)
+            html = '<a href="{0}"><i class="fa fa-chevron-circle-right"></i> {1}</a>'.format(url, text)
             return html
         elif column == 'date':
             return row.date.strftime('%Y-%m-%d')
@@ -205,7 +205,8 @@ class ContractReadView(TemplateView):
 
         context_dict = {
             'contract': contract,
-            'bill': bill
+            'bill': bill,
+            'commission_dist': contract.get_commissions()
         }
 
         return render(request, self.template_name, context_dict)

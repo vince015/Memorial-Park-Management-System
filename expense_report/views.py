@@ -59,9 +59,9 @@ class ExpenseJson(BaseDatatableView):
             return html
         elif column == 'from_petty_cash':
             if row.from_petty_cash:
-                html = '<i class="glyphicon glyphicon-ok"></i>'
+                html = '<span class="text-green"><i class="fa fa-check-square"></i> YES</span>'
             else:
-                html = '<i class="glyphicon glyphicon-remove"></i>'
+                html = '<span class="text-red"><i class="fa fa-times-circle"></i> NO</span>'
             return html
         else:
             return super(ExpenseJson, self).render_column(row, column)
@@ -69,10 +69,7 @@ class ExpenseJson(BaseDatatableView):
     def filter_queryset(self, queryset):
         search = self.request.GET.get('search[value]', None)
         if search:
-            queryset = queryset.filter(Q(date__year=search) |
-                                       Q(date__month=search) |
-                                       Q(date__day=search) |
-                                       Q(reference_number__icontains=search) |
+            queryset = queryset.filter(Q(reference_number__icontains=search) |
                                        Q(payee__icontains=search) |
                                        Q(category__icontains=search))
         return queryset

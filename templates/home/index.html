@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+{% load humanize %}
+{% block pagetitle %}Home{% endblock %}
+
+{% block pagestylesheets %}
+{% endblock %}
+
+{% block breadcrumb %}
+<!-- <div class="input-group input-group-sm col-md-6">
+    <input type="text" id="search-input" class="form-control" placeholder="Search...">
+    <span class="input-group-btn">
+        <button type="button" class="btn btn-primary">
+            <i class="fa fa-search"></i>
+        </button>
+    </span>
+</div>
+ -->
+<h1>
+    Welcome!
+</h1>
+
+<ol class="breadcrumb">
+    <li class="active">
+        <i class="fa fa-home"></i> Home
+    </li>
+</ol>
+{% endblock %}
+
+{% block main %}
+<div class="row">
+    <div class="col-md-6">
+        <div class="box box-primary" id="bills-due">
+        <div class="box box-primary" id="bills-overdue">
+            <div class="overlay text-center" id="due-overlay">
+                <i class="fa fa-spinner fa-spin"></i>
+            </div>
+            <div class="box-body">
+                &nbsp;
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="box box-primary" id="bills-overdue">
+            <div class="overlay text-center" id="overdue-overlay">
+                <i class="fa fa-spinner fa-spin"></i>
+            </div>
+            <div class="box-body">
+                &nbsp;
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block pagescripts %}
+<script src="{% static "bower_components/datatables.net/js/jquery.dataTables.min.js" %}"></script>
+<script src="{% static "bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js" %}"></script>
+<script>
+    $(document).ready(function() {
+        getDue(1);
+        getOverdue(1);
+    });
+
+    function getDue(page) {
+        $("#due-overlay").show();
+        $.ajax({
+            type: "GET",
+            url: "{% url 'home_due' %}",
+            data: {
+                "page": page
+            },
+            success: getDueOK,
+            dataType: "html"
+        })
+    }
+    function getDueOK(data, textStatus, jqXHR) {
+        $("#bills-due").html(data);
+        $("#due-overlay").hide();
+    }
+
+    function duePageChange(page) {
+        getDue(page);
+    }
+
+    function getOverdue(page) {
+        $("#overdue-overlay").show();
+        $.ajax({
+            type: "GET",
+            url: "{% url 'home_overdue' %}",
+            data: {
+                "page": page
+            },
+            success: getOverdueOK,
+            dataType: "html"
+        })
+    }
+    function getOverdueOK(data, textStatus, jqXHR) {
+        $("#bills-overdue").html(data);
+        $("#overdue-overlay").hide();
+    }
+
+    function overduePageChange(page) {
+        getOverdue(page);
+    }
+</script>
+{% endblock %}

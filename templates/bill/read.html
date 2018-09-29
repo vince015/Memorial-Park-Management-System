@@ -2,7 +2,7 @@
 
 {% load staticfiles %}
 {% load humanize %}
-{% block pagetitle %}Home{% endblock %}
+{% block pagetitle %}Bills{% endblock %}
 
 {% block pagestylesheets %}{% endblock %}
 
@@ -78,6 +78,12 @@
                     </li>
                 </ul>
             </div>
+
+            <div class="box-footer">
+                <a href="{% url 'contract_read' contract_id=bill.contract.id %}" class="pull-right">
+                    <i class="fa fa-chevron-circle-left"></i> View Contract
+                </a>
+            </div>
         </div>
 
         <div class="box box-primary">
@@ -111,7 +117,7 @@
         <div class="box box-primary">
             <div class="box-header">
                 <h3 class="box-title {% if bill.status == 'OVERDUE' %} text-red {% elif bill.status == 'PAID' %} text-green {% endif %}">
-                    {{ bill.start | date:"M Y" }} -- {{ bill.end | date:"M Y" }}
+                    {{ bill.start | date:"M d, Y" }} TO {{ bill.end | date:"M d, Y" }}
                 </h3>
 
                 <div class="box-tools pull-right">

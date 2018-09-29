@@ -17,8 +17,13 @@
             <i class="fa fa-home"></i> Home
         </a>
     </li>
+    <li>
+        <a href="{% url 'client_list' %}">
+            Clients
+        </a>
+    </li>
     <li class="active">
-        Update Client
+        Client {{ form.instance.id }}
     </li>
 </ol>
 {% endblock %}

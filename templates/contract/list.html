@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% load staticfiles %}
-{% block pagetitle %}Home{% endblock %}
+{% block pagetitle %}Contracts{% endblock %}
 
 {% block pagestylesheets %}
 {% endblock %}
@@ -54,6 +54,9 @@
 <script>
     $(function () {
         $('#contract_table').DataTable({
+            "language": {
+                "searchPlaceholder": "Search Client, Lot"
+            },
             "order": [[0, "desc"]],
             "processing": true,
             "serverSide": true,

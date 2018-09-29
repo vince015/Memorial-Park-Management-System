@@ -17,8 +17,23 @@
             <i class="fa fa-home"></i> Home
         </a>
     </li>
+    <li>
+        <a href="{% url 'contract_list' %}">
+            All Contracts
+        </a>
+    </li>
+    <li>
+        <a href="{% url 'contract_read' contract_id=bill.contract.id %}">
+            Contract No. {{ bill.contract.number }}
+        </a>
+    </li>
+    <li>
+        <a href="{% url 'bill_read' bill_id=bill.id %}">
+            Bill {{ bill.id }}
+        </a>
+    </li>
     <li class="active">
-        Update Payment
+        Payment {{ form.instance.id }}
     </li>
 </ol>
 {% endblock %}

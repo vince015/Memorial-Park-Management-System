@@ -2,7 +2,7 @@
 
 {% load staticfiles %}
 {% load humanize %}
-{% block pagetitle %}Clients{% endblock %}
+{% block pagetitle %}Expenses{% endblock %}
 
 {% block pagestylesheets %}{% endblock %}
 
@@ -23,7 +23,7 @@
         </a>
     </li>
     <li class="active">
-        Update Expense
+        Expense {{ form.instance.id }}
     </li>
 </ol>
 {% endblock %}
