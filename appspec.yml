@@ -11,3 +11,7 @@ permissions:
      mode: 755
      type:
        - file
+hooks:
+   BeforeInstall:
+    - location: scripts/djangostart.sh
+      runas: root
