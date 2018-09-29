@@ -32,14 +32,12 @@
 <div class="row">
     <div class="col-md-6">
         <div class="box box-primary" id="bills-due">
-        <div class="box box-primary" id="bills-overdue">
             <div class="overlay text-center" id="due-overlay">
                 <i class="fa fa-spinner fa-spin"></i>
             </div>
             <div class="box-body">
                 &nbsp;
             </div>
-        </div>
         </div>
     </div>
 
@@ -99,6 +97,7 @@
         })
     }
     function getOverdueOK(data, textStatus, jqXHR) {
+        console.log('overdue okay')
         $("#bills-overdue").html(data);
         $("#overdue-overlay").hide();
     }

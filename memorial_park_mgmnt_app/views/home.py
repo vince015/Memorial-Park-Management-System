@@ -75,10 +75,7 @@ class OverdueBillsView(TemplateView):
 
     def get(self, request):
         branch_id = request.session.get('branch_id')
-        pst = datetime.utcnow() + timedelta(hours=8)
-        five_days = pst + timedelta(days=5)
 
-        # Due for the next 5 days
         bill_list = models.Bill.objects.filter(contract__lot__branch__id=branch_id,
                                                status='OVERDUE').order_by('due_date')
         page = request.GET.get('page', 1)
