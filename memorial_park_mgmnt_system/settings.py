@@ -40,8 +40,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'import_export',
     'django.contrib.humanize',
+    'import_export',
+    'django_s3_storage',
     'memorial_park_mgmnt_app',
     'expense_report'
 ]
@@ -132,6 +133,16 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, "www", "static")
 
 LOGIN_URL = '/login'
+
+AWS_REGION = config('AWS_REGION')
+AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY')
+
+AWS_S3_BUCKET_NAME = config('AWS_S3_BUCKET_NAME')
+AWS_S3_BUCKET_NAME_STATIC = config('AWS_S3_BUCKET_NAME_STATIC')
+
+DEFAULT_FILE_STORAGE = 'django_s3_storage.storage.S3Storage'
+STATICFILES_STORAGE = 'django_s3_storage.storage.StaticS3Storage'
 
 
 from django.contrib.messages import constants as messages
