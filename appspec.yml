@@ -2,9 +2,9 @@ version: 0.0
 os: linux
 files:
    - source: /
-     destination: /usr/local/src
+     destination: /home/ec2-user/src
 permissions:
-   - object: /usr/local/src
+   - object: /home/ec2-user/src
      pattern: "**"
      owner: ec2-user
      group: ec2-user
