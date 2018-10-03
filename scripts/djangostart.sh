@@ -1,20 +1,20 @@
-#!/bin/bash
-DIR="/usr/local/src/venv"
+!/bin/bash
 
 cd "/usr/local/src/"
 
-if [ -d $DIR ]
+if [ ! -d "/usr/local/src" ]
 then
-    echo "Directory $DIR exists."
-else
-    echo "Error: Directory $DIR does not exists."
-    python3.7 virtualenv venv
+    sudo virtualenv venv --python=/usr/local/lib/python3.7
 fi
 
 # install requirements
 source venv/bin/activate
-pip3.7 install -r requirements.txt
+pip  install -r requirements.txt
 
-python3.7 manage.py migrate
+python manage.py collectstatic
 
-python3.7 manage.py createsu
+python manage.py migrate
+
+python manage.py createsu
+
+python manage.py creategrp
