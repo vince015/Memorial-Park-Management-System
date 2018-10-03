@@ -12,6 +12,6 @@ permissions:
      type:
        - file
 hooks:
-   BeforeInstall:
+   AfterInstall:
     - location: scripts/djangostart.sh
       runas: root
