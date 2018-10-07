@@ -2,12 +2,12 @@ version: 0.0
 os: linux
 files:
    - source: /
-     destination: /home/ec2-user/src
+     destination: /home/ubuntu/src
 permissions:
-   - object: /home/ec2-user/src
+   - object: /home/ubuntu/src
      pattern: "**"
-     owner: ec2-user
-     group: ec2-user
+     owner: ubuntu
+     group: ubuntu
      mode: 755
      type:
        - file

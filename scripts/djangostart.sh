@@ -1,8 +1,8 @@
 !/bin/bash
 
-cd /home/ec2-user/src
+cd /home/ubuntu/src
 
-if [ ! -d "/home/ec2-user/src" ]
+if [ ! -d "/home/ubuntu/src" ]
 then
     sudo virtualenv venv --python=/usr/local/lib/python3.7
 fi
