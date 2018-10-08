@@ -138,11 +138,8 @@ AWS_REGION = config('AWS_REGION')
 AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY')
 
-AWS_S3_BUCKET_NAME = config('AWS_S3_BUCKET_NAME')
-AWS_S3_BUCKET_NAME_STATIC = config('AWS_S3_BUCKET_NAME_STATIC')
-
 DEFAULT_FILE_STORAGE = 'django_s3_storage.storage.S3Storage'
-STATICFILES_STORAGE = 'django_s3_storage.storage.StaticS3Storage'
+AWS_S3_BUCKET_NAME = config('AWS_S3_BUCKET_NAME')
 
 
 from django.contrib.messages import constants as messages

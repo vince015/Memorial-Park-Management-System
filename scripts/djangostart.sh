@@ -1,10 +1,10 @@
-!/bin/bash
+#!/bin/bash
 
 cd /home/ubuntu/src
 
-if [ ! -d "/home/ubuntu/src" ]
+if [ ! -d "/home/ubuntu/src/venv" ]
 then
-    sudo virtualenv venv --python=/usr/local/lib/python3.7
+   virtualenv venv --python=/usr/bin/python3.6
 fi
 
 # install requirements
