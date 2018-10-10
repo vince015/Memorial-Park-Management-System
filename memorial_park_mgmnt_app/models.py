@@ -227,7 +227,7 @@ class InstallmentPromo(models.Model):
 class SpotPromo(models.Model):
     discount = models.FloatField(blank=False, null=False, default=0.15)
     start_date = models.DateField(null=False, blank=False, default=date.today)
-    end_date = models.DateField(null=False, blank=False, default=date.today)
+    end_date = models.DateField(null=False, blank=False, default=one_year_from_today)
 
     def __str__(self):
         return 'Spot | {0}% OFF'.format(int(self.discount * 100))

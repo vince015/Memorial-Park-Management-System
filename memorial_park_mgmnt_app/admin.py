@@ -183,18 +183,18 @@ class DownpaymentPromoAdmin(ImportExportModelAdmin):
 
 admin.site.register(models.DownpaymentPromo, DownpaymentPromoAdmin)
 
-'''
-class InstallmentOptionResource(resources.ModelResource):
+
+class InstallmentPromoResource(resources.ModelResource):
 
     class Meta:
-        model = models.InstallmentOption
+        model = models.InstallmentPromo
         fields = ('id',
                   'name',
                   'months',
                   'interest')
 
 
-class InstallmentOptionAdmin(ImportExportModelAdmin):
+class InstallmentPromoAdmin(ImportExportModelAdmin):
     list_display = ('id',
                     'name',
                     'months',
@@ -203,30 +203,30 @@ class InstallmentOptionAdmin(ImportExportModelAdmin):
                           'name')
     search_fields = ('id',
                      'name')
-    resource_class = InstallmentOptionResource
+    resource_class = InstallmentPromoResource
     list_per_page = 50
 
-admin.site.register(models.InstallmentOption, InstallmentOptionAdmin)
+admin.site.register(models.InstallmentPromo, InstallmentPromoAdmin)
 
 
-class SpotOptionResource(resources.ModelResource):
+class SpotPromoResource(resources.ModelResource):
 
     class Meta:
-        model = models.SpotOption
+        model = models.SpotPromo
         fields = ('id',
                   'discount')
 
 
-class SpotOptionAdmin(ImportExportModelAdmin):
+class SpotPromoAdmin(ImportExportModelAdmin):
     list_display = ('id',
                     'discount')
     list_display_links = ('id',)
     search_fields = ('id',)
-    resource_class = SpotOptionResource
+    resource_class = SpotPromoResource
     list_per_page = 50
 
-admin.site.register(models.SpotOption, SpotOptionAdmin)
-'''
+admin.site.register(models.SpotPromo, SpotPromoAdmin)
+
 
 class ContractResource(resources.ModelResource):
 

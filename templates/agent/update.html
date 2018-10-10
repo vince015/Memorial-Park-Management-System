@@ -92,6 +92,17 @@
                         {% endfor %}
                     </div>
                 </div>
+                <div class="form-group {% if form.rank.errors %} has-error {% endif %}">
+                    <label for="{{ form.rank.id_for_label }}" class="col-sm-2 control-label">
+                        Rank *
+                    </label>
+                    <div class="col-sm-8">
+                        {{ form.rank }}
+                        {% for error in form.rank.errors %}
+                            <span class="help-block">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
                 <hr>
 
                 <div class="form-group">
