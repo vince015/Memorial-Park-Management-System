@@ -87,20 +87,23 @@ class ContractCreateView(TemplateView):
         if form.is_valid():
             instance = form.save(commit=False)
 
-            is_spot = False
             if form.cleaned_data.get('payment_terms') == 'SPOT':
                 today = date.today()
-                spot_option = models.SpotOption.objects.filter(start_date__lte=today,
-                                                               end_date__gte=today)
-                instance.spot_option = spot_option.first()
-                is_spot = True
+                spot_promo = models.SpotPromo.objects.filter(start_date__lte=today,
+                                                             end_date__gte=today).first()
+                if spot_promo:
+                    instance.save()
+                    models.SpotOption.objects.create(discount=spot_promo.discount,
+                                                     contract=instance)
+                    return redirect(reverse('contract_spot', kwargs={'contract_id': instance.id}))
+                else:
+                    msg = 'No available Spot Option Promo kindly contact admin'
+                    messages.error(request, msg)
 
-            instance.save()
-            next_url = reverse('contract_installment', kwargs={'contract_id': instance.id})
-            if is_spot:
-                next_url = reverse('contract_spot', kwargs={'contract_id': instance.id})
-
-            return redirect(next_url)
+                    return render(request, self.template_name, context_dict)
+            else:
+                instance.save()
+                return redirect(reverse('contract_installment', kwargs={'contract_id': instance.id}))
 
         else:
             context_dict = {'form': form}
@@ -150,7 +153,6 @@ class ContractReadView(TemplateView):
 
     def __generate_bills(self, contract):
 
-        print('generating bills...')
         if contract.payment_terms == 'SPOT':
             models.Bill.objects.create(start=contract.date,
                                        end=contract.date,
@@ -195,6 +197,11 @@ class ContractReadView(TemplateView):
         branch_id = request.session.get('branch_id')
         if contract.lot.branch.id != branch_id:
             return HttpResponseForbidden()
+
+        if contract.payment_terms == 'SPOT' and not hasattr(contract, 'spot_option'):
+                return redirect(reverse('contract_spot', kwargs={'contract_id': contract.id}))
+        elif contract.payment_terms == 'INSTALLMENT' and not hasattr(contract, 'installment_option'):
+                return redirect(reverse('contract_installment', kwargs={'contract_id': contract.id}))
 
         if request.GET.get('generate', False) and len(contract.bills.all()) < 1:
             self.__generate_bills(contract)
@@ -261,7 +268,10 @@ class ContractSpotView(TemplateView):
             return redirect(reverse('contract_read', kwargs={'contract_id': contract.id}))
 
         else:
-            context_dict = {'form': form}
+            context_dict = {
+                'contract': contract,
+                'form': form
+            }
             return render(request, self.template_name, context_dict)
 
 
@@ -276,10 +286,13 @@ class ContractInstallmentView(TemplateView):
             return HttpResponseForbidden()
 
         if contract.payment_terms == 'SPOT':
-            return redirect(reverse('contract_installment', kwargs={'contract_id': contract.id}))
+            return redirect(reverse('contract_spot', kwargs={'contract_id': contract.id}))
 
-        form = forms.ContractInstallmentForm(instance=contract)
-        context_dict = {'form': form}
+        form = forms.InstallmentOptionForm()
+        context_dict = {
+            'form': form,
+            'contract': contract
+        }
 
         return render(request, self.template_name, context_dict)
 
@@ -289,19 +302,29 @@ class ContractInstallmentView(TemplateView):
         if contract.lot.branch.id != branch_id:
             return HttpResponseForbidden()
 
-        form = forms.ContractInstallmentForm(request.POST, instance=contract)
+        form = forms.InstallmentOptionForm(request.POST)
         if form.is_valid():
-            instance = form.save(commit=False)
-            instance.save()
+            downpayment = form.cleaned_data['downpayment_option']
+            installment = form.cleaned_data['installment_option']
 
-            msg = 'Successfully created new Contract: {0}'.format(str(instance))
+            models.InstallmentOption.objects.create(split=downpayment.split,
+                                                    discount=downpayment.discount,
+                                                    months=installment.months,
+                                                    interest=installment.interest,
+                                                    contract=contract)
+
+            msg = 'Successfully created new Contract: {0}'.format(str(contract))
             messages.success(request, msg)
 
             return redirect(reverse('contract_read', kwargs={'contract_id': contract.id}))
 
         else:
-            context_dict = {'form': form}
+            context_dict = {
+                'form': form,
+                'contract': contract
+            }
             return render(request, self.template_name, context_dict)
+
 
 @method_decorator(utils.branch_required(utils.is_auth_and_has_branch), name='dispatch')
 class ContractInstallmentComputeView(TemplateView):

@@ -251,25 +251,25 @@
             nameProperty: "name",
             valueProperty: "id",
             valueField: "#id_sales_agent",
-            dataSource: "/lookup/agent"
+            dataSource: "/lookup/agent?rank=SALES_AGENT"
         });
         $("#unit_manager-autocomplete").autocomplete({
             nameProperty: "name",
             valueProperty: "id",
             valueField: "#id_unit_manager",
-            dataSource: "/lookup/agent"
+            dataSource: "/lookup/agent?rank=UNIT_MNGR"
         });
         $("#sales_leader-autocomplete").autocomplete({
             nameProperty: "name",
             valueProperty: "id",
             valueField: "#id_sales_leader",
-            dataSource: "/lookup/agent"
+            dataSource: "/lookup/agent?rank=SALES_LEADER"
         });
         $("#referent-autocomplete").autocomplete({
             nameProperty: "name",
             valueProperty: "id",
             valueField: "#id_referent",
-            dataSource: "/lookup/agent"
+            dataSource: "/lookup/agent?rank=REFERENT"
         });
     });
 </script>

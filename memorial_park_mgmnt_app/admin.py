@@ -131,13 +131,13 @@ class AgentResource(resources.ModelResource):
                   'last_name',
                   'first_name',
                   'middle_name',
+                  'rank',
                   'house_number',
                   'street',
                   'barangay',
                   'town',
                   'province',
-                  'contact_number',
-                  'branch')
+                  'contact_number')
 
 
 class AgentAdmin(ImportExportModelAdmin):
@@ -145,10 +145,9 @@ class AgentAdmin(ImportExportModelAdmin):
                     'last_name',
                     'first_name',
                     'contact_number',
-                    'main_address',
-                    'branch')
+                    'main_address')
     list_display_links = ('id',)
-    list_filter = ('branch',)
+    list_filter = ('rank',)
     search_fields = ('id',
                      'last_name',
                      'first_name')
@@ -158,17 +157,19 @@ class AgentAdmin(ImportExportModelAdmin):
 admin.site.register(models.Agent, AgentAdmin)
 
 
-class DownpaymentOptionResource(resources.ModelResource):
+class DownpaymentPromoResource(resources.ModelResource):
 
     class Meta:
-        model = models.DownpaymentOption
+        model = models.DownpaymentPromo
         fields = ('id',
                   'name',
+                  'start_date',
+                  'end_date',
                   'split',
                   'discount')
 
 
-class DownpaymentOptionAdmin(ImportExportModelAdmin):
+class DownpaymentPromoAdmin(ImportExportModelAdmin):
     list_display = ('id',
                     'name',
                     'split',
@@ -177,12 +178,12 @@ class DownpaymentOptionAdmin(ImportExportModelAdmin):
                           'name')
     search_fields = ('id',
                      'name')
-    resource_class = DownpaymentOptionResource
+    resource_class = DownpaymentPromoResource
     list_per_page = 50
 
-admin.site.register(models.DownpaymentOption, DownpaymentOptionAdmin)
+admin.site.register(models.DownpaymentPromo, DownpaymentPromoAdmin)
 
-
+'''
 class InstallmentOptionResource(resources.ModelResource):
 
     class Meta:
@@ -225,7 +226,7 @@ class SpotOptionAdmin(ImportExportModelAdmin):
     list_per_page = 50
 
 admin.site.register(models.SpotOption, SpotOptionAdmin)
-
+'''
 
 class ContractResource(resources.ModelResource):
 

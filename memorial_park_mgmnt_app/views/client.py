@@ -69,6 +69,8 @@ class ClientCreateView(TemplateView):
 
         if form.is_valid():
             instance = form.save(commit=False)
+            branch_id = request.session.get('branch_id')
+            instance.branch_id = branch_id
             instance.save()
 
             msg = 'Successfully created new client: {0}'.format(str(instance))

@@ -1,0 +1,384 @@
+[
+{
+    "model": "auth.group",
+    "pk": 1,
+    "fields": {
+        "name": "Baliwag",
+        "permissions": []
+    }
+},
+{
+    "model": "auth.group",
+    "pk": 2,
+    "fields": {
+        "name": "San Rafael",
+        "permissions": []
+    }
+},
+{
+    "model": "auth.group",
+    "pk": 3,
+    "fields": {
+        "name": "San Miguel",
+        "permissions": []
+    }
+},
+{
+    "model": "auth.user",
+    "pk": 1,
+    "fields": {
+        "password": "pbkdf2_sha256$100000$snd2zeaeDw9Y$6/aK+1QA5uhBUx8WME9r811DFjInbp6LQUaCFJnXvR4=",
+        "last_login": "2018-10-09T12:04:03Z",
+        "is_superuser": true,
+        "username": "admin",
+        "first_name": "",
+        "last_name": "",
+        "email": "johnjabola@gmail.com",
+        "is_staff": true,
+        "is_active": true,
+        "date_joined": "2018-10-09T12:02:54Z",
+        "groups": [
+            1
+        ],
+        "user_permissions": []
+    }
+},
+{
+    "model": "memorial_park_mgmnt_app.branch",
+    "pk": 1,
+    "fields": {
+        "name": "Golden Gate Memorial Park",
+        "address": "Baliwag, Bulacan",
+        "group": 1
+    }
+},
+{
+    "model": "memorial_park_mgmnt_app.branch",
+    "pk": 2,
+    "fields": {
+        "name": "San Miguel Memorial Park",
+        "address": "San Miguel, Bulacan",
+        "group": 3
+    }
+},
+{
+    "model": "memorial_park_mgmnt_app.branch",
+    "pk": 3,
+    "fields": {
+        "name": "San Rafael Memorial Park",
+        "address": "San Rafael, Bulacan",
+        "group": 2
+    }
+},
+{
+    "model": "memorial_park_mgmnt_app.lottype",
+    "pk": 1,
+    "fields": {
+        "lot_type": "REG",
+        "price": 50000,
+        "vat": 0.12,
+        "care_fund": 5000
+    }
+},
+{
+    "model": "memorial_park_mgmnt_app.lottype",
+    "pk": 2,
+    "fields": {
+        "lot_type": "SPL",
+        "price": 55000,
+        "vat": 0.12,
+        "care_fund": 5000
+    }
+},
+{
+    "model": "memorial_park_mgmnt_app.agent",
+    "pk": 1,
+    "fields": {
+        "last_name": "Varilla",
+        "first_name": "Ermilando",
+        "middle_name": "",
+        "rank": "SALES_AGENT",
+        "mobile": null,
+        "landline": null,
+        "email": null,
+        "house_number": "",
+        "street": "",
+        "barangay": "Virgie delos Flores",
+        "town": "Baliwag",
+        "province": "Bulacan",
+        "valid_id": "",
+        "birthdate": null,
+        "other_address": null,
+        "business_name": null,
+        "business_address": null
+    }
+},
+{
+    "model": "memorial_park_mgmnt_app.agent",
+    "pk": 2,
+    "fields": {
+        "last_name": "Tonson",
+        "first_name": "Gina",
+        "middle_name": "",
+        "rank": "UNIT_MNGR",
+        "mobile": null,
+        "landline": null,
+        "email": null,
+        "house_number": "",
+        "street": "",
+        "barangay": "Virgie delos Flores",
+        "town": "Baliwag",
+        "province": "Bulacan",
+        "valid_id": "",
+        "birthdate": null,
+        "other_address": null,
+        "business_name": null,
+        "business_address": null
+    }
+},
+{
+    "model": "memorial_park_mgmnt_app.client",
+    "pk": 1,
+    "fields": {
+        "last_name": "Dela Cruz",
+        "first_name": "Rhodora",
+        "middle_name": "",
+        "mobile": null,
+        "landline": null,
+        "house_number": "276",
+        "street": "Aldana St.",
+        "barangay": "Virgie delos Flores",
+        "town": "Baliwag",
+        "province": "Bulacan",
+        "valid_id": "",
+        "birthdate": null,
+        "other_address": null,
+        "business_name": null,
+        "business_address": null,
+        "email": null,
+        "branch": 1
+    }
+},
+{
+    "model": "memorial_park_mgmnt_app.client",
+    "pk": 2,
+    "fields": {
+        "last_name": "Gonzales",
+        "first_name": "Victoria",
+        "middle_name": "",
+        "mobile": null,
+        "landline": null,
+        "house_number": "",
+        "street": "",
+        "barangay": "Bahay Pare",
+        "town": "Candaba",
+        "province": "Pampanga",
+        "valid_id": "",
+        "birthdate": null,
+        "other_address": null,
+        "business_name": null,
+        "business_address": null,
+        "email": null,
+        "branch": 1
+    }
+},
+{
+    "model": "memorial_park_mgmnt_app.client",
+    "pk": 3,
+    "fields": {
+        "last_name": "Musni",
+        "first_name": "Amabelle",
+        "middle_name": "",
+        "mobile": null,
+        "landline": null,
+        "house_number": "336",
+        "street": "BS Aquino Ave.",
+        "barangay": "Tangos",
+        "town": "Baliwag",
+        "province": "Bulacan",
+        "valid_id": "",
+        "birthdate": null,
+        "other_address": null,
+        "business_name": null,
+        "business_address": null,
+        "email": null,
+        "branch": 1
+    }
+},
+{
+    "model": "memorial_park_mgmnt_app.client",
+    "pk": 4,
+    "fields": {
+        "last_name": "Cruz",
+        "first_name": "Ireneo",
+        "middle_name": "",
+        "mobile": null,
+        "landline": null,
+        "house_number": "",
+        "street": "",
+        "barangay": "",
+        "town": "",
+        "province": "",
+        "valid_id": "",
+        "birthdate": null,
+        "other_address": null,
+        "business_name": null,
+        "business_address": null,
+        "email": null,
+        "branch": 1
+    }
+},
+{
+    "model": "memorial_park_mgmnt_app.client",
+    "pk": 5,
+    "fields": {
+        "last_name": "Sanchez",
+        "first_name": "Blesilda",
+        "middle_name": "",
+        "mobile": null,
+        "landline": null,
+        "house_number": "2",
+        "street": "BS Aquino Ave.",
+        "barangay": "Hinukay",
+        "town": "Baliwag",
+        "province": "Bulacan",
+        "valid_id": "",
+        "birthdate": null,
+        "other_address": null,
+        "business_name": null,
+        "business_address": null,
+        "email": null,
+        "branch": 1
+    }
+},
+{
+    "model": "memorial_park_mgmnt_app.client",
+    "pk": 6,
+    "fields": {
+        "last_name": "Gonzales",
+        "first_name": "Melodie",
+        "middle_name": "",
+        "mobile": null,
+        "landline": null,
+        "house_number": "",
+        "street": "",
+        "barangay": "",
+        "town": "",
+        "province": "",
+        "valid_id": "",
+        "birthdate": null,
+        "other_address": null,
+        "business_name": null,
+        "business_address": null,
+        "email": null,
+        "branch": 1
+    }
+},
+{
+    "model": "memorial_park_mgmnt_app.client",
+    "pk": 7,
+    "fields": {
+        "last_name": "Montecillo",
+        "first_name": "Anastacia",
+        "middle_name": "",
+        "mobile": null,
+        "landline": null,
+        "house_number": "",
+        "street": "",
+        "barangay": "Sto. Nino",
+        "town": "Baliwag",
+        "province": "Bulacan",
+        "valid_id": "",
+        "birthdate": null,
+        "other_address": null,
+        "business_name": null,
+        "business_address": null,
+        "email": null,
+        "branch": 1
+    }
+},
+{
+    "model": "memorial_park_mgmnt_app.client",
+    "pk": 8,
+    "fields": {
+        "last_name": "Preston",
+        "first_name": "Cecilia",
+        "middle_name": "",
+        "mobile": null,
+        "landline": null,
+        "house_number": "70",
+        "street": "",
+        "barangay": "Pulong Palazan",
+        "town": "Candaba",
+        "province": "Pampanga",
+        "valid_id": "",
+        "birthdate": null,
+        "other_address": null,
+        "business_name": null,
+        "business_address": null,
+        "email": null,
+        "branch": 1
+    }
+},
+{
+    "model": "memorial_park_mgmnt_app.downpaymentpromo",
+    "pk": 1,
+    "fields": {
+        "name": "Spot Downpayment",
+        "split": 1,
+        "discount": 0.2
+    }
+},
+{
+    "model": "memorial_park_mgmnt_app.downpaymentpromo",
+    "pk": 2,
+    "fields": {
+        "name": "4-Splits",
+        "split": 4,
+        "discount": 0.05
+    }
+},
+{
+    "model": "memorial_park_mgmnt_app.downpaymentpromo",
+    "pk": 3,
+    "fields": {
+        "name": "12-Splits",
+        "split": 12,
+        "discount": 0.0
+    }
+},
+{
+    "model": "memorial_park_mgmnt_app.installmentpromo",
+    "pk": 1,
+    "fields": {
+        "name": "2 Years",
+        "months": 24,
+        "interest": 0.0
+    }
+},
+{
+    "model": "memorial_park_mgmnt_app.installmentpromo",
+    "pk": 2,
+    "fields": {
+        "name": "3 Years",
+        "months": 36,
+        "interest": 0.06
+    }
+},
+{
+    "model": "memorial_park_mgmnt_app.installmentpromo",
+    "pk": 3,
+    "fields": {
+        "name": "5 Years",
+        "months": 60,
+        "interest": 0.08
+    }
+},
+{
+    "model": "memorial_park_mgmnt_app.spotpromo",
+    "pk": 1,
+    "fields": {
+        "discount": 0.15
+    }
+}
+]

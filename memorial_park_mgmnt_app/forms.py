@@ -1,3 +1,5 @@
+from datetime import date, datetime, timedelta
+
 from django import forms
 
 from memorial_park_mgmnt_app import models
@@ -220,20 +222,26 @@ class ContractUpdateForm(forms.ModelForm):
         }
 
 
-class ContractInstallmentForm(forms.ModelForm):
+class InstallmentOptionForm(forms.Form):
+
+    pst = datetime.utcnow() + timedelta(hours=8)
+
+    valid_downpayment_promos = models.DownpaymentPromo.objects.filter(start_date__lte=pst.date(),
+                                                                      end_date__gte=pst.date()).order_by('-start_date')
+    valid_installment_promos = models.InstallmentPromo.objects.filter(start_date__lte=pst.date(),
+                                                                      end_date__gte=pst.date()).order_by('-start_date')
+
+    downpayment_option = forms.ModelChoiceField(queryset=valid_downpayment_promos, required=True)
+    installment_option = forms.ModelChoiceField(queryset=valid_installment_promos, required=True)
 
     class Meta:
-        model = models.Contract
-        fields = [  'downpayment_option',
-                    'installment_option'
-                ]
-
         widgets = {
             'downpayment_option': forms.Select(attrs={'class': 'form-control',
                                                       'placeholder': 'Select Downpayment Option'}),
             'installment_option': forms.Select(attrs={'class': 'form-control',
                                                       'placeholder': 'Select Installment Option'})
         }
+
 
 class ServiceForm(forms.ModelForm):
 

@@ -1,5 +1,6 @@
 import os
 import uuid
+from datedelta import datedelta
 from datetime import date, datetime, timedelta
 
 from django.db import models
@@ -14,7 +15,7 @@ from django.contrib.auth.models import Group
 #              ('REG', 'Regular'))
 
 BUYER_TYPES = (('PRE-NEED', 'Pre-Need'),
-               ('IN-NEED', 'In-Need'))
+               ('AT-NEED', 'At-Need'))
 
 CONTRACT_STATUSES = (('NEW', 'New'),
                      ('REVIEWED', 'Reviewed'),
@@ -55,6 +56,12 @@ def valid_id_directory_path(instance, filename):
                                                   name=str(instance).title().replace(' ', ''),
                                                   ext=ext)
 
+def one_year_from_today():
+    pst = datetime.utcnow() + timedelta(hours=8)
+    nxt_year = pst + datedelta(years=1)
+
+    return nxt_year.date()
+
 class Branch(models.Model):
     name = models.CharField(max_length=128, null=False, blank=False)
     address = models.CharField(max_length=512, null=True, blank=True)
@@ -94,6 +101,7 @@ class Agent(models.Model):
     last_name = models.CharField(max_length=56, blank=False, null=False)
     first_name = models.CharField(max_length=56, blank=False, null=False)
     middle_name = models.CharField(max_length=56, blank=True, null=True)
+    rank = models.CharField(max_length=56, blank=False, null=False, choices=AGENT_TYPES, default='SALES_AGENT')
 
     mobile = models.CharField(max_length=18, blank=True, null=True)
     landline = models.CharField(max_length=18, blank=True, null=True)
@@ -111,8 +119,6 @@ class Agent(models.Model):
     other_address = models.CharField(max_length=512, blank=True, null=True)
     business_name = models.CharField(max_length=512, blank=True, null=True)
     business_address = models.CharField(max_length=512, blank=True, null=True)
-
-    branch = models.ForeignKey(Branch, null=True, blank=True, related_name='agents', on_delete=models.SET_NULL)
 
     def __str__(self):
         fullname = '{0} {1}'.format(self.last_name, self.first_name)
@@ -194,31 +200,31 @@ class Client(models.Model):
             return ''
 
 
-class DownpaymentOption(models.Model):
+class DownpaymentPromo(models.Model):
     name = models.CharField(max_length=256, blank=False, null=False)
     split = models.PositiveSmallIntegerField(default=1)
     discount = models.FloatField(blank=False, null=False, default=0.00)
 
     start_date = models.DateField(null=False, blank=False, default=date.today)
-    end_date = models.DateField(null=False, blank=False, default=date.today)
+    end_date = models.DateField(null=False, blank=False, default=one_year_from_today)
 
     def __str__(self):
         return '{0}: {1}% OFF'.format(self.name, int(self.discount * 100))
 
 
-class InstallmentOption(models.Model):
+class InstallmentPromo(models.Model):
     name = models.CharField(max_length=256, blank=False, null=False)
     months = models.PositiveSmallIntegerField(default=12)
     interest = models.FloatField(blank=False, null=False, default=0.00)
 
     start_date = models.DateField(null=False, blank=False, default=date.today)
-    end_date = models.DateField(null=False, blank=False, default=date.today)
+    end_date = models.DateField(null=False, blank=False, default=one_year_from_today)
 
     def __str__(self):
         return '{0}: {1}% INTEREST'.format(self.name, int(self.interest * 100))
 
 
-class SpotOption(models.Model):
+class SpotPromo(models.Model):
     discount = models.FloatField(blank=False, null=False, default=0.15)
     start_date = models.DateField(null=False, blank=False, default=date.today)
     end_date = models.DateField(null=False, blank=False, default=date.today)
@@ -230,19 +236,15 @@ class SpotOption(models.Model):
 class Contract(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
 
-    number = models.CharField(max_length=256, blank=False, null=False)
+    number = models.CharField(max_length=256, blank=False, null=False, unique=True)
     date = models.DateField(null=False, blank=False, default=date.today)
     buyer_type = models.CharField(max_length=32, blank=False, null=False, choices=BUYER_TYPES, default='PRE-NEED')
 
     status = models.CharField(max_length=64, blank=False, null=False, choices=CONTRACT_STATUSES, default='NEW')
     remarks = models.CharField(max_length=256, blank=True, null=True)
 
-    reservation = models.FloatField(default=0.00)
-
+    reservation = models.FloatField(blank=False, null=False, default=0.00)
     payment_terms = models.CharField(max_length=256, blank=False, null=False, choices=PAYMENT_TERMS, default='SPOT')
-    spot_option = models.ForeignKey(SpotOption, blank=True, null=True, on_delete=models.SET_NULL)
-    downpayment_option = models.ForeignKey(DownpaymentOption, blank=True, null=True, on_delete=models.SET_NULL)
-    installment_option = models.ForeignKey(InstallmentOption, blank=True, null=True, on_delete=models.SET_NULL)
 
     lot = models.OneToOneField(Lot, null=False, blank=False, related_name='lot_contract', on_delete=models.CASCADE)
     client = models.ForeignKey(Client, null=False, blank=False, related_name='client_contracts', on_delete=models.CASCADE)
@@ -300,16 +302,16 @@ class Contract(models.Model):
     @property
     def downpayment_amount(self):
         downpayment = (self.lot.price + self.lot.lot_type.care_fund) * 0.2
-        if self.downpayment_option:
-            downpayment = downpayment - (downpayment * self.downpayment_option.discount)
+        if self.installment_option:
+            downpayment = downpayment - (downpayment * self.installment_option.discount)
 
         return downpayment
 
     @property
     def downpayment_monthly(self):
         monthly = self.downpayment_amount
-        if self.downpayment_option:
-            monthly = self.downpayment_amount / (self.downpayment_option.split)
+        if self.installment_option:
+            monthly = self.downpayment_amount / (self.installment_option.split)
 
         return monthly
 
@@ -334,14 +336,14 @@ class Contract(models.Model):
 
     @property
     def contract_price(self):
-        if self.buyer_type == 'IN-NEED':
-            ### IN-NEED ###
+        if self.buyer_type == 'AT-NEED':
+            ### AT-NEED ###
             return self.lot.price + (self.lot.price * 0.5) + self.lot.lot_type.care_fund
         else:
             ### PRE-NEED ###
             if self.payment_terms == 'SPOT':
                 discount = 0
-                if self.spot_option:
+                if hasattr(self, 'spot_option'):
                     discount = (self.lot.price + self.lot.lot_type.care_fund) * self.spot_option.discount
                 return self.lot.price + self.lot.lot_type.care_fund - discount
             else:
@@ -371,8 +373,8 @@ class Contract(models.Model):
             return net_commission
         else:
             discount = 0
-            if self.downpayment_option:
-                discount = self.lot.price * self.downpayment_option.discount
+            if self.installment_option:
+                discount = self.lot.price * self.installment_option.discount
 
             gross = self.lot.price - discount - self.lot.lot_type.care_fund
             vat = gross - (gross / 1.12)
@@ -451,6 +453,23 @@ class Contract(models.Model):
                 commissions[key] = commissions[key] / self.downpayment_option.downpayment.split
 
         return commissions
+
+
+class SpotOption(models.Model):
+    discount = models.FloatField(blank=False, null=False, default=0.15)
+    contract = models.OneToOneField(Contract, blank=True, null=True, related_name='spot_option', on_delete=models.CASCADE)
+
+
+class InstallmentOption(models.Model):
+    # Downpayment
+    split = models.PositiveSmallIntegerField(blank=False, null=False, default=1)
+    discount = models.FloatField(blank=False, null=False, default=0.00)
+
+    # Installment
+    months = models.PositiveSmallIntegerField(blank=False, null=False, default=12)
+    interest = models.FloatField(blank=False, null=False, default=0.00)
+
+    contract = models.OneToOneField(Contract, blank=True, null=True, related_name='installment_option', on_delete=models.CASCADE)
 
 
 class Service(models.Model):

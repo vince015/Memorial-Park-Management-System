@@ -27,8 +27,7 @@ class AgentJson(BaseDatatableView):
     order_columns = [['last_name', 'first_name', 'middle_name'], None, '']
 
     def get_initial_queryset(self):
-        branch_id = self.request.session.get('branch_id')
-        return models.Agent.objects.filter(branch__id=branch_id)
+        return models.Agent.objects.all()
 
     def render_column(self, row, column):
         if column == 'name':
@@ -67,8 +66,6 @@ class AgentCreateView(TemplateView):
         form = forms.AgentForm(request.POST, request.FILES)
         if form.is_valid():
             instance = form.save(commit=False)
-            branch_id = self.request.session.get('branch_id')
-            instance.branch_id = branch_id
             instance.save()
 
             msg = 'Successfully created new agent: {0}'.format(str(instance))
@@ -87,9 +84,6 @@ class AgentUpdateView(TemplateView):
 
     def get(self, request, agent_id):
         instance = get_object_or_404(models.Agent, pk=agent_id)
-        branch_id = request.session.get('branch_id')
-        if instance.branch.id != branch_id:
-            return HttpResponseForbidden()
 
         form = forms.AgentForm(instance=instance)
         context_dict = {'form': form}
@@ -98,9 +92,6 @@ class AgentUpdateView(TemplateView):
 
     def post(self, request, agent_id):
         instance = get_object_or_404(models.Agent, pk=agent_id)
-        branch_id = request.session.get('branch_id')
-        if instance.branch.id != branch_id:
-            return HttpResponseForbidden
         
         form = forms.AgentForm(request.POST, request.FILES, instance=instance)
         if form.is_valid():

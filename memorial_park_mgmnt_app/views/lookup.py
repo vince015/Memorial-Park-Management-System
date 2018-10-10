@@ -54,8 +54,12 @@ def client_lookup(request):
 @utils.branch_required(utils.is_auth_and_has_branch)
 def agent_lookup(request):
     if request.method == 'GET':
-        branch = request.session.get('branch_id')
-        queryset = models.Agent.objects.filter(branch__id=branch)
+        queryset = models.Agent.objects.all()
+
+        rank = request.GET.get('rank')
+        if rank:
+            print(rank)
+            queryset = queryset.filter(rank=rank)
 
         if request.GET.get('q'):
             queryset = queryset.filter(Q(first_name__icontains=q) |
