@@ -17,11 +17,11 @@ def lot_type_post_save(sender, instance, created, **kwargs):
             lot.price = instance.price
             lot.save()
 
-@receiver(post_save, sender=models.Contract)
-def contract_post_save(sender, instance, created, **kwargs):
+# @receiver(post_save, sender=models.Contract)
+# def contract_post_save(sender, instance, created, **kwargs):
 
-    if created and instance.payment_terms == 'SPOT':
-        # Create a single bill
-        models.Bill.objects.create(amount_due=instance.contract_price,
-                                   contract=instance,
-                                   remarks='For spot cash payment')
+#     if created and instance.payment_terms == 'SPOT':
+#         # Create a single bill
+#         models.Bill.objects.create(amount_due=instance.contract_price,
+#                                    contract=instance,
+#                                    remarks='For spot cash payment')

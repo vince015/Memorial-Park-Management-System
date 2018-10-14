@@ -29,6 +29,29 @@
 {% block main %}
     <div class="row">
         <div class="col-md-12">
+            <div class="info-box bg-blue">
+                <span class="info-box-icon">
+                    <i class="fa fa-money"></i>
+                </span>
+
+                <div class="info-box-content">
+                  <span class="info-box-text">Remaning Petty Cash</span>
+                  <span class="info-box-number">PhP {{ remaining | floatformat:2 | intcomma }}</span>
+
+                  <div class="progress">
+                    <div class="progress-bar" style="width: {{ percent }}%"></div>
+                  </div>
+                      <span class="progress-description">
+                        <strong>This month's expenses:</strong> PhP {{ expense | floatformat:2 | intcomma }}
+                      </span>
+                </div>
+                <!-- /.info-box-content -->
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
             <div class="box">
                 <div class="box-body">
                     <table id="expense_table" class="table table-bordered table-striped">
@@ -70,7 +93,7 @@
             "ajax": {
                 "url": "{% url 'expense_json' %}",
                 "data": function (d) {
-                    d.petty_cash = 0
+                    d.petty_cash = 1
                 }
             }
         });

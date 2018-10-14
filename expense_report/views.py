@@ -21,6 +21,13 @@ from expense_report import forms
 class ExpenseListView(TemplateView):
     template_name = 'expense/list.html'
 
+    def get(self, request):
+        return render(request, self.template_name)
+
+@method_decorator(login_required, name='dispatch')
+class PettyCashView(TemplateView):
+    template_name = 'expense/petty_cash.html'
+
     def __compute_petty_cash_monthly(self):
         pst = datetime.utcnow() + timedelta(hours=8)
         month_expenses = models.Expense.objects.filter(from_petty_cash=True,
@@ -49,19 +56,18 @@ class ExpenseJson(BaseDatatableView):
     order_columns = ['date', 'payee', 'category', 'amount', 'from_petty_cash']
 
     def get_initial_queryset(self):
-        return models.Expense.objects.all()
+        from_petty_cash = self.request.GET.get('petty_cash', 0)
+        from_petty_cash = int(from_petty_cash)
+        if from_petty_cash == 0:
+            return models.Expense.objects.filter(from_petty_cash=False)
+        else:
+            return models.Expense.objects.filter(from_petty_cash=True)
 
     def render_column(self, row, column):
         if column == 'date':
             url = reverse('expense_update', kwargs={'expense_id': row.id})
             text = row.date.strftime('%Y-%m-%d')
             html = '<a href="{0}">{1}</a>'.format(url, text)
-            return html
-        elif column == 'from_petty_cash':
-            if row.from_petty_cash:
-                html = '<span class="text-green"><i class="fa fa-check-square"></i> YES</span>'
-            else:
-                html = '<span class="text-red"><i class="fa fa-times-circle"></i> NO</span>'
             return html
         else:
             return super(ExpenseJson, self).render_column(row, column)

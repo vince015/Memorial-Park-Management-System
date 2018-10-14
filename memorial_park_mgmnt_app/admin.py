@@ -173,7 +173,9 @@ class DownpaymentPromoAdmin(ImportExportModelAdmin):
     list_display = ('id',
                     'name',
                     'split',
-                    'discount')
+                    'discount',
+                    'start_date',
+                    'end_date')
     list_display_links = ('id',
                           'name')
     search_fields = ('id',
@@ -191,14 +193,18 @@ class InstallmentPromoResource(resources.ModelResource):
         fields = ('id',
                   'name',
                   'months',
-                  'interest')
+                  'interest',
+                  'start_date',
+                  'end_date')
 
 
 class InstallmentPromoAdmin(ImportExportModelAdmin):
     list_display = ('id',
                     'name',
                     'months',
-                    'interest')
+                    'interest',
+                    'start_date',
+                    'end_date')
     list_display_links = ('id',
                           'name')
     search_fields = ('id',
@@ -214,12 +220,16 @@ class SpotPromoResource(resources.ModelResource):
     class Meta:
         model = models.SpotPromo
         fields = ('id',
-                  'discount')
+                  'discount',
+                  'start_date',
+                  'end_date')
 
 
 class SpotPromoAdmin(ImportExportModelAdmin):
     list_display = ('id',
-                    'discount')
+                    'discount',
+                    'start_date',
+                    'end_date')
     list_display_links = ('id',)
     search_fields = ('id',)
     resource_class = SpotPromoResource

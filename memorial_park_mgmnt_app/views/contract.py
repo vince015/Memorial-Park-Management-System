@@ -95,11 +95,17 @@ class ContractCreateView(TemplateView):
                     instance.save()
                     models.SpotOption.objects.create(discount=spot_promo.discount,
                                                      contract=instance)
+
+                    models.Bill.objects.create(amount_due=instance.contract_price,
+                                               contract=instance,
+                                               remarks='For spot cash payment')
+
                     return redirect(reverse('contract_spot', kwargs={'contract_id': instance.id}))
                 else:
-                    msg = 'No available Spot Option Promo kindly contact admin'
+                    msg = 'No available Spot Option Promo. Kindly report to admin'
                     messages.error(request, msg)
 
+                    context_dict = {'form': form}
                     return render(request, self.template_name, context_dict)
             else:
                 instance.save()

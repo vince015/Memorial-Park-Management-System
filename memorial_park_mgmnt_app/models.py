@@ -96,6 +96,9 @@ class Lot(models.Model):
     def __str__(self):
         return 'B{0}-LOT{1}{2}'.format(self.block, self.lot, self.unit)
 
+    class Meta:
+        unique_together = ('block', 'lot', 'unit')
+
 
 class Agent(models.Model):
     last_name = models.CharField(max_length=56, blank=False, null=False)
@@ -361,9 +364,11 @@ class Contract(models.Model):
     @property
     def commissionable_amount(self):
         if self.payment_terms == 'SPOT':
-            discount = self.lot.price * self.spot_option.discount
+            discount = 0
+            if self.spot_option:
+                discount = (self.lot.price + self.lot.lot_type.care_fund) * self.spot_option.discount
 
-            gross = self.lot.price - discount - self.lot.lot_type.care_fund
+            gross = self.lot.price - discount
             vat = gross - (gross / 1.12)
             net = gross - vat
 
@@ -374,9 +379,9 @@ class Contract(models.Model):
         else:
             discount = 0
             if self.installment_option:
-                discount = self.lot.price * self.installment_option.discount
+                discount = (self.lot.price + self.lot.lot_type.care_fund) * self.installment_option.discount
 
-            gross = self.lot.price - discount - self.lot.lot_type.care_fund
+            gross = self.lot.price - discount
             vat = gross - (gross / 1.12)
             net = gross - vat
 
