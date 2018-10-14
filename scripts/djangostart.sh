@@ -1,4 +1,6 @@
 #!/bin/bash
+sudo systemctl stop nginx
+sudo systemctl stop gunicorn
 
 cd /home/ubuntu/src
 
@@ -18,3 +20,7 @@ python manage.py migrate
 python manage.py createsu
 
 python manage.py creategrp
+
+sudo systemctl start gunicorn
+sudo systemctl start nginx
+sudo systemctl enable nginx
