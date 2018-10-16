@@ -9,6 +9,7 @@ from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
 from django.db.models import Sum
 from django.contrib.auth.models import Group
+from django.core import exceptions
 
 # Constants
 # LOT_TYPES = (('SPL', 'Special'),
@@ -76,9 +77,9 @@ class Branch(models.Model):
 
 class LotType(models.Model):
     lot_type = models.CharField(max_length=32, blank=False, null=False, default='REG')
-    price = models.FloatField(default=0.00)
-    vat = models.FloatField(default=0.00)
-    care_fund = models.FloatField(default=0.00)
+    price = models.FloatField(null=False, blank=False, default=0.00)
+    vat = models.FloatField(null=False, blank=False, default=0.00)
+    care_fund = models.FloatField(null=False, blank=False, default=0.00)
 
     def __str__(self):
         return self.lot_type
@@ -89,15 +90,14 @@ class Lot(models.Model):
     lot = models.CharField(max_length=32, blank=False, null=False)
     unit = models.CharField(max_length=32, blank=False, null=False)
 
-    price = models.FloatField(default=0.00)
     lot_type = models.ForeignKey(LotType, null=False, blank=False, on_delete=models.CASCADE)
     branch = models.ForeignKey(Branch, null=True, blank=True, related_name='lots', on_delete=models.SET_NULL)
 
-    def __str__(self):
-        return 'B{0}-LOT{1}{2}'.format(self.block, self.lot, self.unit)
-
     class Meta:
         unique_together = ('block', 'lot', 'unit')
+
+    def __str__(self):
+        return 'B{0}-LOT{1}{2}'.format(self.block, self.lot, self.unit)
 
 
 class Agent(models.Model):
@@ -122,6 +122,9 @@ class Agent(models.Model):
     other_address = models.CharField(max_length=512, blank=True, null=True)
     business_name = models.CharField(max_length=512, blank=True, null=True)
     business_address = models.CharField(max_length=512, blank=True, null=True)
+
+    class Meta:
+        unique_together = ('last_name', 'first_name')
 
     def __str__(self):
         fullname = '{0} {1}'.format(self.last_name, self.first_name)
@@ -176,6 +179,9 @@ class Client(models.Model):
     email = models.EmailField(blank=True, null=True)
 
     branch = models.ForeignKey(Branch, null=True, blank=True, related_name='clients', on_delete=models.SET_NULL)
+
+    class Meta:
+        unique_together = ('last_name', 'first_name')
 
     def __str__(self):
         fullname = '{0} {1}'.format(self.last_name, self.first_name)
@@ -249,7 +255,11 @@ class Contract(models.Model):
     reservation = models.FloatField(blank=False, null=False, default=0.00)
     payment_terms = models.CharField(max_length=256, blank=False, null=False, choices=PAYMENT_TERMS, default='SPOT')
 
-    lot = models.OneToOneField(Lot, null=False, blank=False, related_name='lot_contract', on_delete=models.CASCADE)
+    lot = models.ForeignKey(Lot, null=False, blank=False, related_name='lot_contracts', on_delete=models.CASCADE)
+    price = models.FloatField(null=False, blank=False, default=0.00)
+    vat = models.FloatField(null=False, blank=False, default=0.00)
+    care_fund = models.FloatField(null=False, blank=False, default=0.00)
+
     client = models.ForeignKey(Client, null=False, blank=False, related_name='client_contracts', on_delete=models.CASCADE)
 
     # Commission = 7%
@@ -267,9 +277,23 @@ class Contract(models.Model):
     def __str__(self):
         return '{0} - {1}'.format(str(self.client), str(self.lot))
 
+    def save(self, **kwargs):
+        self.clean()
+        return super(Contract, self).save(**kwargs)
+
+    def clean(self):
+        super(Contract, self).clean()
+        if self._state.adding and self.pk is None:
+            print('heeere')
+            qs = self.lot.lot_contracts.filter(status__in=['NEW', 'REVIEWED'])
+            print('qs: {0}'.format(qs))
+            if qs.exists():
+                error = {'lot': 'Lot is already under an active contract'}
+                raise exceptions.ValidationError(error)
+
     @property
     def installment_amount(self):
-        installment = (self.lot.price + self.lot.lot_type.care_fund) * 0.8
+        installment = (self.price + self.care_fund) * 0.8
         if self.installment_option:
             installment = installment + (installment * self.installment_option.interest)
 
@@ -304,7 +328,7 @@ class Contract(models.Model):
 
     @property
     def downpayment_amount(self):
-        downpayment = (self.lot.price + self.lot.lot_type.care_fund) * 0.2
+        downpayment = (self.price + self.care_fund) * 0.2
         if self.installment_option:
             downpayment = downpayment - (downpayment * self.installment_option.discount)
 
@@ -341,14 +365,14 @@ class Contract(models.Model):
     def contract_price(self):
         if self.buyer_type == 'AT-NEED':
             ### AT-NEED ###
-            return self.lot.price + (self.lot.price * 0.5) + self.lot.lot_type.care_fund
+            return self.price + (self.price * 0.5) + self.care_fund
         else:
             ### PRE-NEED ###
             if self.payment_terms == 'SPOT':
                 discount = 0
                 if hasattr(self, 'spot_option'):
-                    discount = (self.lot.price + self.lot.lot_type.care_fund) * self.spot_option.discount
-                return self.lot.price + self.lot.lot_type.care_fund - discount
+                    discount = (self.price + self.care_fund) * self.spot_option.discount
+                return self.price + self.care_fund - discount
             else:
                 return self.downpayment_amount + self.installment_amount
 
@@ -366,9 +390,9 @@ class Contract(models.Model):
         if self.payment_terms == 'SPOT':
             discount = 0
             if self.spot_option:
-                discount = (self.lot.price + self.lot.lot_type.care_fund) * self.spot_option.discount
+                discount = (self.price + self.care_fund) * self.spot_option.discount
 
-            gross = self.lot.price - discount
+            gross = self.price - discount
             vat = gross - (gross / 1.12)
             net = gross - vat
 
@@ -379,9 +403,9 @@ class Contract(models.Model):
         else:
             discount = 0
             if self.installment_option:
-                discount = (self.lot.price + self.lot.lot_type.care_fund) * self.installment_option.discount
+                discount = ((self.price + self.care_fund) * 0.2) * self.installment_option.discount
 
-            gross = self.lot.price - discount
+            gross = self.price - discount
             vat = gross - (gross / 1.12)
             net = gross - vat
 
@@ -453,9 +477,9 @@ class Contract(models.Model):
 
     def get_monthly_commissions(self):
         commissions = self.get_commissions()
-        if self.downpayment_option:
+        if self.installment_option:
             for key in list(commissions.keys()):
-                commissions[key] = commissions[key] / self.downpayment_option.downpayment.split
+                commissions[key] = commissions[key] / self.installment_option.split
 
         return commissions
 
@@ -482,7 +506,7 @@ class Service(models.Model):
     updated = models.DateTimeField(auto_now=True)
 
     date = models.DateField(null=False, blank=False, default=date.today)
-    amount = models.FloatField(default=0.00)
+    amount = models.FloatField(null=False, blank=False, default=0.00)
     service_type = models.CharField(max_length=256, blank=True, null=True, choices=SERVICE_TYPES, default='INTERMENT')
     remarks = models.CharField(max_length=256, blank=True, null=True)
 
@@ -518,6 +542,16 @@ class Bill(models.Model):
         return '{0}: {1} - {2}'.format(str(self.contract),
                                        self.start.strftime('%b %d, %Y'),
                                        self.end.strftime('%b %d, %Y'))
+
+    def save(self, **kwargs):
+        self.clean()
+        return super(Bill, self).save(**kwargs)
+
+    def clean(self):
+        super(Bill, self).clean()
+        if self.end < self.start:
+            error = {'end': 'End cannot be earlier than start.'}
+            raise exceptions.ValidationError(error)
 
     @property
     def is_paid(self):

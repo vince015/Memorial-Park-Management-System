@@ -6,6 +6,7 @@ Django==2.0
 django-ajax-selects==1.7.1
 django-datatables-view==1.16.0
 django-import-export==1.0.1
+django-mathfilters==0.4.0
 django-s3-storage==0.12.4
 docutils==0.14
 et-xmlfile==1.0.1

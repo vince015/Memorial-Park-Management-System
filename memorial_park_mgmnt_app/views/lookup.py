@@ -58,7 +58,6 @@ def agent_lookup(request):
 
         rank = request.GET.get('rank')
         if rank:
-            print(rank)
             queryset = queryset.filter(rank=rank)
 
         if request.GET.get('q'):

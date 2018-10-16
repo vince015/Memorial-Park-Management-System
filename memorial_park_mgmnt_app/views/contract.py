@@ -170,7 +170,7 @@ class ContractReadView(TemplateView):
 
         else:
             start_date = contract.date
-            for split in range(0, contract.downpayment_option.split):
+            for split in range(0, contract.installment_option.split):
                 end_date = contract.date + datedelta(months=(split + 1))
                 issue_date = end_date - timedelta(days=5)
 
@@ -205,9 +205,9 @@ class ContractReadView(TemplateView):
             return HttpResponseForbidden()
 
         if contract.payment_terms == 'SPOT' and not hasattr(contract, 'spot_option'):
-                return redirect(reverse('contract_spot', kwargs={'contract_id': contract.id}))
+            return redirect(reverse('contract_spot', kwargs={'contract_id': contract.id}))
         elif contract.payment_terms == 'INSTALLMENT' and not hasattr(contract, 'installment_option'):
-                return redirect(reverse('contract_installment', kwargs={'contract_id': contract.id}))
+            return redirect(reverse('contract_installment', kwargs={'contract_id': contract.id}))
 
         if request.GET.get('generate', False) and len(contract.bills.all()) < 1:
             self.__generate_bills(contract)

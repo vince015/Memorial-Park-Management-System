@@ -2,6 +2,7 @@
 
 {% load staticfiles %}
 {% load humanize %}
+{% load mathfilters %}
 {% block pagetitle %}Contracts{% endblock %}
 
 {% block pagestylesheets %}{% endblock %}
@@ -48,7 +49,7 @@
                     Lot
                 </strong>
                 <p class="text-muted pull-right">
-                    {{ contract.lot }}
+                    {{ contract.lot }} ({{ contract.lot.lot_type }})
                 </p>
                 <hr>
                 <strong>
@@ -62,21 +63,21 @@
                     Lot Price
                 </strong>
                 <p class="text-muted pull-right">
-                    PhP {{ contract.lot.price | floatformat:2 | intcomma }}
+                    PhP {{ contract.price | floatformat:2 | intcomma }}
                 </p>
                 <hr>
                 <strong>
                     Care Fund
                 </strong>
                 <p class="text-muted pull-right">
-                    PhP {{ contract.lot.lot_type.care_fund | floatformat:2 | intcomma }}
+                    PhP {{ contract.care_fund | floatformat:2 | intcomma }}
                 </p>
                 <hr>
                 <strong>
                     Discount
                 </strong>
                 <p class="text-muted pull-right">
-                    {{ contract.spot_option.discount }}
+                    {{ contract.spot_option.discount | mul:100 }} %
                 </p>
                 <hr>
                 <strong>

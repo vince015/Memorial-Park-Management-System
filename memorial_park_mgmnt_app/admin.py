@@ -72,7 +72,6 @@ class LotAdmin(ImportExportModelAdmin):
                     'block',
                     'lot',
                     'unit',
-                    'price',
                     'lot_type',
                     'branch')
     list_display_links = ('id',)
@@ -284,6 +283,34 @@ class ContractAdmin(ImportExportModelAdmin):
                              'lot__unit']
 
 admin.site.register(models.Contract, ContractAdmin)
+
+
+class InstallmentOptionAdmin(admin.ModelAdmin):
+    list_display = ('id',
+                    'client',
+                    'lot',
+                    'split',
+                    'discount',
+                    'months',
+                    'interest')
+    list_display_links = ('id',)
+    search_fields = ('id',)
+    list_per_page = 50
+
+    def client(self, obj):
+        return str(obj.contract.client)
+    client.short_description = 'Client'
+    client.admin_order_field = ['client__last_name',
+                                'client__first_name']
+
+    def lot(self, obj):
+        return str(obj.contract.lot)
+    lot.short_description = 'Lot'
+    lot.admin_order_field = ['lot__block',
+                             'lot__lot',
+                             'lot__unit']
+
+admin.site.register(models.InstallmentOption, InstallmentOptionAdmin)
 
 
 class ServiceResource(resources.ModelResource):

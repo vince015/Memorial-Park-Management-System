@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     'import_export',
     'django_s3_storage',
     'memorial_park_mgmnt_app',
-    'expense_report'
+    'expense_report',
+    'mathfilters'
 ]
 
 MIDDLEWARE = [
