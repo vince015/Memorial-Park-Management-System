@@ -119,7 +119,11 @@
 <script>
     $(document).ready(function () {
         var days = getURLParameter('days');
+        if (days === undefined) {
+            days = 7;
+        }
         $("#daysSelect").val(days);
+
     });
 </script>
 {% endblock %}
