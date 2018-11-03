@@ -2,13 +2,13 @@
 
 {% load staticfiles %}
 {% load humanize %}
-{% block pagetitle %}Expenses{% endblock %}
+{% block pagetitle %}Petty Cash Transactions{% endblock %}
 
 {% block pagestylesheets %}{% endblock %}
 
 {% block breadcrumb %}
 <h1>
-    New Expense
+    New Petty Cash Transaction
 </h1>
 
 <ol class="breadcrumb">
@@ -18,12 +18,12 @@
         </a>
     </li>
     <li>
-        <a href="{% url 'expense_list' %}">
-            Expenses
+        <a href="{% url 'pettycash_list' %}">
+            Petty Cash Transactions
         </a>
     </li>
         <li class="active">
-        New Expense
+        New Petty Cash Transaction
     </li>
 </ol>
 {% endblock %}
@@ -32,7 +32,7 @@
 <div class="row">
     <div class="col-md-12">
         <div class="box box-primary">
-            <form class="form-horizontal" action="{% url 'expense_create' %}" method="post">
+            <form class="form-horizontal" action="{% url 'pettycash_create' %}" method="post">
             {% csrf_token %}
             <div class="box-body">
                 {% if form.non_field_errors %}
@@ -59,28 +59,19 @@
                 </div>
                 <hr>
 
-                <div class="form-group {% if form.date.errors %} has-error {% endif %}">
-                    <label for="{{ form.date.id_for_label }}" class="col-sm-2 control-label">
-                        Date *
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">
+                        Timestamp *
                     </label>
                     <div class="col-sm-8">
-                        {{ form.date }}
-                        {% for error in form.date.errors %}
-                            <span class="help-block">{{ error }}</span>
-                        {% endfor %}
+                        <input 
+                            value="{% now 'Y-m-d H:i A' %}" 
+                            type="text"
+                            class="form-control"
+                            disabled="">
                     </div>
                 </div>
-                <div class="form-group {% if form.reference_number.errors %} has-error {% endif %}">
-                    <label for="{{ form.reference_number.id_for_label }}" class="col-sm-2 control-label">
-                        Reference No.
-                    </label>
-                    <div class="col-sm-8">
-                        {{ form.reference_number }}
-                        {% for error in form.reference_number.errors %}
-                            <span class="help-block">{{ error }}</span>
-                        {% endfor %}
-                    </div>
-                </div>
+
                 <div class="form-group {% if form.payee.errors %} has-error {% endif %}">
                     <label for="{{ form.payee.id_for_label }}" class="col-sm-2 control-label">
                         Payee *
@@ -104,17 +95,7 @@
                         {% endfor %}
                     </div>
                 </div>
-                <div class="form-group {% if form.category.errors %} has-error {% endif %}">
-                    <label for="{{ form.category.id_for_label }}" class="col-sm-2 control-label">
-                        Category *
-                    </label>
-                    <div class="col-sm-8">
-                        {{ form.category }}
-                        {% for error in form.category.errors %}
-                            <span class="help-block">{{ error }}</span>
-                        {% endfor %}
-                    </div>
-                </div>
+
                 <div class="form-group {% if form.description.errors %} has-error {% endif %}">
                     <label for="{{ form.description.id_for_label }}" class="col-sm-2 control-label">
                         Description *

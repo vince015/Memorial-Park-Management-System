@@ -37,3 +37,31 @@ class ExpenseAdmin(ImportExportModelAdmin):
     resource_class = ExpenseResource
 
 admin.site.register(models.Expense, ExpenseAdmin)
+
+class TransactionResource(resources.ModelResource):
+
+
+    class Meta:
+        model = models.Transaction
+        fields = ('id',
+                  'timestamp',
+                  'payee',
+                  'amount',
+                  'description',
+                  'transaction_type')
+
+
+class TransactionAdmin(ImportExportModelAdmin):
+    list_display  = ('id',
+                     'timestamp',
+                     'payee',
+                     'description',
+                     'amount')
+    list_display_links = ('id',
+                          'timestamp')
+    search_fields = ('id',
+                     'payee')
+    list_per_page = 50
+    resource_class = TransactionResource
+
+admin.site.register(models.Transaction, TransactionAdmin)

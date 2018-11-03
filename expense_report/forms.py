@@ -13,7 +13,6 @@ class ExpenseForm(forms.ModelForm):
                     'payee',
                     'amount',
                     'category',
-                    'from_petty_cash',
                     'description'
                 ]
         widgets = {
@@ -30,7 +29,27 @@ class ExpenseForm(forms.ModelForm):
                                                'class': 'form-control'}),
             'category': forms.Select(attrs={'class': 'form-control',
                                             'placeholder': 'Category'}),
-            'from_petty_cash': forms.CheckboxInput(),
+            'description': forms.Textarea(attrs={'class': 'form-control',
+                                                 'rows': 3,
+                                                 'placeholder': 'Description'}),
+        }
+
+class TransactionForm(forms.ModelForm):
+
+    class Meta:
+        model = models.Transaction
+        fields = [
+                    'payee',
+                    'amount',
+                    'description'
+                ]
+        widgets = {
+            'payee': forms.TextInput(attrs={'class': 'form-control',
+                                            'placeholder': 'Payee'}),
+            'amount': forms.NumberInput(attrs={'step': 0.01,
+                                               'min': 0.00,
+                                               'value': 0.00,
+                                               'class': 'form-control'}),
             'description': forms.Textarea(attrs={'class': 'form-control',
                                                  'rows': 3,
                                                  'placeholder': 'Description'}),

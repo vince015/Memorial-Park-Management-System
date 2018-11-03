@@ -91,13 +91,19 @@
                                         </li>
                                         <li class="divider"></li>
                                         <li>
-                                            <a href="{% url 'expense_petty_cash' %}">
-                                                View Expenses (Petty Cash)
+                                            <a href="{% url 'pettycash_list' %}">
+                                                View Petty Cash Transactions
                                             </a>
                                         </li>
                                         <li>
+                                            <a href="{% url 'pettycash_create' %}">
+                                                Add new Petty Cash Transaction
+                                            </a>
+                                        </li>
+                                        <li class="divider"></li>
+                                        <li>
                                             <a href="{% url 'expense_list' %}">
-                                                View Expenses (Non Petty Cash)
+                                                View Expenses
                                             </a>
                                         </li>
                                         <li>

@@ -10,6 +10,7 @@ from django.urls import reverse
 from django.contrib import messages
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
+from django.db.models import Sum
 
 from django_datatables_view.base_datatable_view import BaseDatatableView
 
@@ -24,44 +25,15 @@ class ExpenseListView(TemplateView):
     def get(self, request):
         return render(request, self.template_name)
 
-@method_decorator(login_required, name='dispatch')
-class PettyCashView(TemplateView):
-    template_name = 'expense/petty_cash.html'
-
-    def __compute_petty_cash_monthly(self):
-        pst = datetime.utcnow() + timedelta(hours=8)
-        month_expenses = models.Expense.objects.filter(from_petty_cash=True,
-                                                       date__month=pst.month)
-
-        total = 0
-        for expense in month_expenses:
-            total = total + expense.amount
-
-        return total
-
-    def get(self, request):
-        month_expense = self.__compute_petty_cash_monthly()
-        context_dict = {
-            'expense': month_expense,
-            'percent': ((50000 - month_expense) / 50000) * 100,
-            'remaining': 50000 - month_expense
-        }
-        return render(request, self.template_name, context_dict)
-
 
 @method_decorator(login_required, name='dispatch')
 class ExpenseJson(BaseDatatableView):
     model = models.Expense
-    columns = ['date', 'payee', 'category', 'amount', 'from_petty_cash']
-    order_columns = ['date', 'payee', 'category', 'amount', 'from_petty_cash']
+    columns = ['date', 'payee', 'category', 'amount']
+    order_columns = ['date', 'payee', 'category', 'amount']
 
     def get_initial_queryset(self):
-        from_petty_cash = self.request.GET.get('petty_cash', 0)
-        from_petty_cash = int(from_petty_cash)
-        if from_petty_cash == 0:
-            return models.Expense.objects.filter(from_petty_cash=False)
-        else:
-            return models.Expense.objects.filter(from_petty_cash=True)
+        return models.Expense.objects.all()
 
     def render_column(self, row, column):
         if column == 'date':
@@ -137,25 +109,49 @@ class ExpenseUpdateView(TemplateView):
             return render(request, self.template_name, context_dict)
 
 
-from django.http import JsonResponse
-from django.utils import timezone
-from datetime import datetime, timedelta
+@method_decorator(login_required, name='dispatch')
+class PettyCashListView(TemplateView):
+    template_name = 'petty_cash/list.html'
 
-def expense_report(request):
+    def get(self, request):
+        days = int(request.GET.get('days', 7))
 
-    if request.method == 'GET':
-        ret = {
-            'range': [],
-            'vals': []
-        }
+        pst_now = datetime.utcnow() + timedelta(hours=8)
+        pst_tomorrow = datetime.combine(pst_now.date(), datetime.min.time()) + timedelta(days=1)
+        days_ago = pst_tomorrow - timedelta(days=days + 1)
 
-        start = timezone.now()
-        end = start - timedelta(days=30)
-        print(0, start.strftime('%Y-%m-%d'), end.strftime('%Y-%m-%d'))
+        transactions = models.Transaction.objects.filter(timestamp__gte=days_ago,
+                                                         timestamp__lt=pst_tomorrow).order_by('timestamp')
+        init = models.Transaction.objects.filter(timestamp__lt=days_ago).aggregate(balance=Sum('value'))
 
-        for cnt in range(1, 12):
-            start = end - timedelta(days=1)
-            end = end - timedelta(days=30*cnt)
-            print(cnt, start.strftime('%Y-%m-%d'), end.strftime('%Y-%m-%d'))
+        context_dict = {'transactions': transactions,
+                        'init': init.get('balance', 0)}
 
-        return JsonResponse(ret, safe=False)
+        return render(request, self.template_name, context_dict)
+
+
+@method_decorator(login_required, name='dispatch')
+class PettyCashCreateView(TemplateView):
+    template_name = 'petty_cash/create.html'
+
+    def get(self, request):
+        form = forms.TransactionForm()
+        context_dict = {'form': form}
+
+        return render(request, self.template_name, context_dict)
+
+    def post(self, request):
+        form = forms.TransactionForm(request.POST)
+
+        if form.is_valid():
+            instance = form.save(commit=False)
+            instance.save()
+
+            msg = 'Successfully created new Petty Cash Transaction: {0}'.format(str(instance))
+            messages.success(request, msg)
+
+            return redirect(reverse('pettycash_list'))
+
+        else:
+            context_dict = {'form': form}
+            return render(request, self.template_name, context_dict)

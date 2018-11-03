@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+{% load humanize %}
+{% block pagetitle %}Petty Cash Transactions{% endblock %}
+
+{% block pagestylesheets %}
+{% endblock %}
+
+{% block breadcrumb %}
+<h1>
+    Petty Cash Transactions
+    <a href="{% url 'pettycash_create' %}">
+        <i class="fa fa-plus-circle"></i>
+    </a>
+</h1>
+<ol class="breadcrumb">
+    <li>
+        <a href="{% url 'home' %}">
+            <i class="fa fa-home"></i> Home
+        </a>
+    </li>
+    <li class="active">
+        Petty Cash Transactions
+    </li>
+</ol>
+{% endblock %}
+
+{% block main %}
+    <div class="row">
+        <div class="col-md-9">
+            <div class="box">
+                <div class="box-body">
+                    <table id="transaction_table" class="table table-bordered table-striped">
+                        <colgroup>
+                            <col style="width: 20%;"></col>
+                            <col style="width: 30%;"></col>
+                            <col style="width: 25%;"></col>
+                            <col style="width: 25%;"></col>
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>Description</th>
+                                <th>Amount</th>
+                                <th>Balance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td></td>
+                                <td>
+                                    <b>Beginning Balance</b>
+                                </td>
+                                <td></td>
+                                <td>
+                                    <b>{{ init | default:0 | floatformat:2 | intcomma }}</b>
+                                </td>
+                            </tr>
+                            {% for transaction in transactions %}
+                                <tr>
+                                    <td>
+                                        {{ transaction.timestamp | date:'Y-m-d H:i A'}}
+                                    </td>
+                                    <td>
+                                        {{ transaction.description | default:'-' }}
+                                    </td>
+                                    <td>
+                                        {{ transaction.amount | floatformat:2 | intcomma }}
+                                    </td>
+                                    <td>
+                                        {% if transaction.transaction_type > 0 %}
+                                            <b class="text-green">
+                                                {{ transaction.balance | floatformat:2 | intcomma}}
+                                            </b>
+                                        {% else %}
+                                            {{ transaction.balance | floatformat:2 | intcomma}}
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <form action="{% url 'pettycash_list' %}" method="get">
+            <div class="box">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Filters</h3>
+                </div>
+                <div class="box-body">
+                    <div class="form-group">
+                        <label>
+                            All for last:
+                        </label>
+                        <select class="form-control" name="days" id="daysSelect">
+                            <option value="7">7 Days</option>
+                            <option value="14">14 Days</option>
+                            <option value="30">30 Days</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="box-footer">
+                    <button type="submit" class="btn btn-primary btn-block">
+                        Continue
+                    </button>
+                </div>
+            </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block pagescripts %}
+<script src="{% static 'js/utils.js' %}"></script>
+<script>
+    $(document).ready(function () {
+        var days = getURLParameter('days');
+        $("#daysSelect").val(days);
+    });
+</script>
+{% endblock %}
