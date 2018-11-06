@@ -368,28 +368,47 @@ class BillAdmin(ImportExportModelAdmin):
 admin.site.register(models.Bill, BillAdmin)
 
 
+class ReceiptResource(resources.ModelResource):
+
+    class Meta:
+        model = models.Receipt
+        fields = ('id',
+                  'number',
+                  'date',
+                  'amount',
+                  'remarks')
+
+
+class ReceiptAdmin(ImportExportModelAdmin):
+    list_display = ('id',
+                    'number',
+                    'date',
+                    'amount')
+    list_display_links = ('id',
+                          'number')
+    search_fields = ('id',
+                     'number')
+    resource_class = ReceiptResource
+    list_per_page = 50
+
+admin.site.register(models.Receipt, ReceiptAdmin)
+
+
 class PaymentResource(resources.ModelResource):
 
     class Meta:
         model = models.Payment
         fields = ('id',
-                  'number',
                   'date',
-                  'payment_type',
                   'bill')
 
 
 class PaymentAdmin(ImportExportModelAdmin):
     list_display = ('id',
-                    'number',
                     'date',
-                    'payment_type',
                     'bill')
-    list_display_links = ('id',
-                          'number')
-    list_filter = ('payment_type',)
-    search_fields = ('id',
-                     'number')
+    list_display_links = ('id',)
+    search_fields = ('id',)
     resource_class = PaymentResource
     list_per_page = 50
 

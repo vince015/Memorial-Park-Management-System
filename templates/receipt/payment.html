@@ -1,0 +1,236 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+{% load humanize %}
+{% block pagetitle %}Home{% endblock %}
+
+{% block pagestylesheets %}
+<style type="text/css">
+    .myautocomplete {
+        /* the container must be positioned relative: */
+        position: relative;
+        display: inline-block;
+    }
+
+    .autocomplete-items {
+        position: absolute;
+        border: 1px solid #d4d4d4;
+        border-bottom: none;
+        border-top: none;
+        z-index: 99;
+        /*position the autocomplete items to be the same width as the container:*/
+        top: 100%;
+        left: 0;
+        right: 0;
+    }
+
+    .autocomplete-items div {
+        padding: 10px;
+        cursor: pointer;
+        background-color: #fff; 
+        border-bottom: 1px solid #d4d4d4; 
+    }
+
+    .autocomplete-items div:hover {
+        /*when hovering an item:*/
+        background-color: #e9e9e9; 
+    }
+
+    .autocomplete-active {
+        /*when navigating through the items using the arrow keys:*/
+        background-color: DodgerBlue !important; 
+        color: #ffffff;
+    }
+
+    .contract-result-item div input {
+        height: 20px;
+        font-size: 14px;
+    }
+</style>
+{% endblock %}
+
+{% block breadcrumb %}
+<h1>
+    Add Payment Receipt
+</h1>
+
+<ol class="breadcrumb">
+    <li class="active">
+        <i class="fa fa-home"></i> Home
+    </li>
+</ol>
+{% endblock %}
+
+{% block main %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="box box-primary">
+            <div class="box-header with-border">
+                <h3 class="box-title">Receipt Details</h3>
+            </div>
+            <div class="box-body">
+                <div class="form-group">
+                    <label class="control-label">
+                        Number
+                    </label>
+                    <div>
+                        <input type="text" value="{{ receipt.number }}" class="form-control" disabled>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label">
+                        Amount
+                    </label>
+                    <div>
+                        <input id="id_amount" type="number" value="{{ receipt.amount | floatformat:2 }}" class="form-control" disabled>
+                    </div>
+                </div>
+
+                {% if receipt.remarks %}
+                <div class="form-group">
+                    <label class="control-label">
+                        Remarks
+                    </label>
+                    <div>
+                        <textarea class="form-control" disabled>{{ receipt.remarks }}</textarea>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <div class="box box-primary">
+            <form action="{% url 'receipt_contract' receipt_id=receipt.id %}" method="get">
+            <div class="box-header with-border">
+                <div class="input-group input-group-sm">
+                    <input type="search" id="client-autocomplete" class="form-control" value="{% if client %}{{ client }}{% endif %}" placeholder="Search..." autocomplete="off">
+                    <input type="hidden" id="client-autocomplete-val" name="client-id" value="{% if client %}{{ client.id }}{% endif %}">
+                    <span class="input-group-btn">
+                        <button type="submit" class="btn btn-primary" id="search-contract-btn">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </span>
+                </div>
+            </div>
+            </form>
+
+            <form action="{% url 'receipt_contract' receipt_id=receipt.id %}" method="post">
+            {% csrf_token %}
+            {% if contracts %}
+            <div class="box-body" id="contracts-result-container">
+                <input type="hidden" name="client-id" value="{{ contracts.0.client.id }}">
+                <ul class="todo-list">
+                    {% for contract in contracts %}
+                    <li class="contract-result-item">
+                        {% if contract.next_due_date %}
+                            <input type="checkbox" name="{{ contract.id }}-status">
+                            <span class="text">
+                            <a href="{% url 'contract_read' contract_id=contract.id %}">
+                                {{ contract.lot }}
+                            </a>
+                            &bull;
+                            {{ contract.next_due_date }}
+                            &bull;
+                            {{ contract.amount_due }}
+                            </span>
+                            <div class="pull-right">
+                                <input 
+                                    type="number"
+                                    name="{{ contract.id }}-amount"
+                                    class="form-control contract-payment-amount"
+                                    min=0.00
+                                    step=0.01
+                                    value=0.00
+                                    disabled="">
+                            </div>
+                        {% else %}
+                            <a href="{% url 'contract_read' contract_id=contract.id %}">
+                                {{ contract.lot }}
+                            </a>
+                            &bull;
+                            <b class="text-green">PAYMENT COMPLETE</b>
+                        {% endif %}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <div class="box-footer">
+                <button type="submit" id="contracts-submit" class="btn btn-primary pull-right" disabled>Submit</button>
+            </div>
+            {% endif %}
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block pagescripts %}
+<script src="{% static "js/myautocomplete.js" %}"></script>
+<script>
+    $(document).ready(function() {
+        $.ajax({
+            type: "GET",
+            url: "/lookup/client",
+            success: getClientOK,
+            dataType: "JSON"
+        });
+
+        if ($(".contract-result-item > input:checked").length > 0) {
+            $("#contracts-submit").prop("disabled", false);
+        } else {
+            $("#contracts-submit").prop("disabled", true);
+        }
+
+        $(".contract-result-item > input").change(function() {
+            var target_input = $(this).siblings(":last").find("input")[0];
+            if (this.checked) {
+                $(target_input).prop("disabled", false);
+            } else {
+                $(target_input).prop("disabled", true);
+                $(target_input).val("0.00");
+            }
+
+            if ($(".contract-result-item > input:checked").length > 0) {
+                $("#contracts-submit").prop("disabled", false);
+            } else {
+                $("#contracts-submit").prop("disabled", true);
+            }
+        });
+
+        /*
+        $(".contract-payment-amount").change(function() {
+            // console.log(evt.cancelable);
+            // evt.preventDefault();
+
+            var max = parseFloat($("#id_amount").val());
+            var sum = 0;
+            var realVal = parseFloat($(this).val());
+
+            $(".contract-payment-amount").each(function() {
+                var val = parseFloat($(this).val());
+                console.log(val);
+                sum = sum + val;
+            });
+
+            if (sum > max) {
+                console.log(sum - realVal);
+                $(this).val(sum - realVal);
+            }
+        });
+        */
+    });
+    function getClientOK(data, textStatus, jqXHR) {
+        myautocomplete(document.getElementById("client-autocomplete"),
+                       document.getElementById("client-autocomplete-val"),
+                       data)
+    }
+
+    function getContractsOK(data, textStatus, jqXHR) {
+        $("#contracts-result-container").html(data);
+    }
+</script>
+{% endblock %}

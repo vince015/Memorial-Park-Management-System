@@ -83,7 +83,7 @@
                         Lot *
                     </label>
                     <div class="col-sm-8">
-                        <input type="text" id="lot-autocomplete" class="form-control">
+                        <input type="search" id="lot-autocomplete" class="form-control" autocomplete="off">
                         {{ form.lot }}
                         {% for error in form.lot.errors %}
                             <span class="help-block">{{ error }}</span>
@@ -96,7 +96,7 @@
                         Client Name*
                     </label>
                     <div class="col-sm-8">
-                        <input type="text" id="client-autocomplete" class="form-control">
+                        <input type="search" id="client-autocomplete" class="form-control" autocomplete="off">
                         {{ form.client }}
                         {% for error in form.client.errors %}
                             <span class="help-block">{{ error }}</span>
@@ -147,7 +147,7 @@
                         Name of Sales Agent
                     </label>
                     <div class="col-sm-8">
-                        <input type="text" id="sales_agent-autocomplete" class="form-control">
+                        <input type="search" id="sales_agent-autocomplete" class="form-control" autocomplete="off" placeholder="Input name">
                         {{ form.sales_agent }}
                         {% for error in form.sales_agent.errors %}
                             <span class="help-block">{{ error }}</span>
@@ -160,7 +160,7 @@
                         Name of Unit Manager
                     </label>
                     <div class="col-sm-8">
-                        <input type="text" id="unit_manager-autocomplete" class="form-control">
+                        <input type="search" id="unit_manager-autocomplete" class="form-control" autocomplete="off">
                         {{ form.unit_manager }}
                         {% for error in form.unit_manager.errors %}
                             <span class="help-block">{{ error }}</span>
@@ -173,7 +173,7 @@
                         Name of Sales Leader
                     </label>
                     <div class="col-sm-8">
-                        <input type="text" id="sales_leader-autocomplete" class="form-control">
+                        <input type="search" id="sales_leader-autocomplete" class="form-control" autocomplete="off">
                         {{ form.sales_leader }}
                         {% for error in form.sales_leader.errors %}
                             <span class="help-block">{{ error }}</span>
@@ -186,7 +186,7 @@
                         Name of Referent
                     </label>
                     <div class="col-sm-8">
-                        <input type="text" id="referent-autocomplete" class="form-control">
+                        <input type="search" id="referent-autocomplete" class="form-control" autocomplete="off">
                         {{ form.referent }}
                         {% for error in form.referent.errors %}
                             <span class="help-block">{{ error }}</span>

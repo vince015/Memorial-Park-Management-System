@@ -1,0 +1,75 @@
+{% load humanize %}
+
+<div class="box-header with-border">
+    <h3 class="box-title">Recent Payments</h3>
+
+    <div class="box-tools pull-right">
+        {% if payments.has_other_pages %}
+        <ul class="pagination pagination-sm inline">
+            <li>
+                <a href="javascript:void(0)" onclick="overduePageChange(1)">
+                    &laquo;
+                </a>
+            </li>
+
+            {% if payments.has_previous %}
+            <li>
+                <a href="javascript:void(0)" onclick="overduePageChange({{ payments.previous_page_number }})">
+                    {{ payments.previous_page_number }}
+                </a>
+            </li>
+            {% endif %}
+
+            <li class="current">
+                <a href="javascript:void(0)" onclick="overduePageChange({{ payments.number }})">
+                    {{ payments.number }}
+                </a>
+            </li>
+
+            {% if payments.has_next %}
+            <li>
+                <a href="javascript:void(0)" onclick="overduePageChange({{ payments.next_page_number }})">
+                    {{ payments.next_page_number }}
+                </a>
+            </li>
+            {% endif %}
+
+            <li>
+                <a href="javascript:void(0)" onclick="overduePageChange({{ payments.paginator.num_pages }})">
+                    &raquo;
+                </a>
+            </li>
+        </ul>
+        {% endif %}
+    </div>
+</div>
+
+<div class="box-body">
+    {% if payments %}
+    <ul class="products-list product-list-in-box">
+        {% for payment in payments %}
+        <li class="item">
+            <div class="product-item">
+                <a href="{% url 'bill_read' bill_id=payment.bill.id %}" class="product-title">
+                    {{ payment.date }}
+                    <span class="label pull-right {% if payment.bill.is_overdue %} bg-red {% elif payment.bill.is_paid %} bg-green {% else %} bg-blue {% endif %}">
+                        Php {{ payment.amount | floatformat:2 | intcomma}}
+                    </span>
+                </a>
+                <span class="product-description">
+                    <a href="{% url 'contract_read' contract_id=payment.bill.contract.id %}">
+                        {{ payment.bill.contract }}
+                    </a>
+                    &bull;
+                    Receipt No. {{ payment.receipt.number }}
+                </span>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <h3 class="text-muted text-center">
+        No results found
+    </h3>
+    {% endif %}
+</div>

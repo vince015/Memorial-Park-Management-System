@@ -8,7 +8,7 @@
 {% endblock %}
 
 {% block breadcrumb %}
-<!-- <div class="input-group input-group-sm col-md-6">
+<div class="input-group input-group-sm col-md-6">
     <input type="text" id="search-input" class="form-control" placeholder="Search...">
     <span class="input-group-btn">
         <button type="button" class="btn btn-primary">
@@ -16,7 +16,6 @@
         </button>
     </span>
 </div>
- -->
 <h1>
     Welcome!
 </h1>
@@ -30,7 +29,7 @@
 
 {% block main %}
 <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-12">
         <div class="box box-primary" id="bills-due">
             <div class="overlay text-center" id="due-overlay">
                 <i class="fa fa-spinner fa-spin"></i>
@@ -41,16 +40,6 @@
         </div>
     </div>
 
-    <div class="col-md-6">
-        <div class="box box-primary" id="bills-overdue">
-            <div class="overlay text-center" id="overdue-overlay">
-                <i class="fa fa-spinner fa-spin"></i>
-            </div>
-            <div class="box-body">
-                &nbsp;
-            </div>
-        </div>
-    </div>
 </div>
 {% endblock %}
 
@@ -59,8 +48,9 @@
 <script src="{% static "bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js" %}"></script>
 <script>
     $(document).ready(function() {
-        getDue(1);
-        getOverdue(1);
+        // getDue(1);
+        // getOverdue(1);
+        console.log('ready')
     });
 
     function getDue(page) {
@@ -88,7 +78,7 @@
         $("#overdue-overlay").show();
         $.ajax({
             type: "GET",
-            url: "{% url 'home_payments' %}",
+            url: "{% url 'home_overdue' %}",
             data: {
                 "page": page
             },

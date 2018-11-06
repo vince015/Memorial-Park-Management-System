@@ -100,7 +100,7 @@ class ContractCreateView(TemplateView):
                                                contract=instance,
                                                remarks='For spot cash payment')
 
-                    return redirect(reverse('contract_spot', kwargs={'contract_id': instance.id}))
+                    return redirect(reverse('contract_read', kwargs={'contract_id': instance.id}))
                 else:
                     msg = 'No available Spot Option Promo. Kindly report to admin'
                     messages.error(request, msg)
@@ -197,7 +197,6 @@ class ContractReadView(TemplateView):
 
                 start_date = end_date + timedelta(days=1)
 
-
     def get(self, request, contract_id):
         contract = get_object_or_404(models.Contract, pk=contract_id)
         branch_id = request.session.get('branch_id')
@@ -212,13 +211,8 @@ class ContractReadView(TemplateView):
         if request.GET.get('generate', False) and len(contract.bills.all()) < 1:
             self.__generate_bills(contract)
 
-        pst = datetime.utcnow() + timedelta(hours=8)
-        bill = contract.bills.filter(start__lte=pst,
-                                     end__gte=pst).first()
-
         context_dict = {
             'contract': contract,
-            'bill': bill,
             'commission_dist': contract.get_commissions()
         }
 
@@ -376,3 +370,36 @@ def contract_forfeit(request, contract_id):
         contract.save()
 
         return redirect(reverse('contract_read', kwargs={'contract_id': contract.id}))
+
+
+@method_decorator(utils.branch_required(utils.is_auth_and_has_branch), name='dispatch')
+class ContractResultsView(TemplateView):
+    template_name = 'payment/add.html'
+
+    def get(self, request):
+        branch_id = request.session.get('branch_id')
+
+        query = request.GET.get('q')
+        if query:
+            branch_id = request.session.get('branch_id')
+            contract_list = models.Contract.objects.filter(Q(lot__id=branch_id) &
+                                                           Q(client__first_name__icontains=query) |
+                                                           Q(client__last_name__icontains=query) |
+                                                           Q(client__middle_name__icontains=query))
+            contract_list = contract_list.order_by('client__last_name', 'client__first_name')
+        else:
+            contract_list = models.Contract.objects.filter(contract__lot__id=branch_id).order_by('-timestamp')
+
+        page = request.GET.get('page', 1)
+
+        paginator = Paginator(contract_list, 25)
+        try:
+            contracts = paginator.page(page)
+        except PageNotAnInteger:
+            contracts = paginator.page(1)
+        except EmptyPage:
+            contracts = paginator.page(paginator.num_pages)
+
+        context_dict = {'contracts': contracts}
+
+        return render(request, self.template_name, context_dict)

@@ -314,14 +314,13 @@ class BillStatusForm(forms.ModelForm):
                                           'placeholder': 'Service Type'}),
         }
 
-class PaymentForm(forms.ModelForm):
+class ReceiptForm(forms.ModelForm):
 
     class Meta:
-        model = models.Payment
+        model = models.Receipt
         fields = ['number',
                   'date',
                   'amount',
-                  'payment_type',
                   'remarks']
 
         widgets = {
@@ -333,8 +332,26 @@ class PaymentForm(forms.ModelForm):
             'amount': forms.NumberInput(attrs={'step': 0.01,
                                                'min': 0.00,
                                                'class': 'form-control'}),
-            'payment_type': forms.Select(attrs={'class': 'form-control',
-                                                'placeholder': 'Service Type'}),
+            'remarks': forms.Textarea(attrs={'class': 'form-control',
+                                             'rows': 3,
+                                             'placeholder': 'Remarks'}),
+        }
+
+class PaymentForm(forms.ModelForm):
+
+    class Meta:
+        model = models.Payment
+        fields = ['date',
+                  'amount',
+                  'remarks']
+
+        widgets = {
+            'date': forms.DateInput(format='%m/%d/%Y',
+                                     attrs={'class': 'form-control datepicker',
+                                            'placeholder': 'mm/dd/yyyy'}),
+            'amount': forms.NumberInput(attrs={'step': 0.01,
+                                               'min': 0.00,
+                                               'class': 'form-control'}),
             'remarks': forms.Textarea(attrs={'class': 'form-control',
                                              'rows': 3,
                                              'placeholder': 'Remarks'}),

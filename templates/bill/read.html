@@ -86,7 +86,7 @@
             </div>
         </div>
 
-        <div class="box box-primary">
+        <!-- <div class="box box-primary">
             <form class="form-horizontal" action="{% url 'bill_status' bill_id=bill.id %}" method="post">
             {% csrf_token %}
             <div class="box-header">
@@ -110,13 +110,13 @@
                 </button>
             </div>
             </form>
-        </div>
+        </div> -->
     </div>
 
     <div class="col-md-8">
         <div class="box box-primary">
             <div class="box-header">
-                <h3 class="box-title {% if bill.status == 'OVERDUE' %} text-red {% elif bill.status == 'PAID' %} text-green {% endif %}">
+                <h3 class="box-title {% if bill.is_overdue %} text-red {% elif bill.is_paid %} text-green {% endif %}">
                     {{ bill.start | date:"M d, Y" }} TO {{ bill.end | date:"M d, Y" }}
                 </h3>
 
@@ -148,16 +148,36 @@
                         </a>
                     </li>
                     <li class="list-group-item">
+                        <b>Balance</b>
+                        <a class="pull-right">
+                            PhP {{ bill.balance | floatformat:2 | intcomma}}
+                        </a>
+                    </li>
+                    <li class="list-group-item">
                         <b>Interest</b>
                         <a class="pull-right">
                             PhP {{ bill.interest | floatformat:2 | intcomma}}
                         </a>
                     </li>
                     <li class="list-group-item">
-                        <b class="{% if bill.status == 'NEW' %} text-light-blue {% elif bill.status == 'OVERDUE' %} text-red {% elif bill.status == 'PAID' %} text-green {% endif %}">Total Amount Due</b>
-                        <a class="pull-right {% if bill.status == 'OVERDUE' %} text-red {% elif bill.status == 'PAID' %} text-green {% endif %}">
+                        <b>Total Amount Due</b>
+                        <a class="pull-right">
                            <b> PhP {{ bill.total_amount_due | floatformat:2 | intcomma}} </b>
                         </a>
+                    </li>
+                    <li class="list-group-item">
+                        <b>Status</b>
+                    {% if bill.is_paid %}
+                        <a class="pull-right text-green">
+                            <i class="fa fa-check-square"></i> <b>PAID</b>
+                        </a>
+                    {% elif bill.is_overdue %}
+                        <a class="pull-right text-red">
+                            <i class="fa fa-warning"></i> <b>OVERDUE</b>
+                        </a>
+                    {% else %}
+                        <a class="pull-right">--</a>
+                    {% endif %}
                     </li>
                 </ul>
             </div>
@@ -197,7 +217,7 @@
                 <table class="table table-bordered table-striped">
                     <thead>
                         <tr>
-                            <th>Number</th>
+                            <th>Receipt Number</th>
                             <th>Date</th>
                             <th>Amount</th>
                         </tr>
@@ -206,7 +226,7 @@
                         {% if bill.payments.all %}
                             {% for payment in bill.payments.all %}
                             <tr>
-                                <td>{{ payment.number }}</td>
+                                <td>{{ payment.receipt }}</td>
                                 <td>{{ payment.date }}</td>
                                 <td>{{ payment.amount | floatformat:2 }}</th>
                             </tr>

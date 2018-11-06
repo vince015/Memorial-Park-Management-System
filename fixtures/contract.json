@@ -1,0 +1,652 @@
+[
+{
+    "model": "memorial_park_mgmnt_app.lot",
+    "pk": 1,
+    "fields": {
+        "block": "8",
+        "lot": "F/E 20 LOT 41",
+        "unit": "B7 ",
+        "lot_type": 1,
+        "branch": 1
+    }
+},
+{
+    "model": "memorial_park_mgmnt_app.lot",
+    "pk": 2,
+    "fields": {
+        "block": "8",
+        "lot": "F/E 20 LOT 29",
+        "unit": "B7 ",
+        "lot_type": 1,
+        "branch": 1
+    }
+},
+{
+    "model": "memorial_park_mgmnt_app.lot",
+    "pk": 3,
+    "fields": {
+        "block": "8",
+        "lot": "F/E 20 LOT 28",
+        "unit": "B7 ",
+        "lot_type": 1,
+        "branch": 1
+    }
+},
+{
+    "model": "memorial_park_mgmnt_app.lot",
+    "pk": 4,
+    "fields": {
+        "block": "8",
+        "lot": "F/E 20 LOT 26",
+        "unit": "B7 ",
+        "lot_type": 2,
+        "branch": 1
+    }
+},
+{
+    "model": "memorial_park_mgmnt_app.lot",
+    "pk": 5,
+    "fields": {
+        "block": "8",
+        "lot": "329",
+        "unit": "D",
+        "lot_type": 2,
+        "branch": 1
+    }
+},
+{
+    "model": "memorial_park_mgmnt_app.lot",
+    "pk": 6,
+    "fields": {
+        "block": "8",
+        "lot": "194",
+        "unit": "C",
+        "lot_type": 2,
+        "branch": 1
+    }
+},
+{
+    "model": "memorial_park_mgmnt_app.lot",
+    "pk": 7,
+    "fields": {
+        "block": "8",
+        "lot": "106",
+        "unit": "D",
+        "lot_type": 1,
+        "branch": 1
+    }
+},
+{
+    "model": "memorial_park_mgmnt_app.lot",
+    "pk": 8,
+    "fields": {
+        "block": "8",
+        "lot": "34",
+        "unit": "C",
+        "lot_type": 1,
+        "branch": 1
+    }
+},
+{
+    "model": "memorial_park_mgmnt_app.receipt",
+    "pk": 1,
+    "fields": {
+        "created": "2018-11-04T03:45:59.530Z",
+        "updated": "2018-11-04T03:45:59.530Z",
+        "number": "4",
+        "date": "2018-11-07",
+        "amount": 20.0,
+        "remarks": null
+    }
+},
+{
+    "model": "memorial_park_mgmnt_app.receipt",
+    "pk": 2,
+    "fields": {
+        "created": "2018-11-04T03:47:31.071Z",
+        "updated": "2018-11-04T03:47:31.071Z",
+        "number": "3",
+        "date": "2018-11-04",
+        "amount": 0.0,
+        "remarks": null
+    }
+},
+{
+    "model": "memorial_park_mgmnt_app.receipt",
+    "pk": 3,
+    "fields": {
+        "created": "2018-11-04T04:03:46.960Z",
+        "updated": "2018-11-04T04:03:46.960Z",
+        "number": "32",
+        "date": "2018-11-04",
+        "amount": 1000.0,
+        "remarks": "hello"
+    }
+},
+{
+    "model": "memorial_park_mgmnt_app.receipt",
+    "pk": 4,
+    "fields": {
+        "created": "2018-11-04T06:10:37.760Z",
+        "updated": "2018-11-04T06:10:37.760Z",
+        "number": "2",
+        "date": "2018-11-04",
+        "amount": 1000.0,
+        "remarks": null
+    }
+},
+{
+    "model": "memorial_park_mgmnt_app.receipt",
+    "pk": 5,
+    "fields": {
+        "created": "2018-11-04T11:56:11.697Z",
+        "updated": "2018-11-04T12:03:58.880Z",
+        "number": "311",
+        "date": "2018-11-04",
+        "amount": 46750.0,
+        "remarks": null
+    }
+},
+{
+    "model": "memorial_park_mgmnt_app.receipt",
+    "pk": 6,
+    "fields": {
+        "created": "2018-11-06T14:11:16.082Z",
+        "updated": "2018-11-06T14:11:16.082Z",
+        "number": "234",
+        "date": "2018-11-06",
+        "amount": 1000.0,
+        "remarks": null
+    }
+},
+{
+    "model": "memorial_park_mgmnt_app.contract",
+    "pk": 3,
+    "fields": {
+        "timestamp": "2018-11-04T11:33:13.162Z",
+        "number": "3",
+        "date": "2018-10-04",
+        "buyer_type": "PRE-NEED",
+        "status": "NEW",
+        "remarks": null,
+        "reservation": 0.0,
+        "payment_terms": "SPOT",
+        "lot": 7,
+        "price": 50000.0,
+        "vat": 0.12,
+        "care_fund": 5000.0,
+        "client": 4,
+        "sales_agent": null,
+        "unit_manager": null,
+        "sales_leader": null,
+        "referent": null,
+        "sold_by": "SALES_AGENT"
+    }
+},
+{
+    "model": "memorial_park_mgmnt_app.contract",
+    "pk": 4,
+    "fields": {
+        "timestamp": "2018-11-06T12:43:47.162Z",
+        "number": "15",
+        "date": "2018-10-05",
+        "buyer_type": "PRE-NEED",
+        "status": "NEW",
+        "remarks": null,
+        "reservation": 0.0,
+        "payment_terms": "INSTALLMENT",
+        "lot": 6,
+        "price": 55000.0,
+        "vat": 0.12,
+        "care_fund": 5000.0,
+        "client": 4,
+        "sales_agent": null,
+        "unit_manager": null,
+        "sales_leader": null,
+        "referent": null,
+        "sold_by": "SALES_AGENT"
+    }
+},
+{
+    "model": "memorial_park_mgmnt_app.bill",
+    "pk": 2,
+    "fields": {
+        "created": "2018-11-04T11:33:13.170Z",
+        "updated": "2018-11-04T11:33:13.170Z",
+        "start": "2018-11-04",
+        "end": "2018-11-04",
+        "issue_date": "2018-11-04",
+        "due_date": "2018-11-04",
+        "amount_due": 46750.0,
+        "status": "NEW",
+        "remarks": "For spot cash payment",
+        "contract": 3
+    }
+},
+{
+    "model": "memorial_park_mgmnt_app.bill",
+    "pk": 3,
+    "fields": {
+        "created": "2018-11-06T12:47:34.039Z",
+        "updated": "2018-11-06T12:47:34.039Z",
+        "start": "2018-10-05",
+        "end": "2018-11-05",
+        "issue_date": "2018-10-31",
+        "due_date": "2018-11-05",
+        "amount_due": 9600.0,
+        "status": "NEW",
+        "remarks": null,
+        "contract": 4
+    }
+},
+{
+    "model": "memorial_park_mgmnt_app.bill",
+    "pk": 4,
+    "fields": {
+        "created": "2018-11-06T12:47:34.047Z",
+        "updated": "2018-11-06T12:47:34.047Z",
+        "start": "2018-11-06",
+        "end": "2018-12-05",
+        "issue_date": "2018-11-30",
+        "due_date": "2018-12-05",
+        "amount_due": 2000.0,
+        "status": "NEW",
+        "remarks": null,
+        "contract": 4
+    }
+},
+{
+    "model": "memorial_park_mgmnt_app.bill",
+    "pk": 5,
+    "fields": {
+        "created": "2018-11-06T12:47:34.049Z",
+        "updated": "2018-11-06T12:47:34.049Z",
+        "start": "2018-12-06",
+        "end": "2019-01-05",
+        "issue_date": "2018-12-31",
+        "due_date": "2019-01-05",
+        "amount_due": 2000.0,
+        "status": "NEW",
+        "remarks": null,
+        "contract": 4
+    }
+},
+{
+    "model": "memorial_park_mgmnt_app.bill",
+    "pk": 6,
+    "fields": {
+        "created": "2018-11-06T12:47:34.050Z",
+        "updated": "2018-11-06T12:47:34.050Z",
+        "start": "2019-01-06",
+        "end": "2019-02-05",
+        "issue_date": "2019-01-31",
+        "due_date": "2019-02-05",
+        "amount_due": 2000.0,
+        "status": "NEW",
+        "remarks": null,
+        "contract": 4
+    }
+},
+{
+    "model": "memorial_park_mgmnt_app.bill",
+    "pk": 7,
+    "fields": {
+        "created": "2018-11-06T12:47:34.052Z",
+        "updated": "2018-11-06T12:47:34.052Z",
+        "start": "2019-02-06",
+        "end": "2019-03-05",
+        "issue_date": "2019-02-28",
+        "due_date": "2019-03-05",
+        "amount_due": 2000.0,
+        "status": "NEW",
+        "remarks": null,
+        "contract": 4
+    }
+},
+{
+    "model": "memorial_park_mgmnt_app.bill",
+    "pk": 8,
+    "fields": {
+        "created": "2018-11-06T12:47:34.054Z",
+        "updated": "2018-11-06T12:47:34.054Z",
+        "start": "2019-03-06",
+        "end": "2019-04-05",
+        "issue_date": "2019-03-31",
+        "due_date": "2019-04-05",
+        "amount_due": 2000.0,
+        "status": "NEW",
+        "remarks": null,
+        "contract": 4
+    }
+},
+{
+    "model": "memorial_park_mgmnt_app.bill",
+    "pk": 9,
+    "fields": {
+        "created": "2018-11-06T12:47:34.056Z",
+        "updated": "2018-11-06T12:47:34.056Z",
+        "start": "2019-04-06",
+        "end": "2019-05-05",
+        "issue_date": "2019-04-30",
+        "due_date": "2019-05-05",
+        "amount_due": 2000.0,
+        "status": "NEW",
+        "remarks": null,
+        "contract": 4
+    }
+},
+{
+    "model": "memorial_park_mgmnt_app.bill",
+    "pk": 10,
+    "fields": {
+        "created": "2018-11-06T12:47:34.057Z",
+        "updated": "2018-11-06T12:47:34.057Z",
+        "start": "2019-05-06",
+        "end": "2019-06-05",
+        "issue_date": "2019-05-31",
+        "due_date": "2019-06-05",
+        "amount_due": 2000.0,
+        "status": "NEW",
+        "remarks": null,
+        "contract": 4
+    }
+},
+{
+    "model": "memorial_park_mgmnt_app.bill",
+    "pk": 11,
+    "fields": {
+        "created": "2018-11-06T12:47:34.059Z",
+        "updated": "2018-11-06T12:47:34.059Z",
+        "start": "2019-06-06",
+        "end": "2019-07-05",
+        "issue_date": "2019-06-30",
+        "due_date": "2019-07-05",
+        "amount_due": 2000.0,
+        "status": "NEW",
+        "remarks": null,
+        "contract": 4
+    }
+},
+{
+    "model": "memorial_park_mgmnt_app.bill",
+    "pk": 12,
+    "fields": {
+        "created": "2018-11-06T12:47:34.060Z",
+        "updated": "2018-11-06T12:47:34.060Z",
+        "start": "2019-07-06",
+        "end": "2019-08-05",
+        "issue_date": "2019-07-31",
+        "due_date": "2019-08-05",
+        "amount_due": 2000.0,
+        "status": "NEW",
+        "remarks": null,
+        "contract": 4
+    }
+},
+{
+    "model": "memorial_park_mgmnt_app.bill",
+    "pk": 13,
+    "fields": {
+        "created": "2018-11-06T12:47:34.061Z",
+        "updated": "2018-11-06T12:47:34.061Z",
+        "start": "2019-08-06",
+        "end": "2019-09-05",
+        "issue_date": "2019-08-31",
+        "due_date": "2019-09-05",
+        "amount_due": 2000.0,
+        "status": "NEW",
+        "remarks": null,
+        "contract": 4
+    }
+},
+{
+    "model": "memorial_park_mgmnt_app.bill",
+    "pk": 14,
+    "fields": {
+        "created": "2018-11-06T12:47:34.063Z",
+        "updated": "2018-11-06T12:47:34.063Z",
+        "start": "2019-09-06",
+        "end": "2019-10-05",
+        "issue_date": "2019-09-30",
+        "due_date": "2019-10-05",
+        "amount_due": 2000.0,
+        "status": "NEW",
+        "remarks": null,
+        "contract": 4
+    }
+},
+{
+    "model": "memorial_park_mgmnt_app.bill",
+    "pk": 15,
+    "fields": {
+        "created": "2018-11-06T12:47:34.064Z",
+        "updated": "2018-11-06T12:47:34.064Z",
+        "start": "2019-10-06",
+        "end": "2019-11-05",
+        "issue_date": "2019-10-31",
+        "due_date": "2019-11-05",
+        "amount_due": 2000.0,
+        "status": "NEW",
+        "remarks": null,
+        "contract": 4
+    }
+},
+{
+    "model": "memorial_park_mgmnt_app.bill",
+    "pk": 16,
+    "fields": {
+        "created": "2018-11-06T12:47:34.066Z",
+        "updated": "2018-11-06T12:47:34.066Z",
+        "start": "2019-11-06",
+        "end": "2019-12-05",
+        "issue_date": "2019-11-30",
+        "due_date": "2019-12-05",
+        "amount_due": 2000.0,
+        "status": "NEW",
+        "remarks": null,
+        "contract": 4
+    }
+},
+{
+    "model": "memorial_park_mgmnt_app.bill",
+    "pk": 17,
+    "fields": {
+        "created": "2018-11-06T12:47:34.067Z",
+        "updated": "2018-11-06T12:47:34.067Z",
+        "start": "2019-12-06",
+        "end": "2020-01-05",
+        "issue_date": "2019-12-31",
+        "due_date": "2020-01-05",
+        "amount_due": 2000.0,
+        "status": "NEW",
+        "remarks": null,
+        "contract": 4
+    }
+},
+{
+    "model": "memorial_park_mgmnt_app.bill",
+    "pk": 18,
+    "fields": {
+        "created": "2018-11-06T12:47:34.068Z",
+        "updated": "2018-11-06T12:47:34.068Z",
+        "start": "2020-01-06",
+        "end": "2020-02-05",
+        "issue_date": "2020-01-31",
+        "due_date": "2020-02-05",
+        "amount_due": 2000.0,
+        "status": "NEW",
+        "remarks": null,
+        "contract": 4
+    }
+},
+{
+    "model": "memorial_park_mgmnt_app.bill",
+    "pk": 19,
+    "fields": {
+        "created": "2018-11-06T12:47:34.070Z",
+        "updated": "2018-11-06T12:47:34.070Z",
+        "start": "2020-02-06",
+        "end": "2020-03-05",
+        "issue_date": "2020-02-29",
+        "due_date": "2020-03-05",
+        "amount_due": 2000.0,
+        "status": "NEW",
+        "remarks": null,
+        "contract": 4
+    }
+},
+{
+    "model": "memorial_park_mgmnt_app.bill",
+    "pk": 20,
+    "fields": {
+        "created": "2018-11-06T12:47:34.071Z",
+        "updated": "2018-11-06T12:47:34.071Z",
+        "start": "2020-03-06",
+        "end": "2020-04-05",
+        "issue_date": "2020-03-31",
+        "due_date": "2020-04-05",
+        "amount_due": 2000.0,
+        "status": "NEW",
+        "remarks": null,
+        "contract": 4
+    }
+},
+{
+    "model": "memorial_park_mgmnt_app.bill",
+    "pk": 21,
+    "fields": {
+        "created": "2018-11-06T12:47:34.072Z",
+        "updated": "2018-11-06T12:47:34.072Z",
+        "start": "2020-04-06",
+        "end": "2020-05-05",
+        "issue_date": "2020-04-30",
+        "due_date": "2020-05-05",
+        "amount_due": 2000.0,
+        "status": "NEW",
+        "remarks": null,
+        "contract": 4
+    }
+},
+{
+    "model": "memorial_park_mgmnt_app.bill",
+    "pk": 22,
+    "fields": {
+        "created": "2018-11-06T12:47:34.073Z",
+        "updated": "2018-11-06T12:47:34.074Z",
+        "start": "2020-05-06",
+        "end": "2020-06-05",
+        "issue_date": "2020-05-31",
+        "due_date": "2020-06-05",
+        "amount_due": 2000.0,
+        "status": "NEW",
+        "remarks": null,
+        "contract": 4
+    }
+},
+{
+    "model": "memorial_park_mgmnt_app.bill",
+    "pk": 23,
+    "fields": {
+        "created": "2018-11-06T12:47:34.076Z",
+        "updated": "2018-11-06T12:47:34.076Z",
+        "start": "2020-06-06",
+        "end": "2020-07-05",
+        "issue_date": "2020-06-30",
+        "due_date": "2020-07-05",
+        "amount_due": 2000.0,
+        "status": "NEW",
+        "remarks": null,
+        "contract": 4
+    }
+},
+{
+    "model": "memorial_park_mgmnt_app.bill",
+    "pk": 24,
+    "fields": {
+        "created": "2018-11-06T12:47:34.078Z",
+        "updated": "2018-11-06T12:47:34.078Z",
+        "start": "2020-07-06",
+        "end": "2020-08-05",
+        "issue_date": "2020-07-31",
+        "due_date": "2020-08-05",
+        "amount_due": 2000.0,
+        "status": "NEW",
+        "remarks": null,
+        "contract": 4
+    }
+},
+{
+    "model": "memorial_park_mgmnt_app.bill",
+    "pk": 25,
+    "fields": {
+        "created": "2018-11-06T12:47:34.079Z",
+        "updated": "2018-11-06T12:47:34.079Z",
+        "start": "2020-08-06",
+        "end": "2020-09-05",
+        "issue_date": "2020-08-31",
+        "due_date": "2020-09-05",
+        "amount_due": 2000.0,
+        "status": "NEW",
+        "remarks": null,
+        "contract": 4
+    }
+},
+{
+    "model": "memorial_park_mgmnt_app.bill",
+    "pk": 26,
+    "fields": {
+        "created": "2018-11-06T12:47:34.080Z",
+        "updated": "2018-11-06T12:47:34.080Z",
+        "start": "2020-09-06",
+        "end": "2020-10-05",
+        "issue_date": "2020-09-30",
+        "due_date": "2020-10-05",
+        "amount_due": 2000.0,
+        "status": "NEW",
+        "remarks": null,
+        "contract": 4
+    }
+},
+{
+    "model": "memorial_park_mgmnt_app.bill",
+    "pk": 27,
+    "fields": {
+        "created": "2018-11-06T12:47:34.082Z",
+        "updated": "2018-11-06T12:47:34.082Z",
+        "start": "2020-10-06",
+        "end": "2020-11-05",
+        "issue_date": "2020-10-31",
+        "due_date": "2020-11-05",
+        "amount_due": 2000.0,
+        "status": "NEW",
+        "remarks": null,
+        "contract": 4
+    }
+},
+{
+    "model": "memorial_park_mgmnt_app.payment",
+    "pk": 2,
+    "fields": {
+        "created": "2018-11-04T12:53:14.875Z",
+        "updated": "2018-11-04T12:53:14.875Z",
+        "date": "2018-11-04",
+        "amount": 46750.0,
+        "remarks": null,
+        "bill": 2,
+        "receipt": 5
+    }
+},
+{
+    "model": "memorial_park_mgmnt_app.payment",
+    "pk": 3,
+    "fields": {
+        "created": "2018-11-06T14:11:36.554Z",
+        "updated": "2018-11-06T14:11:36.554Z",
+        "date": "2018-11-06",
+        "amount": 1000.0,
+        "remarks": null,
+        "bill": 3,
+        "receipt": 6
+    }
+}
+]

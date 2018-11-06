@@ -248,31 +248,28 @@
                 </div>
             </div>
 
+            {% if contract.bills.all %}
             <div class="box-body">
-                {% if bill %}
                 <div class="small-box bg-light-blue">
                     <div class="inner">
                         <h3>
-                            PhP {{ bill.total_amount_due | floatformat:2 | intcomma }}
+                            PhP {{ contract.amount_due | floatformat:2 | intcomma }}
                         </h3>
                         <p>
-                            Current Bill
-                            &bull;
-                            {{ bill.start |date:"M d, Y" }} to {{ bill.end |date:"M d, Y" }}
-                            {% if bill.status == 'PAID' %}
-                            &bull;
-                            <b class="text-green">Paid</b>
+                            {% if contract.next_due_date %}
+                                Next Due Date: {{ contract.next_due_date | date:"M d, Y" }}
+                            {% else %}
+                                PAYMENT COMPLETE
                             {% endif %}
                         </p>
                     </div>
                     <div class="icon">
                         <i class="fa fa-envelope"></i>
                     </div>
-                    <a href="{% url 'bill_read' bill_id=bill.id %}" class="small-box-footer">
+                    <a href="#" class="small-box-footer">
                       More info <i class="fa fa-arrow-circle-right"></i>
                     </a>
                 </div>
-                {% endif %}
 
                 <table id="bill_table" class="table table-bordered table-striped">
                     <thead>
@@ -280,6 +277,7 @@
                             <th>Period</th>
                             <th>Due Date</th>
                             <th>Amount Due</th>
+                            <th>Amount Paid</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -287,9 +285,9 @@
                 </table>
             </div>
 
-            {% if not contract.bills.all %}
+            {% else %}
             <div class="box-footer">
-                <a href="{% url 'contract_read' contract_id=contract.id %}?generate=true" class="btn btn-primary pull-right">
+                <a href="{% url 'contract_read' contract_id=contract.id %}?generate=true" class="btn btn-primary btn-lg btn-block pull-right">
                     Generate Bills
                 </a>
             </div>
@@ -352,14 +350,23 @@
 <script>
     $(function () {
         $('#bill_table').DataTable({
-            "order": [[0, "desc"]],
+            "order": [[0, "asc"]],
             "processing": true,
             "serverSide": true,
             "searching": false,
+            "columnDefs": [
+                {
+                    "orderable": false,
+                    "targets": [2, 3]
+                }
+            ],
             "ajax": {
                 "url": "{% url 'bill_json' %}",
                 "data": function (d) {
                     d.contract_id = "{{ contract.id }}";
+                    d.is_overdue = true;
+                    d.is_paid = true;
+                    d.until = Date.now()
                 }
             }
         });

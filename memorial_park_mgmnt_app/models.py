@@ -36,11 +36,6 @@ SERVICE_TYPES = (('CERTIFICATE_OF_OWNERSHIP', 'Certificate of Ownership'),
                  ('INTERMENT', 'Interment'),
                  ('OTHERS', 'Others'))
 
-PAYMENT_TYPES = (('SPOT_CASH', 'Spot Cash'),
-                 ('DOWNPAYMENT', 'Downpayment'),
-                 ('INSTALLMENT', 'Installment'),
-                 ('OTHERS', 'Others'))
-
 CONTRACT_STATUSES = (('NEW', 'New'),
                      ('REVIEWED', 'Reviewed'),
                      ('FORFEITED', 'Forfeited'))
@@ -284,9 +279,7 @@ class Contract(models.Model):
     def clean(self):
         super(Contract, self).clean()
         if self._state.adding and self.pk is None:
-            print('heeere')
             qs = self.lot.lot_contracts.filter(status__in=['NEW', 'REVIEWED'])
-            print('qs: {0}'.format(qs))
             if qs.exists():
                 error = {'lot': 'Lot is already under an active contract'}
                 raise exceptions.ValidationError(error)
@@ -422,6 +415,25 @@ class Contract(models.Model):
 
         return monthly
 
+    @property
+    def next_due_date(self):
+        pst = datetime.utcnow() + timedelta(hours=8)
+        for bill in self.bills.filter(due_date__gte=pst).order_by('due_date'):
+            if not bill.is_paid:
+                return bill.due_date
+
+        return None
+
+    @property
+    def amount_due(self):
+        amount_due = 0
+        if self.next_due_date:
+            for bill in self.bills.filter(due_date__lte=self.next_due_date):
+                if not bill.is_paid:
+                    amount_due = amount_due + bill.balance + bill.interest
+
+        return amount_due
+
     def get_commissions(self):
         base = self.commissionable_amount
         commissions = {
@@ -554,11 +566,16 @@ class Bill(models.Model):
             raise exceptions.ValidationError(error)
 
     @property
-    def is_paid(self):
+    def total_amount_paid(self):
         paid = 0
         for payment in self.payments.all():
             paid = paid + payment.amount
-        if paid < self.amount_due:
+
+        return paid
+
+    @property
+    def is_paid(self):
+        if self.total_amount_paid < self.amount_due:
             return False
 
         return True
@@ -573,6 +590,13 @@ class Bill(models.Model):
         return False
 
     @property
+    def balance(self):
+        if self.is_paid:
+            return 0
+        else:
+            return self.amount_due - self.total_amount_paid
+
+    @property
     def interest(self):
         interest = 0
 
@@ -580,7 +604,7 @@ class Bill(models.Model):
         last_bill = bills.order_by('-issue_date').first()
 
         if last_bill and last_bill.is_overdue:
-            interest = last_bill.total_amount_due * 0.02
+            interest = last_bill.balance * 0.02
 
         return interest
 
@@ -588,27 +612,30 @@ class Bill(models.Model):
     def total_amount_due(self):
         return self.amount_due + self.interest
 
-    @property
-    def total_amount_paid(self):
-        paid = 0
-        for payment in self.payments.all():
-            paid = paid + payment.amount
 
-        return paid
+class Receipt(models.Model):
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    number = models.CharField(max_length=256, blank=False, null=False, unique=True)
+    date = models.DateField(null=False, blank=False, default=date.today)
+    amount = models.FloatField(null=False, blank=False, default=0.00)
+    remarks = models.CharField(max_length=256, blank=True, null=True)
+
+    def __str__(self):
+        return self.number
 
 
 class Payment(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
-    number = models.CharField(max_length=256, blank=False, null=False)
     date = models.DateField(null=False, blank=False, default=date.today)
     amount = models.FloatField(null=False, blank=False, default=0.00)
-    payment_type = models.CharField(max_length=256, blank=True, null=True, choices=PAYMENT_TYPES, default='DOWNPAYMENT')
     remarks = models.CharField(max_length=256, blank=True, null=True)
 
     bill = models.ForeignKey(Bill, null=False, blank=False, related_name='payments', on_delete=models.CASCADE)
+    receipt = models.ForeignKey(Receipt, null=False, blank=False, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.number
-

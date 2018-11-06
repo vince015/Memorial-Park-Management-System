@@ -70,24 +70,23 @@ class DueBillsView(TemplateView):
 
 
 @method_decorator(utils.branch_required(utils.is_auth_and_has_branch), name='dispatch')
-class OverdueBillsView(TemplateView):
-    template_name = 'home/overdue_bills.html'
+class PaymentBillsView(TemplateView):
+    template_name = 'home/payment_bills.html'
 
     def get(self, request):
         branch_id = request.session.get('branch_id')
 
-        bill_list = models.Bill.objects.filter(contract__lot__branch__id=branch_id,
-                                               status='OVERDUE').order_by('due_date')
+        payment_list = models.Payment.objects.filter(bill__contract__lot__branch__id=branch_id).order_by('-date')[:100]
         page = request.GET.get('page', 1)
 
-        paginator = Paginator(bill_list, 25)
+        paginator = Paginator(payment_list, 25)
         try:
-            bills = paginator.page(page)
+            payments = paginator.page(page)
         except PageNotAnInteger:
-            bills = paginator.page(1)
+            payments = paginator.page(1)
         except EmptyPage:
-            bills = paginator.page(paginator.num_pages)
+            payments = paginator.page(paginator.num_pages)
 
-        context_dict = {'bills': bills}
+        context_dict = {'payments': payments}
 
         return render(request, self.template_name, context_dict)

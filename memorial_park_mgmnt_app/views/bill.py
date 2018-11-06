@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 
 from django.views.generic import TemplateView
 from django.contrib import messages
@@ -18,10 +18,11 @@ from utils import utils
 @method_decorator(utils.branch_required(utils.is_auth_and_has_branch), name='dispatch')
 class BillJson(BaseDatatableView):
     model = models.Bill
-    columns = ['period', 'due_date', 'amount_due']
+    columns = ['period', 'due_date', 'amount_due', 'amount_paid']
     order_columns = [['start', 'end'],
                       'due_date',
-                      'amount_due'
+                      '',
+                      ''
                     ]
 
     def get_initial_queryset(self):
@@ -31,10 +32,30 @@ class BillJson(BaseDatatableView):
         if contract_id:
             contract = models.Contract.objects.get(pk=contract_id)
 
-            branch = self.request.session.get('branch_id')
-            if contract.lot.branch.id == branch:
+            branch_id = self.request.session.get('branch_id')
+            if contract.lot.branch.id == branch_id:
                 queryset = contract.bills.all()
+        else:
+            queryset = models.Bill.objects.filter(contract__lot__branch__id=branch_id)
 
+        return queryset
+
+    def filter_queryset(self, queryset):
+        until = self.request.GET.get('until')
+        if until:
+            until = datetime.fromtimestamp(int(until)/1000).date()
+            queryset = queryset.filter(start__lte=until)
+
+        # is_overdue = self.request.GET.get('is_overdue')
+        # is_paid = self.request.GET.get('is_paid')
+        # if is_overdue is not None and is_paid is not None:
+        #     excluded = []
+        #     for bill in queryset:
+        #         if (bill.is_overdue != bool(is_overdue.title()) and
+        #             bill.is_paid != bool(is_paid.title())):
+        #             excluded.append(bill.pk)
+
+        # queryset = queryset.exclude(id__in=excluded)
         return queryset
 
     def render_column(self, row, column):
@@ -45,14 +66,16 @@ class BillJson(BaseDatatableView):
             return html
         if column == 'amount_due':
             text = '{0:.2f}'.format(row.total_amount_due)
-            if row.status == 'PAID':
+            if row.is_paid:
                 html = '<span class="text-green">{0}</span>'.format(text)
-            elif row.status == 'OVERDUE':
+            elif row.is_overdue:
                 html = '<span class="text-red">{0}</span>'.format(text)
             else:
                 html = text
 
             return html
+        if column == 'amount_paid':
+            return '{0:.2f}'.format(row.total_amount_paid)
         else:
             return super(BillJson, self).render_column(row, column)
 

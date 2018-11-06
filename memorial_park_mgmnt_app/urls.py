@@ -5,6 +5,7 @@ from memorial_park_mgmnt_app.views import (login,
                                            client,
                                            agent,
                                            bill,
+                                           receipt,
                                            payment,
                                            service,
                                            lookup)
@@ -12,7 +13,7 @@ from memorial_park_mgmnt_app.views import (login,
 urlpatterns = [
     url(r'^$', home.HomeView.as_view(), name='home'),
     url(r'^home/due$', home.DueBillsView.as_view(), name='home_due'),
-    url(r'^home/overdue$', home.OverdueBillsView.as_view(), name='home_overdue'),
+    url(r'^home/payments$', home.PaymentBillsView.as_view(), name='home_payments'),
     #####
     url(r'^login/$', login.LoginView.as_view(), name='login'),
     url(r'^branch$', login.BranchView.as_view(), name='branch'),
@@ -44,6 +45,10 @@ urlpatterns = [
     url(r'^bill/json$', bill.BillJson.as_view(), name='bill_json'),
     url(r'^bill/read/(?P<bill_id>[\d]+)$', bill.BillReadView.as_view(), name='bill_read'),
     url(r'^bill/(?P<bill_id>[\d]+)/status$', bill.bill_update_status, name='bill_status'),
+    ### payments ###
+    url(r'^payment/receipt/create$', receipt.ReceiptCreateView.as_view(), name='receipt_create'),
+    url(r'^payment/receipt/(?P<receipt_id>[\d]+)/contract$', receipt.ReceiptContactView.as_view(), name='receipt_contract'),
+    url(r'^payment/receipt/(?P<receipt_id>[\d]+)/create$', receipt.ReceiptPaymentView.as_view(), name='receipt_payment'),
     ### lookups ###
     url(r'^lookup/lot$', lookup.lot_lookup, name='lot_lookup'),
     url(r'^lookup/client$', lookup.client_lookup, name='client_lookup'),
