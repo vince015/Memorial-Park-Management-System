@@ -125,16 +125,18 @@
                 <ul class="todo-list">
                     {% for contract in contracts %}
                     <li class="contract-result-item">
-                        {% if contract.next_due_date %}
+                        {% if not contract.is_complete %}
                             <input type="checkbox" name="{{ contract.id }}-status">
                             <span class="text">
-                            <a href="{% url 'contract_read' contract_id=contract.id %}">
-                                {{ contract.lot }}
-                            </a>
-                            &bull;
-                            {{ contract.next_due_date }}
-                            &bull;
-                            {{ contract.amount_due }}
+                                <a href="{% url 'contract_read' contract_id=contract.id %}">
+                                    {{ contract.lot }}
+                                </a>
+                                &bull;
+                                <span class="{% if contract.is_overdue %} text-red {% endif %}">
+                                    {{ contract.due_date }}
+                                </span>
+                                &bull;
+                                PhP {{ contract.amount_due | floatformat:2 | intcomma }}
                             </span>
                             <div class="pull-right">
                                 <input 
@@ -147,11 +149,13 @@
                                     disabled="">
                             </div>
                         {% else %}
-                            <a href="{% url 'contract_read' contract_id=contract.id %}">
-                                {{ contract.lot }}
-                            </a>
-                            &bull;
-                            <b class="text-green">PAYMENT COMPLETE</b>
+                            <span class="text">
+                                <a href="{% url 'contract_read' contract_id=contract.id %}">
+                                    {{ contract.lot }}
+                                </a>
+                                &bull;
+                                <span class="text-green">PAYMENT COMPLETE</span>
+                            </span>
                         {% endif %}
                     </li>
                     {% endfor %}

@@ -40,9 +40,18 @@ CONTRACT_STATUSES = (('NEW', 'New'),
                      ('REVIEWED', 'Reviewed'),
                      ('FORFEITED', 'Forfeited'))
 
+BILL_TYPES = (('SPOT', 'Spot'),
+             ('DOWNPAYMENT', 'Downpayment'),
+             ('INSTALLMENT', 'Installment'),
+             ('OTHERS', 'Others'))
+
 BILL_STATUSES = (('NEW', 'New'),
                  ('PAID', 'Paid'),
                  ('OVERDUE', 'Overdue'))
+
+PAYMENT_TYPES = (('CASH', 'Cash'),
+                 ('CHECK', 'Check'),
+                 ('OTHERS', 'Others'))
 
 def valid_id_directory_path(instance, filename):
     ext  = os.path.splitext(filename)[1]
@@ -415,24 +424,69 @@ class Contract(models.Model):
 
         return monthly
 
-    @property
-    def next_due_date(self):
-        pst = datetime.utcnow() + timedelta(hours=8)
-        for bill in self.bills.filter(due_date__gte=pst).order_by('due_date'):
-            if not bill.is_paid:
-                return bill.due_date
+    # @property
+    # def next_due_date(self):
+    #     pst = datetime.utcnow() + timedelta(hours=8)
+    #     for bill in self.bills.filter(due_date__gte=pst).order_by('due_date'):
+    #         if not bill.is_paid:
+    #             return bill.due_date
 
-        return None
+    #     return None
+
+    # @property
+    # def last_due_date(self):
+    #     pst = datetime.utcnow() + timedelta(hours=8)
+    #     for bill in self.bills.filter(due_date__lte=pst).order_by('-due_date'):
+    #         if not bill.is_paid:
+    #             return bill.due_date
+
+    #     return None
+
+    @property
+    def due_date(self):
+        due_date = None
+        pst = datetime.utcnow() + timedelta(hours=8)
+
+        for bill in self.bills.filter(due_date__lte=pst).order_by('-due_date'):
+            if not bill.is_paid:
+                due_date = bill.due_date
+                break
+
+        # Advanced payments
+        if not due_date:
+            for bill in self.bills.filter(due_date__gte=pst).order_by('due_date'):
+                if not bill.is_paid:
+                    due_date = bill.due_date
+                    break
+
+        return due_date
 
     @property
     def amount_due(self):
         amount_due = 0
-        if self.next_due_date:
-            for bill in self.bills.filter(due_date__lte=self.next_due_date):
+
+        if self.due_date:
+            for bill in self.bills.filter(due_date__lte=self.due_date):
                 if not bill.is_paid:
-                    amount_due = amount_due + bill.balance + bill.interest
+                    amount_due = amount_due + bill.balance
 
         return amount_due
+
+    @property
+    def is_overdue(self):
+        pst = datetime.utcnow() + timedelta(hours=8)
+        if self.due_date and self.due_date < pst.date():
+            return True
+    
+        return False
+
+    @property
+    def is_complete(self):
+        for bill in self.bills.all():
+            if not bill.is_paid:
+                return False
+
+        return True
 
     def get_commissions(self):
         base = self.commissionable_amount
@@ -535,12 +589,14 @@ class Bill(models.Model):
     start = models.DateField(null=False, blank=False, default=date.today)
     end = models.DateField(null=False, blank=False, default=date.today)
 
+    bill_type = models.CharField(max_length=64, null=False, blank=False, choices=BILL_TYPES, default='SPOT')
     # 5 days before contract date
     issue_date = models.DateField(null=False, blank=False, default=date.today)
     # Same day as contract date
     due_date = models.DateField(null=False, blank=False, default=date.today)
 
     amount_due = models.FloatField(null=False, blank=False, default=0.00)
+    interest = models.FloatField(null=False, blank=False, default=0.00)
     status = models.CharField(max_length=64, blank=False, null=False, choices=BILL_STATUSES, default='NEW')
 
     remarks = models.CharField(max_length=256, blank=True, null=True)
@@ -574,8 +630,12 @@ class Bill(models.Model):
         return paid
 
     @property
+    def total_amount_due(self):
+        return self.amount_due + self.interest
+
+    @property
     def is_paid(self):
-        if self.total_amount_paid < self.amount_due:
+        if self.total_amount_paid < self.total_amount_due:
             return False
 
         return True
@@ -594,23 +654,19 @@ class Bill(models.Model):
         if self.is_paid:
             return 0
         else:
-            return self.amount_due - self.total_amount_paid
+            return self.total_amount_due - self.total_amount_paid
 
-    @property
-    def interest(self):
-        interest = 0
+    # @property
+    # def interest(self):
+    #     interest = 0
 
-        bills = self.contract.bills.filter(issue_date__lt=self.issue_date)
-        last_bill = bills.order_by('-issue_date').first()
+    #     bills = self.contract.bills.filter(issue_date__lt=self.issue_date)
+    #     last_bill = bills.order_by('-issue_date').first()
 
-        if last_bill and last_bill.is_overdue:
-            interest = last_bill.balance * 0.02
+    #     if last_bill and last_bill.is_overdue:
+    #         interest = last_bill.balance * 0.02
 
-        return interest
-
-    @property
-    def total_amount_due(self):
-        return self.amount_due + self.interest
+    #     return interest
 
 
 class Receipt(models.Model):
@@ -620,7 +676,10 @@ class Receipt(models.Model):
     number = models.CharField(max_length=256, blank=False, null=False, unique=True)
     date = models.DateField(null=False, blank=False, default=date.today)
     amount = models.FloatField(null=False, blank=False, default=0.00)
+    payment_type = models.CharField(max_length=32, blank=False, null=False, choices=PAYMENT_TYPES, default='CASH')
     remarks = models.CharField(max_length=256, blank=True, null=True)
+
+    branch = models.ForeignKey(Branch, null=True, blank=True, related_name='receipts', on_delete=models.SET_NULL)
 
     def __str__(self):
         return self.number
@@ -638,4 +697,14 @@ class Payment(models.Model):
     receipt = models.ForeignKey(Receipt, null=False, blank=False, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.number
+        return '{0}: {1:.2f}'.format(self.receipt.number, self.amount)
+
+class Commission(models.Model):
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    amount = models.FloatField(null=False, blank=False, default=0.00)
+    release_date = models.DateField(null=True, blank=True)
+
+    bill = models.ForeignKey(Bill, null=False, blank=False, on_delete=models.CASCADE)
+    agent = models.ForeignKey(Agent, null=False, blank=False, on_delete=models.CASCADE)

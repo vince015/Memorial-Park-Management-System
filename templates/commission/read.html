@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+{% load humanize %}
+{% block pagetitle %}Bills{% endblock %}
+
+{% block pagestylesheets %}{% endblock %}
+
+{% block breadcrumb %}
+<h1>
+    Bill {{ bill.id }}
+</h1>
+
+<ol class="breadcrumb">
+    <li>
+        <a href="{% url 'home' %}">
+            <i class="fa fa-home"></i> Home
+        </a>
+    </li>
+    <li>
+        <a href="{% url 'contract_list' %}">
+            Contracts
+        </a>
+    </li>
+    <li>
+        <a href="{% url 'contract_bills' contract_id=commission.bill.contract.id %}">
+            Contract No. {{ commission.bill.contract.number }}
+        </a>
+    </li>
+    <li>
+        <a href="{% url 'contract_read' contract_id=commission.bill.contract.id %}">
+            Bills and Payments
+        </a>
+    </li>
+    <li class="active">
+        Commision {{ commission.get_rank_display }}
+    </li>
+</ol>
+{% endblock %}
+
+{% block main %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="box box-primary">
+            <div class="box-body box-profile">
+                <a href="{% url 'client_update' client_id=commission.bill.contract.client.id %}">
+                    <h3 class="profile-username text-center">
+                        <b>{{ commission.bill.contract.client.last_name | upper }}, </b>
+                        {{ commission.bill.contract.client.first_name }}
+                    </h3>
+                </a>
+
+                <p class="text-muted text-center">
+                    Client
+                </p>
+
+                <ul class="list-group list-group-unbordered">
+                    <li class="list-group-item">
+                        <b>Contract<br> Price</b>
+                        <a class="pull-right">
+                            PhP {{ commission.bill.contract.contract_price | floatformat:2 | intcomma}}
+                        </a>
+                    </li>
+                    {% if commission.bill.contract.payment_terms == 'INSTALLMENT' %}
+                    <li class="list-group-item">
+                        <b>Downpayment<br> Amount</b>
+                        <a class="pull-right">
+                            PhP {{ commission.bill.contract.downpayment_amount | floatformat:2 | intcomma}}
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <b>Installment<br> Amount</b>
+                        <a class="pull-right">
+                            PhP {{ commission.bill.contract.installment_amount | floatformat:2 | intcomma}}
+                        </a>
+                    </li>
+                    {% endif %}
+                    <li class="list-group-item">
+                        <b>Total<br> Payment</b>
+                        <a class="pull-right">
+                            PhP {{ commission.bill.contract.total_payment | floatformat:2 | intcomma}}
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="box-footer">
+                <a href="{% url 'contract_read' contract_id=commission.bill.contract.id %}" class="pull-right">
+                    <i class="fa fa-chevron-circle-left"></i> View Contract
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <div class="box box-primary">
+            <div class="box-header">
+                <h3 class="box-title">
+                    Commision Details
+                </h3>
+            </div>
+
+            <div class="box-body">
+                <ul class="list-group list-group-unbordered">
+                    <li class="list-group-item">
+                        <b>Agent Name</b>
+                        <a class="pull-right">
+                            {{ commission.agent.last_name | upper }}, {{ commission.agent.first_name }}
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <b>Agent Rank</b>
+                        <a class="pull-right">
+                            {{ commission.agent.get_rank_display }}
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <b>Due Amount</b>
+                        <a class="pull-right">
+                            PhP {{ commission.amount | floatformat:2 | intcomma }}
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <b>Release Date</b>
+                        <a class="pull-right">
+                            {% if commission.release_date %}
+                                <span class="text-green">
+                                    Released on{{ commission.release_date | date:"M d, Y" }}
+                                </span>
+                            {% else %}
+                                <span class="text-red">
+                                    Not yet released
+                                </span>
+                            {% endif %}
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block pagescripts %}
+<script src="{% static "bower_components/datatables.net/js/jquery.dataTables.min.js" %}"></script>
+<script src="{% static "bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js" %}"></script>
+<script>
+    /*
+    $(function () {
+        $('#bill_table').DataTable({
+            "order": [[0, "desc"]],
+            "processing": true,
+            "serverSide": true,
+            "searching": false,
+            "ajax": {
+                "url": "{% url 'bill_json' %}",
+                "data": function (d) {
+                    d.contract_id = "{{ contract.id }}";
+                }
+            }
+        });
+    });
+    */
+</script>
+{% endblock %}

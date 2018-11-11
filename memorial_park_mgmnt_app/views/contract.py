@@ -97,6 +97,10 @@ class ContractCreateView(TemplateView):
                                                      contract=instance)
 
                     models.Bill.objects.create(amount_due=instance.contract_price,
+                                               start=instance.date,
+                                               end=instance.date,
+                                               issue_date=instance.date,
+                                               due_date=instance.date,
                                                contract=instance,
                                                remarks='For spot cash payment')
 
@@ -148,7 +152,6 @@ class ContractUpdateView(TemplateView):
             return redirect(reverse('contract_read', kwargs={'contract_id': instance.id}))
 
         else:
-            print(form.errors)
             context_dict = {'form': form}
             return render(request, self.template_name, context_dict)
 
@@ -178,6 +181,7 @@ class ContractReadView(TemplateView):
                                            end=end_date,
                                            issue_date=issue_date,
                                            due_date=end_date,
+                                           bill_type='DOWNPAYMENT',
                                            amount_due=contract.downpayment_monthly,
                                            contract=contract)
 
@@ -192,6 +196,7 @@ class ContractReadView(TemplateView):
                                            end=end_date,
                                            issue_date=issue_date,
                                            due_date=end_date,
+                                           bill_type='INSTALLMENT',
                                            amount_due=contract.installment_monthly,
                                            contract=contract)
 
@@ -324,6 +329,23 @@ class ContractInstallmentView(TemplateView):
                 'contract': contract
             }
             return render(request, self.template_name, context_dict)
+
+
+@method_decorator(utils.branch_required(utils.is_auth_and_has_branch), name='dispatch')
+class ContractBillListView(TemplateView):
+    template_name = 'bill/list.html'
+
+    def get(self, request, contract_id):
+        contract = get_object_or_404(models.Contract, pk=contract_id)
+        branch_id = request.session.get('branch_id')
+        if contract.lot.branch.id != branch_id:
+            return HttpResponseForbidden()
+
+        context_dict = {
+            'contract': contract
+        }
+
+        return render(request, self.template_name, context_dict)
 
 
 @method_decorator(utils.branch_required(utils.is_auth_and_has_branch), name='dispatch')

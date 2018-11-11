@@ -376,6 +376,7 @@ class ReceiptResource(resources.ModelResource):
                   'number',
                   'date',
                   'amount',
+                  'payment_type'
                   'remarks')
 
 
@@ -383,9 +384,11 @@ class ReceiptAdmin(ImportExportModelAdmin):
     list_display = ('id',
                     'number',
                     'date',
-                    'amount')
+                    'amount',
+                    'payment_type')
     list_display_links = ('id',
                           'number')
+    list_filter = ('payment_type',)
     search_fields = ('id',
                      'number')
     resource_class = ReceiptResource
@@ -413,3 +416,25 @@ class PaymentAdmin(ImportExportModelAdmin):
     list_per_page = 50
 
 admin.site.register(models.Payment, PaymentAdmin)
+
+
+class CommissionResource(resources.ModelResource):
+
+    class Meta:
+        model = models.Commission
+        fields = ('id',
+                  'amount',
+                  'release_date')
+
+
+class CommissionAdmin(ImportExportModelAdmin):
+    list_display = ('id',
+                    'amount',
+                    'release_date',
+                    'agent')
+    list_display_links = ('id',)
+    search_fields = ('id',)
+    resource_class = CommissionResource
+    list_per_page = 50
+
+admin.site.register(models.Commission, CommissionAdmin)

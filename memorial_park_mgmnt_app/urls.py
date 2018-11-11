@@ -7,6 +7,7 @@ from memorial_park_mgmnt_app.views import (login,
                                            bill,
                                            receipt,
                                            payment,
+                                           commission,
                                            service,
                                            lookup)
 
@@ -30,6 +31,7 @@ urlpatterns = [
     url(r'^contract/(?P<contract_id>[\d]+)/installment/compute$', contract.ContractInstallmentComputeView.as_view(), name='contract_installment_compute'),
     url(r'^contract/(?P<contract_id>[\d]+)/service$', service.ServiceCreateView.as_view(), name='service_create'),
     url(r'^contract/(?P<contract_id>[\d]+)/forfeit$', contract.contract_forfeit, name='contract_forfeit'),
+    url(r'^contract/(?P<contract_id>[\d]+)/bills$', contract.ContractBillListView.as_view(), name='contract_bills'),
     ###
     url(r'^client/list$', client.ClientListView.as_view(), name='client_list'),
     url(r'^client/json$', client.ClientJson.as_view(), name='client_json'),
@@ -45,10 +47,13 @@ urlpatterns = [
     url(r'^bill/json$', bill.BillJson.as_view(), name='bill_json'),
     url(r'^bill/read/(?P<bill_id>[\d]+)$', bill.BillReadView.as_view(), name='bill_read'),
     url(r'^bill/(?P<bill_id>[\d]+)/status$', bill.bill_update_status, name='bill_status'),
+    url(r'^bill/(?P<bill_id>[\d]+)/commission$', bill.BillCommmisionList.as_view(), name='bill_commission'),
     ### payments ###
     url(r'^payment/receipt/create$', receipt.ReceiptCreateView.as_view(), name='receipt_create'),
     url(r'^payment/receipt/(?P<receipt_id>[\d]+)/contract$', receipt.ReceiptContactView.as_view(), name='receipt_contract'),
     url(r'^payment/receipt/(?P<receipt_id>[\d]+)/create$', receipt.ReceiptPaymentView.as_view(), name='receipt_payment'),
+    ### commission ###
+    url(r'^commission/(?P<commission_id>[\d]+)/read$', commission.CommissionReadView.as_view(), name='commission_read'),
     ### lookups ###
     url(r'^lookup/lot$', lookup.lot_lookup, name='lot_lookup'),
     url(r'^lookup/client$', lookup.client_lookup, name='client_lookup'),

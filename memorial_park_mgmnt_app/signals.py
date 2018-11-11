@@ -11,6 +11,26 @@ def contract_pre_save(sender, instance, raw, using, update_fields, **kwargs):
         instance.care_fund = instance.lot.lot_type.care_fund
         instance.vat = instance.lot.lot_type.vat
 
+@receiver(post_save, sender=models.Payment)
+def payment_post_save(sender, instance, created, **kwargs):
+
+    conditions = [
+        created,
+        (instance.bill.bill_type == 'SPOT' or instance.bill.bill_type == 'DOWNPAYMENT'),
+        instance.bill.is_paid
+    ]
+
+    if all(conditions):
+        # Create commision
+        commissions = instance.bill.contract.get_monthly_commissions()
+        for owner in commissions.keys():
+            agent = getattr(instance.bill.contract, owner)
+            if agent and commissions[owner] > 0:
+                models.Commission.objects.create(agent=agent,
+                                                 bill=instance.bill,
+                                                 amount=commissions[owner])
+
+
 '''
 @receiver(pre_save, sender=models.Lot)
 def lot_pre_save(sender, instance, raw, using, update_fields, **kwargs):

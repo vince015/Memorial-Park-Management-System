@@ -76,7 +76,7 @@ class PaymentBillsView(TemplateView):
     def get(self, request):
         branch_id = request.session.get('branch_id')
 
-        payment_list = models.Payment.objects.filter(bill__contract__lot__branch__id=branch_id).order_by('-date')[:100]
+        payment_list = models.Receipt.objects.filter(branch__id=branch_id).order_by('-date')[:100]
         page = request.GET.get('page', 1)
 
         paginator = Paginator(payment_list, 25)

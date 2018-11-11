@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+{% load humanize %}
+{% block pagetitle %}Bills{% endblock %}
+
+{% block pagestylesheets %}{% endblock %}
+
+{% block breadcrumb %}
+<h1>
+    Contract No. {{ contract.number }} | Bills and Payments
+</h1>
+
+<ol class="breadcrumb">
+    <li>
+        <a href="{% url 'home' %}">
+            <i class="fa fa-home"></i> Home
+        </a>
+    </li>
+    <li>
+        <a href="{% url 'contract_list' %}">
+            Contracts
+        </a>
+    </li>
+    <li>
+        <a href="{% url 'contract_read' contract_id=contract.id %}">
+            Contract No. {{ contract.number }}
+        </a>
+    </li>
+    <li class="active">
+        Bills and Payments
+    </li>
+</ol>
+{% endblock %}
+
+{% block main %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="box box-primary">
+            <div class="box-body">
+                <table id="bill_table" class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Start</th>
+                            <th>End</th>
+                            <th>Amount</th>
+                            <th>Interest</th>
+                            <th>Amount Paid</th>
+                            <th>Commisions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for bill in contract.bills.all %}
+                        <tr>
+                            <td>
+                                {{ bill.start | date:"Y-m-d" }}
+                            </td>
+                            <td>
+                                {{ bill.end | date:"Y-m-d" }}
+                            </td>
+                            <td>
+                                {{ bill.amount_due | floatformat:2 | intcomma }}
+                            </td>
+                            <td>
+                                {{ bill.interest | floatformat:2 | intcomma }}
+                            </td>
+                            <td>
+                                {{ bill.total_amount_paid | floatformat:2 | intcomma }}
+                            </td>
+                            <td>
+                                {% if bill.commission_set.all %}
+                                    <a href="{% url 'bill_commission' bill_id=bill.id %}" id="{{ bill.id }}" class="commision-view">
+                                        Details
+                                    </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block pagescripts %}
+<script src="{% static "bower_components/datatables.net/js/jquery.dataTables.min.js" %}"></script>
+<script src="{% static "bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js" %}"></script>
+<script>
+    $(function () {
+        var dt = $('#bill_table').DataTable({
+            "columnDefs": [
+                {
+                    "orderable": false,
+                    "targets": [5]
+                }
+            ],
+        });
+
+        var detailRows = [];
+        $('#bill_table tbody').on( 'click', 'tr td a.commision-view', function (evt) {
+            evt.preventDefault();
+
+            var tr = $(this).parent().closest('tr');
+            var row = dt.row(tr);
+            var idx = $.inArray(tr.attr('id'), detailRows);
+
+            if (row.child.isShown()) {
+                tr.removeClass('details');
+                row.child.remove();
+
+                // Remove from the 'open' array
+                detailRows.splice(idx, 1);
+            }
+            else {
+                tr.addClass('details');
+                format(row, $(this).attr('href'));
+
+                // Add to the 'open' array
+                if (idx === -1) {
+                    detailRows.push(tr.attr('id'));
+                }
+            }
+        });
+
+        // On each draw, loop over the 'detailRows' array and show any child rows
+        dt.on('draw', function () {
+            $.each(detailRows, function ( i, id ) {
+                $('#'+id+' td a.commision-view').trigger( 'click' );
+            });
+        });
+    });
+    function format (row, request_url) {
+        $.ajax({
+            type: "GET",
+            url: request_url,
+            success: function(data, textStatus, jqXHR) {
+                row.child(data).show();
+            },
+            dataType: "html"
+        })
+    }
+</script>
+{% endblock %}

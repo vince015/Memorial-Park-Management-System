@@ -250,23 +250,23 @@
 
             {% if contract.bills.all %}
             <div class="box-body">
-                <div class="small-box bg-light-blue">
+                <div class="small-box {% if contract.is_overdue %} bg-red {% else %} bg-light-blue {% endif %}">
                     <div class="inner">
                         <h3>
                             PhP {{ contract.amount_due | floatformat:2 | intcomma }}
                         </h3>
                         <p>
-                            {% if contract.next_due_date %}
-                                Next Due Date: {{ contract.next_due_date | date:"M d, Y" }}
-                            {% else %}
+                            {% if contract.amount_due < 1 %}
                                 PAYMENT COMPLETE
+                            {% elif contract.due_date %}
+                                Due Date: {{ contract.due_date | date:"M d, Y" }}
                             {% endif %}
                         </p>
                     </div>
                     <div class="icon">
                         <i class="fa fa-envelope"></i>
                     </div>
-                    <a href="#" class="small-box-footer">
+                    <a href="{% url 'contract_bills' contract_id=contract.id %}" class="small-box-footer">
                       More info <i class="fa fa-arrow-circle-right"></i>
                     </a>
                 </div>
@@ -349,6 +349,12 @@
 <script src="{% static "bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js" %}"></script>
 <script>
     $(function () {
+        var due = new Date("{{ contract.due_date}}");
+        var now = new Date();
+        if (now > due) {
+            due = now;
+        }
+
         $('#bill_table').DataTable({
             "order": [[0, "asc"]],
             "processing": true,
@@ -366,7 +372,7 @@
                     d.contract_id = "{{ contract.id }}";
                     d.is_overdue = true;
                     d.is_paid = true;
-                    d.until = Date.now()
+                    d.until = due.getTime()
                 }
             }
         });

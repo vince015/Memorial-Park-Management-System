@@ -28,7 +28,7 @@
         </a>
     </li>
     <li class="active">
-        Bill {{ bill.id }}
+        Bills and Payments
     </li>
 </ol>
 {% endblock %}
@@ -148,15 +148,15 @@
                         </a>
                     </li>
                     <li class="list-group-item">
-                        <b>Balance</b>
-                        <a class="pull-right">
-                            PhP {{ bill.balance | floatformat:2 | intcomma}}
-                        </a>
-                    </li>
-                    <li class="list-group-item">
                         <b>Interest</b>
                         <a class="pull-right">
                             PhP {{ bill.interest | floatformat:2 | intcomma}}
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <b>Balance</b>
+                        <a class="pull-right">
+                            PhP {{ bill.balance | floatformat:2 | intcomma}}
                         </a>
                     </li>
                     <li class="list-group-item">

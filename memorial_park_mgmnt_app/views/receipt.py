@@ -21,10 +21,13 @@ class ReceiptCreateView(TemplateView):
         return render(request, self.template_name, context_dict)
 
     def post(self, request):
+
         form = forms.ReceiptForm(request.POST)
 
         if form.is_valid():
             instance = form.save(commit=False)
+            branch_id = request.session.get('branch_id')
+            instance.branch_id = branch_id
             instance.save()
             return redirect(reverse('receipt_payment', kwargs={'receipt_id': instance.id}))
         else:

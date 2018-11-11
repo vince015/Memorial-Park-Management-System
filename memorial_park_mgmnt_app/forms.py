@@ -321,6 +321,7 @@ class ReceiptForm(forms.ModelForm):
         fields = ['number',
                   'date',
                   'amount',
+                  'payment_type',
                   'remarks']
 
         widgets = {
@@ -332,6 +333,7 @@ class ReceiptForm(forms.ModelForm):
             'amount': forms.NumberInput(attrs={'step': 0.01,
                                                'min': 0.00,
                                                'class': 'form-control'}),
+            'payment_type': forms.RadioSelect(),
             'remarks': forms.Textarea(attrs={'class': 'form-control',
                                              'rows': 3,
                                              'placeholder': 'Remarks'}),

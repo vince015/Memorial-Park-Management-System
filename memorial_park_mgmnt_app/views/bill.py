@@ -98,6 +98,22 @@ class BillReadView(TemplateView):
 
         return render(request, self.template_name, context_dict)
 
+@method_decorator(utils.branch_required(utils.is_auth_and_has_branch), name='dispatch')
+class BillCommmisionList(TemplateView):
+    template_name = 'commission/list.html'
+
+    def get(self, request, bill_id):
+        bill = get_object_or_404(models.Bill, pk=bill_id)
+        branch_id = request.session.get('branch_id')
+        if bill.contract.lot.branch.id != branch_id:
+            return HttpResponseForbidden()
+
+        context_dict = {
+            'commissions': bill.commission_set.all().order_by('-created')
+        }
+
+        return render(request, self.template_name, context_dict)
+
 @utils.branch_required(utils.is_auth_and_has_branch)
 def bill_update_status(request, bill_id):
 
