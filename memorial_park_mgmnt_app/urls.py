@@ -14,7 +14,7 @@ from memorial_park_mgmnt_app.views import (login,
 urlpatterns = [
     url(r'^$', home.HomeView.as_view(), name='home'),
     url(r'^home/due$', home.DueBillsView.as_view(), name='home_due'),
-    url(r'^home/payments$', home.PaymentBillsView.as_view(), name='home_payments'),
+    url(r'^home/commissions$', home.CommisionRecentView.as_view(), name='home_commissions'),
     #####
     url(r'^login/$', login.LoginView.as_view(), name='login'),
     url(r'^branch$', login.BranchView.as_view(), name='branch'),

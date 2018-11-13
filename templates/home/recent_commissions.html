@@ -1,0 +1,91 @@
+{% load humanize %}
+
+<div class="box-header with-border">
+    <h3 class="box-title">Recent Commissions</h3>
+
+    <div class="box-tools pull-right">
+        {% if commissions.has_other_pages %}
+        <ul class="pagination pagination-sm inline">
+            <li>
+                <a href="javascript:void(0)" onclick="overduePageChange(1)">
+                    &laquo;
+                </a>
+            </li>
+
+            {% if commissions.has_previous %}
+            <li>
+                <a href="javascript:void(0)" onclick="overduePageChange({{ commissions.previous_page_number }})">
+                    {{ commissions.previous_page_number }}
+                </a>
+            </li>
+            {% endif %}
+
+            <li class="current">
+                <a href="javascript:void(0)" onclick="overduePageChange({{ commissions.number }})">
+                    {{ commissions.number }}
+                </a>
+            </li>
+
+            {% if commissions.has_next %}
+            <li>
+                <a href="javascript:void(0)" onclick="overduePageChange({{ commissions.next_page_number }})">
+                    {{ commissions.next_page_number }}
+                </a>
+            </li>
+            {% endif %}
+
+            <li>
+                <a href="javascript:void(0)" onclick="overduePageChange({{ commissions.paginator.num_pages }})">
+                    &raquo;
+                </a>
+            </li>
+        </ul>
+        {% endif %}
+    </div>
+</div>
+
+<div class="box-body">
+    {% if commissions %}
+    <ul class="products-list product-list-in-box">
+        {% for commission in commissions %}
+        <li class="item">
+            <div class="product-item">
+                <div class="checkbox">
+                  <label>
+                    <input type="checkbox" name="release-commission" value="{{ commission.id }}" {% if commission.release_date %}disabled{% endif %}>
+                    <a href="{% url 'agent_update' agent_id=commission.agent.id %}" class="product-title">
+                        {{ commission.agent.last_name | upper }}, {{ commission.agent.first_name }}
+                        &bull;
+                        {{ commission.agent.get_rank_display }}
+                    </a>
+                    <span class="product-description">
+                        <a href="{% url 'commission_read' commission_id=commission.id %}">
+                            PhP {{ commission.amount | floatformat:2 | intcomma }}
+                        </a>
+                        &bull;
+                        {% if commission.release_date %}
+                            <span class="text-green">
+                                Released on {{ commission.release_date | date:"M d, Y" }}
+                            </span>
+                        {% else %}
+                            <span class="text-red">
+                                Not yet released
+                            </span>
+                        {% endif %}
+                    </span>
+                  </label>
+                </div>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <h3 class="text-muted text-center">
+        No results found
+    </h3>
+    {% endif %}
+</div>
+
+<div class="box-footer">
+    <button type="submit" class="btn btn-primary pull-right">Release</button>
+</div>

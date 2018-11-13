@@ -8,7 +8,7 @@ from django.db.models import Q
 from django.urls import reverse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponseForbidden
-from django.core.paginator import Paginator
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from django_datatables_view.base_datatable_view import BaseDatatableView
 
@@ -70,23 +70,48 @@ class DueBillsView(TemplateView):
 
 
 @method_decorator(utils.branch_required(utils.is_auth_and_has_branch), name='dispatch')
-class PaymentBillsView(TemplateView):
-    template_name = 'home/payment_bills.html'
+class CommisionRecentView(TemplateView):
+    template_name = 'home/recent_commissions.html'
 
     def get(self, request):
         branch_id = request.session.get('branch_id')
 
-        payment_list = models.Receipt.objects.filter(branch__id=branch_id).order_by('-date')[:100]
+        commission_list = models.Commission.objects.filter(bill__contract__lot__branch__id=branch_id).order_by('-created')[:100]
         page = request.GET.get('page', 1)
 
-        paginator = Paginator(payment_list, 25)
+        paginator = Paginator(commission_list, 25)
         try:
-            payments = paginator.page(page)
+            commissions = paginator.page(page)
         except PageNotAnInteger:
-            payments = paginator.page(1)
+            commissions = paginator.page(1)
         except EmptyPage:
-            payments = paginator.page(paginator.num_pages)
+            commissions = paginator.page(paginator.num_pages)
 
-        context_dict = {'payments': payments}
+        context_dict = {'commissions': commissions}
+
+        return render(request, self.template_name, context_dict)
+
+    def post(self, request):
+        branch_id = request.session.get('branch_id')
+        release_commission = request.POST.getlist('release-commission')
+
+        pst = datetime.utcnow() + timedelta(hours=8)
+        commissions = models.Commission.objects.filter(pk__in=release_commission, bill__contract__lot__branch__id=branch_id)
+        commissions.update(release_date=pst.date())
+
+        commission_list = models.Commission.objects.filter(Q(bill__contract__lot__branch__id=branch_id) |
+                                                           Q(pk__in=release_commission))
+        commission_list = commission_list.order_by('-created')[:100]
+        page = request.GET.get('page', 1)
+
+        paginator = Paginator(commission_list, 25)
+        try:
+            commissions = paginator.page(page)
+        except PageNotAnInteger:
+            commissions = paginator.page(1)
+        except EmptyPage:
+            commissions = paginator.page(paginator.num_pages)
+
+        context_dict = {'commissions': commissions}
 
         return render(request, self.template_name, context_dict)

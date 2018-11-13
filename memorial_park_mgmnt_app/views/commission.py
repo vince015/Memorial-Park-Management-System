@@ -31,3 +31,22 @@ class CommissionReadView(TemplateView):
         }
 
         return render(request, self.template_name, context_dict)
+
+    def post(self, request, commission_id):
+        commission = get_object_or_404(models.Commission, pk=commission_id)
+        branch_id = request.session.get('branch_id')
+        if commission.bill.contract.lot.branch.id != branch_id:
+            return HttpResponseForbidden()
+
+        pst = datetime.utcnow() + timedelta(hours=8)
+        commission.release_date = pst.date()
+        commission.save()
+
+        msg = 'Successfully released Commission, {0}'.format(str(commission))
+        messages.success(request, msg)
+
+        context_dict = {
+            'commission': commission
+        }
+
+        return render(request, self.template_name, context_dict)

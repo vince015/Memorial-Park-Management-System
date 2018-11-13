@@ -380,7 +380,7 @@ class Contract(models.Model):
 
     @property
     def total_payment(self):
-        total = 0
+        total = self.reservation
         for bill in self.bills.all():
             for payment in bill.payments.all():
                 total = total + payment.amount
@@ -708,3 +708,6 @@ class Commission(models.Model):
 
     bill = models.ForeignKey(Bill, null=False, blank=False, on_delete=models.CASCADE)
     agent = models.ForeignKey(Agent, null=False, blank=False, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return '{0}: Php {1:.2f}'.format(str(self.agent), self.amount)

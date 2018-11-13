@@ -163,6 +163,7 @@ class ContractReadView(TemplateView):
     def __generate_bills(self, contract):
 
         if contract.payment_terms == 'SPOT':
+            amount_due = contract.contract_price - contract.reservation
             models.Bill.objects.create(start=contract.date,
                                        end=contract.date,
                                        issue_date=contract.date,

@@ -8,15 +8,6 @@
 {% endblock %}
 
 {% block breadcrumb %}
-<!-- <div class="input-group input-group-sm col-md-6">
-    <input type="text" id="search-input" class="form-control" placeholder="Search...">
-    <span class="input-group-btn">
-        <button type="button" class="btn btn-primary">
-            <i class="fa fa-search"></i>
-        </button>
-    </span>
-</div>
- -->
 <h1>
     Welcome!
 </h1>
@@ -42,14 +33,17 @@
     </div>
 
     <div class="col-md-6">
-        <div class="box box-primary" id="bills-overdue">
-            <div class="overlay text-center" id="overdue-overlay">
+        <form id="release-commission-form">
+        {% csrf_token %}
+        <div class="box box-primary" id="commission-list">
+            <div class="overlay text-center" id="commission-overlay">
                 <i class="fa fa-spinner fa-spin"></i>
             </div>
             <div class="box-body">
                 &nbsp;
             </div>
         </div>
+        </form>
     </div>
 </div>
 {% endblock %}
@@ -60,7 +54,7 @@
 <script>
     $(document).ready(function() {
         getDue(1);
-        getOverdue(1);
+        getCommission(1);
     });
 
     function getDue(page) {
@@ -84,26 +78,36 @@
         getDue(page);
     }
 
-    function getOverdue(page) {
-        $("#overdue-overlay").show();
+    function getCommission(page) {
+        $("#commission-overlay").show();
         $.ajax({
             type: "GET",
-            url: "{% url 'home_payments' %}",
+            url: "{% url 'home_commissions' %}",
             data: {
                 "page": page
             },
-            success: getOverdueOK,
+            success: getCommissionOK,
             dataType: "html"
         })
     }
-    function getOverdueOK(data, textStatus, jqXHR) {
-        console.log('overdue okay')
-        $("#bills-overdue").html(data);
-        $("#overdue-overlay").hide();
+    function getCommissionOK(data, textStatus, jqXHR) {
+        $("#commission-list").html(data);
+        $("#commission-overlay").hide();
     }
 
     function overduePageChange(page) {
-        getOverdue(page);
+        getCommission(page);
     }
+
+    $("#release-commission-form").submit( function (e) {
+        e.preventDefault();
+        $.ajax({
+            type: "POST",
+            url: "{% url 'home_commissions' %}",
+            data: $(this).serialize(),
+            success: getCommissionOK,
+            dataType: "html"
+        });
+    });
 </script>
 {% endblock %}

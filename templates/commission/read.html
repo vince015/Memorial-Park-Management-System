@@ -125,7 +125,7 @@
                         <a class="pull-right">
                             {% if commission.release_date %}
                                 <span class="text-green">
-                                    Released on{{ commission.release_date | date:"M d, Y" }}
+                                    Released on {{ commission.release_date | date:"M d, Y" }}
                                 </span>
                             {% else %}
                                 <span class="text-red">
@@ -136,6 +136,15 @@
                     </li>
                 </ul>
             </div>
+
+            {% if not commission.release_date %}
+            <div class="box-footer">
+                <form action="{% url 'commission_read' commission_id=commission.id %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary pull-right">Release</button>
+                </form>
+            </div>
+            {% endif %}
         </div>
     </div>
 </div>
