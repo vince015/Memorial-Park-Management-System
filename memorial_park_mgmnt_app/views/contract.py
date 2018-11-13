@@ -188,20 +188,40 @@ class ContractReadView(TemplateView):
 
                 start_date = end_date + timedelta(days=1)
 
+            installments = []
+
             split = split + 1
             for month in range(0, contract.installment_option.months):
                 end_date = contract.date + datedelta(months=(split + month + 1))
                 issue_date = end_date - timedelta(days=5)
 
-                models.Bill.objects.create(start=start_date,
-                                           end=end_date,
-                                           issue_date=issue_date,
-                                           due_date=end_date,
-                                           bill_type='INSTALLMENT',
-                                           amount_due=contract.installment_monthly,
-                                           contract=contract)
+                bill = models.Bill(start=start_date,
+                                   end=end_date,
+                                   issue_date=issue_date,
+                                   due_date=end_date,
+                                   bill_type='INSTALLMENT',
+                                   amount_due=contract.installment_monthly,
+                                   contract=contract)
 
+                installments.insert(0, bill)
                 start_date = end_date + timedelta(days=1)
+
+            # Deduct reservation
+            reservation_amount = contract.reservation
+            for bill in installments:
+                # print('{0} - {1}'.format(str(bill), bill.amount_due))
+                if bill.amount_due > reservation_amount:
+                    new_amount = bill.amount_due
+                    if reservation_amount > 0:
+                        new_amount = bill.amount_due - reservation_amount
+                        reservation_amount = reservation_amount - bill.amount_due
+
+                    # print('\t NEW AMOUNT: {0}, RESERV: {1}'.format(new_amount, reservation_amount))
+                    bill.amount_due = new_amount
+                    bill.save()
+                else:
+                    reservation_amount = reservation_amount - bill.amount_due
+
 
     def get(self, request, contract_id):
         contract = get_object_or_404(models.Contract, pk=contract_id)
