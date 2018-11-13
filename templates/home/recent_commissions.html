@@ -87,5 +87,7 @@
 </div>
 
 <div class="box-footer">
-    <button type="submit" class="btn btn-primary pull-right">Release</button>
+    <button type="submit" class="btn btn-primary pull-right" {% if not commissions %}disabled{% endif %}>
+        Release
+    </button>
 </div>
